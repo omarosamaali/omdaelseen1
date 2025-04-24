@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1920 1202">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#_Áåçûìÿííûé_ãðàäèåíò_893);
+      }
+    </style>
+    <linearGradient id="_Áåçûìÿííûé_ãðàäèåíò_893" data-name="Áåçûìÿííûé ãðàäèåíò 893" x1="961.69" y1="1191" x2="957.71" y2="-199.6" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f5dbc4"/>
+      <stop offset=".22" stop-color="#f3d6c0"/>
+      <stop offset=".47" stop-color="#eec8b7"/>
+      <stop offset=".74" stop-color="#e7b1a9"/>
+      <stop offset="1" stop-color="#dd9396"/>
+    </linearGradient>
+  </defs>
+  <!-- Generator: Adobe Illustrator 28.7.1, SVG Export Plug-In . SVG Version: 1.2.0 Build 142)  -->
+  <g>
+    <g id="Layer_1">
+      <rect class="cls-1" width="1920" height="1202"/>
+    </g>
+  </g>
+</svg>

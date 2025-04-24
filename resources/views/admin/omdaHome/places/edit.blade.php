@@ -1,0 +1,336 @@
+@extends($layout)
+
+@section('content')
+    <style>
+        .delete-image-btn {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .delete-image-btn:hover {
+            background-color: #dc2626;
+        }
+
+        .image-container {
+            position: relative;
+            display: inline-block;
+        }
+    </style>
+
+    <div class="py-4" style="margin-top: 30px;">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    <h2 class="text-right mb-4 font-bold text-xl">تعديل المكان</h2>
+
+                    <form action="{{ route('admin.places.update', $place->id) }}" method="POST" enctype="multipart/form-data"
+                        class="space-y-6">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="mb-4 text-right">
+                                <label for="name_ar" class="block text-gray-700 font-bold mb-2">الاسم بالعربي *</label>
+                                <input type="text" name="name_ar" id="name_ar"
+                                    value="{{ old('name_ar', $place->name_ar) }}"
+                                    class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
+                                @error('name_ar')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4 text-right">
+                                <label for="name_en" class="block text-gray-700 font-bold mb-2">الاسم بالإنجليزي *</label>
+                                <input type="text" name="name_en" id="name_en"
+                                    value="{{ old('name_en', $place->name_en) }}"
+                                    class="w-full border-gray-300 rounded-md shadow-sm" required>
+                                @error('name_en')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4 text-right">
+                                <label for="name_ch" class="block text-gray-700 font-bold mb-2">الاسم بالصيني *</label>
+                                <input type="text" name="name_ch" id="name_ch"
+                                    value="{{ old('name_ch', $place->name_ch) }}"
+                                    class="w-full border-gray-300 rounded-md shadow-sm" required>
+                                @error('name_ch')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4 text-right">
+                                <label for="main_category_id" class="block text-gray-700 font-bold mb-2">التصنيف الرئيسي
+                                    *</label>
+                                <select name="main_category_id" id="main_category_id"
+                                    class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
+                                    @foreach ($explorers as $explorer)
+                                        <option value="{{ $explorer->id }}"
+                                            {{ old('main_category_id', $place->main) == $explorer->id ? 'selected' : '' }}>
+                                            {{ $explorer->name_ar }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('main_category_id')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="mb-4 text-right">
+                                <label for="sub_category_id" class="block text-gray-700 font-bold mb-2">التصنيف الفرعي
+                                    *</label>
+                                <select name="sub_category_id" id="sub_category_id"
+                                    class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
+                                    @foreach ($branches as $branch)
+                                        <option value="{{ $branch->id }}" data-main="{{ $branch->main }}"
+                                            {{ old('sub_category_id', $place->sub) == $branch->id ? 'selected' : '' }}>
+                                            {{ $branch->name_ar }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('sub_category_id')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4 text-right">
+                                <label for="region_id" class="block text-gray-700 font-bold mb-2">المنطقة *</label>
+                                <select name="region_id" id="region_id"
+                                    class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
+                                    <option value="">اختر المنطقة</option>
+                                    @foreach ($regions as $region)
+                                        <option value="{{ $region->id }}"
+                                            {{ old('region_id', $place->region_id) == $region->id ? 'selected' : '' }}>
+                                            {{ $region->name_ar }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('region_id')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4 text-right">
+                                <label for="link" class="block text-gray-700 font-bold mb-2">الرابط *</label>
+                                <input type="url" name="link" id="link" value="{{ old('link', $place->link) }}"
+                                    class="w-full border-gray-300 rounded-md shadow-sm" required>
+                                @error('link')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4 text-right">
+                                <label for="map_type" class="block text-gray-700 font-bold mb-2">نوع الخريطة *</label>
+                                <select name="map_type" id="map_type"
+                                    class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
+                                    <option value="google"
+                                        {{ old('map_type', $place->map_type) == 'google' ? 'selected' : '' }}>Google
+                                    </option>
+                                    <option value="apple"
+                                        {{ old('map_type', $place->map_type) == 'apple' ? 'selected' : '' }}>Apple</option>
+                                    <option value="baidu"
+                                        {{ old('map_type', $place->map_type) == 'baidu' ? 'selected' : '' }}>Baidu</option>
+                                </select>
+                                @error('map_type')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4 text-right">
+                                <label for="phone" class="block text-gray-700 font-bold mb-2">رقم الهاتف</label>
+                                <input type="text" name="phone" id="phone"
+                                    value="{{ old('phone', $place->phone) }}"
+                                    class="w-full border-gray-300 rounded-md shadow-sm text-right">
+                                @error('phone')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4 text-right">
+                                <label for="email" class="block text-gray-700 font-bold mb-2">البريد الإلكتروني</label>
+                                <input type="email" name="email" id="email"
+                                    value="{{ old('email', $place->email) }}"
+                                    class="w-full border-gray-300 rounded-md shadow-sm">
+                                @error('email')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4 text-right">
+                                <label for="status" class="block text-gray-700 font-bold mb-2">الحالة *</label>
+                                <select name="status" id="status"
+                                    class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
+                                    <option value="نشط"
+                                        {{ old('status', $place->status) == 'active' ? 'selected' : '' }}>نشط</option>
+                                    <option value="غير نشط"
+                                        {{ old('status', $place->status) == 'inactive' ? 'selected' : '' }}>غير نشط
+                                    </option>
+                                    <option value="محظور"
+                                        {{ old('status', $place->status) == 'banned' ? 'selected' : '' }}>محظور</option>
+                                </select>
+                                @error('status')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4 text-right col-span-2">
+                                <label for="avatar" class="block text-gray-700 font-bold mb-2">الصورة</label>
+                                @if ($place->avatar)
+                                    <div class="mb-2 image-container">
+                                        <img src="{{ asset('storage/' . $place->avatar) }}" alt="{{ $place->name_ar }}"
+                                            class="w-32 h-32 object-cover rounded-md">
+                                        <button type="button" class="delete-image-btn"
+                                            data-image-type="avatar" data-place-id="{{ $place->id }}">حذف</button>
+                                    </div>
+                                @endif
+                                <input type="file" name="avatar" id="avatar"
+                                    class="w-full border-gray-300 rounded-md shadow-sm">
+                                <small class="text-gray-500">اترك الحقل فارغًا إذا كنت لا ترغب في تغيير الصورة</small>
+                                @error('avatar')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="mb-4 text-right col-span-2">
+                                <label for="additional_images" class="block text-gray-700 font-bold mb-2">صور إضافية</label>
+                                @if ($place->additional_images)
+                                    <div class="mb-2 flex flex-wrap gap-2">
+                                        @foreach (json_decode($place->additional_images, true) as $index => $image)
+                                            <div class="image-container">
+                                                <img src="{{ asset('storage/' . $image) }}" alt="Additional Image"
+                                                    class="w-32 h-32 object-cover rounded-md">
+                                                <button type="button" class="delete-image-btn"
+                                                    data-image-type="additional" data-place-id="{{ $place->id }}"
+                                                    data-image-index="{{ $index }}">حذف</button>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+                                <input type="file" name="additional_images[]" id="additional_images"
+                                    class="w-full border-gray-300 rounded-md shadow-sm" multiple>
+                                <small class="text-gray-500">اختر صورًا جديدة لإضافتها</small>
+                                @error('additional_images.*')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="mb-4 text-right col-span-2">
+                                <label for="details" class="block text-gray-700 font-bold mb-2">التفاصيل</label>
+                                <textarea name="details" id="details" rows="4"
+                                    class="w-full border-gray-300 rounded-md shadow-sm text-right">{{ old('details', $place->details) }}</textarea>
+                                @error('details')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end gap-2">
+                            <button type="submit"
+                                class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">تحديث</button>
+                            <a href="{{ route('admin.places.index') }}"
+                                class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">إلغاء</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- إضافة jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // دالة الترجمة (موجودة مسبقًا)
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            function translateText(inputField, sourceLang, targetLangs, targetFields) {
+                const text = inputField.val().trim();
+                if (!text) {
+                    targetFields.forEach(field => field.val(''));
+                    return;
+                }
+
+                $.ajax({
+                    url: '{{ route('translate') }}',
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        text: text,
+                        source_lang: sourceLang,
+                        target_langs: targetLangs
+                    },
+                    success: function(response) {
+                        targetFields[0].val(response[targetLangs[0]] || '');
+                        targetFields[1].val(response[targetLangs[1]] || '');
+                    },
+                    error: function(xhr) {
+                        console.error('Translation failed:', xhr.responseJSON?.error);
+                        alert('فشل في الترجمة، حاول مرة أخرى لاحقًا.');
+                    }
+                });
+            }
+
+            const debouncedTranslate = debounce(translateText, 500);
+
+            $('#name_ar').on('input', function() {
+                debouncedTranslate($(this), 'ar', ['en', 'zh-CN'], [$('#name_en'), $('#name_ch')]);
+            });
+
+            $('#name_en').on('input', function() {
+                debouncedTranslate($(this), 'en', ['ar', 'zh-CN'], [$('#name_ar'), $('#name_ch')]);
+            });
+
+            $('#name_ch').on('input', function() {
+                debouncedTranslate($(this), 'zh-CN', ['ar', 'en'], [$('#name_ar'), $('#name_en')]);
+            });
+
+            // التعامل مع حذف الصور
+            $('.delete-image-btn').on('click', function() {
+                const button = $(this);
+                const placeId = button.data('place-id');
+                const imageType = button.data('image-type');
+                const imageIndex = button.data('image-index'); // للصور الإضافية فقط
+                const confirmDelete = confirm('هل أنت متأكد من حذف هذه الصورة؟');
+
+                if (confirmDelete) {
+                    $.ajax({
+                        url: '{{ route('admin.places.delete-image') }}',
+                        method: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            place_id: placeId,
+                            image_type: imageType,
+                            image_index: imageIndex
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                button.closest('.image-container').remove();
+                                alert('تم حذف الصورة بنجاح');
+                            } else {
+                                alert('فشل في حذف الصورة: ' + response.message);
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error('Error deleting image:', xhr.responseJSON?.message);
+                            alert('فشل في حذف الصورة، حاول مرة أخرى لاحقًا.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+@endsection
