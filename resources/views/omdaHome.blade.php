@@ -33,7 +33,7 @@
             text-align: center;
             height: 481px;
             padding: 20px;
-            z-index: 0;
+            z-index: 99999999999999999;
             direction: rtl;
             justify-content: start;
             display: flex;

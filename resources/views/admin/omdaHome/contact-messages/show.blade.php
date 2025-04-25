@@ -45,7 +45,7 @@
                 </p>
             </div>
         </div>
-        <div class="mt-4">
+        <div class="mt-4 " style="text-align: right;">
             <label class="font-bold">الرسالة:</label>
             <p class="mt-2 p-4 bg-gray-100 rounded">{{ $message->message }}</p>
         </div>

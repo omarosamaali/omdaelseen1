@@ -39,30 +39,39 @@ class BannerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'is_active' => 'required|in:نشط,غير نشط',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+public function store(Request $request)
+{
+    $request->validate([
+        'title_ar' => 'required|string|max:255',
+        'title_en' => 'required|string|max:255',
+        'title_zh' => 'required|string|max:255',
+        'location' => 'required|in:website_home,mobile_app,both',
+        'is_active' => 'required|in:نشط,غير نشط',
+        'start_date' => 'nullable|date',
+        'end_date' => 'nullable|date|after_or_equal:start_date',
+        'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-        $bannerData = $request->only([
-            'is_active', 'start_date', 'end_date'
-        ]);
+    $bannerData = $request->only([
+        'title_ar',
+        'title_en',
+        'title_zh',
+        'location',
+        'is_active',
+        'start_date',
+        'end_date',
+    ]);
 
-        // Handle file upload
-        if ($request->hasFile('avatar')) {
-            $path = $request->file('avatar')->store('banners', 'public');
-            $bannerData['avatar'] = $path;
-        }
-
-        Banner::create($bannerData);
-
-        return redirect()->route('admin.banners.index')->with('success', 'تم إضافة البنر بنجاح');
+    // Handle file upload
+    if ($request->hasFile('avatar')) {
+        $path = $request->file('avatar')->store('banners', 'public');
+        $bannerData['avatar'] = $path;
     }
 
+    Banner::create($bannerData);
+
+    return redirect()->route('admin.banners.index')->with('success', 'تم إضافة البنر بنجاح');
+}
     /**
      * Display the specified resource.
      */
@@ -84,36 +93,45 @@ class BannerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        $request->validate([
-            'is_active' => 'required|in:نشط,غير نشط',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+public function update(Request $request, string $id)
+{
+    $request->validate([
+        'title_ar' => 'required|string|max:255',
+        'title_en' => 'required|string|max:255',
+        'title_zh' => 'required|string|max:255',
+        'location' => 'required|in:website_home,mobile_app,both',
+        'is_active' => 'required|in:نشط,غير نشط',
+        'start_date' => 'nullable|date',
+        'end_date' => 'nullable|date|after_or_equal:start_date',
+        'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-        $banner = Banner::findOrFail($id);
+    $banner = Banner::findOrFail($id);
 
-        $bannerData = $request->only([
-            'is_active', 'start_date', 'end_date'
-        ]);
+    $bannerData = $request->only([
+        'title_ar',
+        'title_en',
+        'title_zh',
+        'location',
+        'is_active',
+        'start_date',
+        'end_date',
+    ]);
 
-        // Handle file upload
-        if ($request->hasFile('avatar')) {
-            // Delete old image if exists
-            if ($banner->avatar) {
-                Storage::disk('public')->delete($banner->avatar);
-            }
-            $path = $request->file('avatar')->store('banners', 'public');
-            $bannerData['avatar'] = $path;
+    // Handle file upload
+    if ($request->hasFile('avatar')) {
+        // Delete old image if exists
+        if ($banner->avatar) {
+            Storage::disk('public')->delete($banner->avatar);
         }
-
-        $banner->update($bannerData);
-
-        return redirect()->route('admin.banners.index')->with('success', 'تم تحديث البنر بنجاح');
+        $path = $request->file('avatar')->store('banners', 'public');
+        $bannerData['avatar'] = $path;
     }
 
+    $banner->update($bannerData);
+
+    return redirect()->route('admin.banners.index')->with('success', 'تم تحديث البنر بنجاح');
+}
     /**
      * Remove the specified resource from storage.
      */

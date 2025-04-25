@@ -61,7 +61,7 @@
             text-align: right;
             justify-content: start;
             align-items: center;
-            gap: 10px;
+            /* gap: 10px; */
             color: #333;
             text-decoration: none;
             font-size: 16px;

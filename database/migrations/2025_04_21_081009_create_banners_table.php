@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('banners', function (Blueprint $table) {
             $table->id();
-            $table->string('avatar')->nullable(); // For banner image
+            $table->string('title_ar')->nullable();
+            $table->string('title_en')->nullable();
+            $table->string('title_zh')->nullable();
+            $table->string('avatar')->nullable();
             $table->enum('is_active', ['نشط', 'غير نشط'])->default('نشط');
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();

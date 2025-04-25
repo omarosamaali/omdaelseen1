@@ -3,6 +3,14 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TranslationController;
+use App\Models\Banner;
+use App\Models\About;
+use App\Models\Work;
+use App\Models\Privacy;
+use App\Models\Terms;
+use App\Models\Event;
+use App\Models\Faq;
+use App\Models\HelpWord;
 
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\Admin\ExplorersController;
@@ -19,20 +27,29 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\HelpWordsController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\EventController;
-use App\Models\Banner;
-use App\Models\About;
-use App\Models\Work;
-use App\Models\Privacy;
-use App\Models\Terms;
-use App\Models\Event;
-use App\Models\Faq;
-use App\Models\HelpWord;
 
 Route::post('/translate', [TranslationController::class, 'translate'])->name('translate');
 
+
+
+Route::prefix('admin/banners')->name('admin.banners.')->group(function () {
+    Route::get('/', [BannerController::class, 'index'])->name('index');
+    Route::get('/create', [BannerController::class, 'create'])->name('create');
+    Route::post('/', [BannerController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [BannerController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [BannerController::class, 'update'])->name('update');
+    Route::get('/{id}', [BannerController::class, 'show'])->name('show');
+    Route::delete('/{id}', [BannerController::class, 'destroy'])->name('destroy');
+    Route::post('/delete-image', [BannerController::class, 'deleteImage'])->name('delete-image');
+});
+
 Route::get('admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard.index');
-
-
+Route::prefix('admin/contact-messages')->name('admin.contact-messages.')->group(function () {
+    Route::get('/', [ContactMessageController::class, 'index'])->name('index');
+    Route::get('/{id}', [ContactMessageController::class, 'showAdmin'])->name('show');
+    Route::delete('/{id}', [ContactMessageController::class, 'destroy'])->name('destroy');
+    Route::patch('/{id}/status', [ContactMessageController::class, 'updateStatus'])->name('update-status');
+});
 Route::get('/contact', [ContactMessageController::class, 'show'])->name('contact.show');
 Route::post('/contact', [ContactMessageController::class, 'submit'])->name('contact.submit');
 Route::get('users/help_words/index', function () {
@@ -91,23 +108,6 @@ Route::prefix('admin/events')->name('admin.events.')->group(function () {
     Route::post('/delete-image', [EventController::class, 'deleteImage'])->name('delete-image');
 });
 
-Route::prefix('admin/contact-messages')->name('admin.contact-messages.')->group(function () {
-    Route::get('/', [ContactMessageController::class, 'index'])->name('index');
-    Route::get('/{id}', [ContactMessageController::class, 'show'])->name('show');
-    Route::delete('/{id}', [ContactMessageController::class, 'destroy'])->name('destroy');
-    Route::patch('/{id}/status', [ContactMessageController::class, 'updateStatus'])->name('update-status');
-});
-
-Route::prefix('admin/banners')->name('admin.banners.')->group(function () {
-    Route::get('/', [BannerController::class, 'index'])->name('index');
-    Route::get('/create', [BannerController::class, 'create'])->name('create');
-    Route::post('/', [BannerController::class, 'store'])->name('store');
-    Route::get('/{id}/edit', [BannerController::class, 'edit'])->name('edit');
-    Route::put('/{id}', [BannerController::class, 'update'])->name('update');
-    Route::get('/{id}', [BannerController::class, 'show'])->name('show');
-    Route::delete('/{id}', [BannerController::class, 'destroy'])->name('destroy');
-    Route::post('/delete-image', [BannerController::class, 'deleteImage'])->name('delete-image');
-});
 
 Route::prefix('admin/help_words')->name('admin.help_words.')->group(function () {
     Route::get('/', [HelpWordsController::class, 'index'])->name('index');

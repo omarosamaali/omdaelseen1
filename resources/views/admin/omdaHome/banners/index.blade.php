@@ -35,8 +35,8 @@
                 <thead class="text-xs text-gray-700 uppercase">
                     <tr>
                         <th scope="col" class="th">الرقم</th>
-                        <th scope="col" class="th">الصورة</th>
                         <th scope="col" class="th">العنوان</th> <!-- Added -->
+                        <th scope="col" class="th">الصورة</th>
                         <th scope="col" class="th">الموقع</th> <!-- Added -->
                         <th scope="col" class="th">الحالة</th>
                         <th scope="col" class="th">تاريخ البدء</th>

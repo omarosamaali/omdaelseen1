@@ -38,7 +38,7 @@
             height: calc(100vh - 170px);
             /* box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); */
             padding: 20px;
-            z-index: 0;
+            z-index: 99999999999999999;
             direction: rtl;
             align-items: center;
             justify-content: start;
@@ -330,7 +330,12 @@
                                     style="color: #c00000">مرحبا بك</span>
                                 {{ Auth::user()->name }}</p> --}}
                         </div>
-
+                        <li>
+                            <a href="{{ route('omdaHome.index') }}">
+                                <x-icon />
+                                مدخل المنزل
+                            </a>
+                        </li>
                         <li>
                             <a href="{{ route('about.index') }}">
                                 <x-icon />
@@ -395,12 +400,7 @@
 
                         <li>
                             <img src="{{ asset('assets/img/dragon.svg') }}"
-                                style="      width: 188px;
-    height: 178px;
-    position: absolute;
-    right: -44.9px;
-    bottom: -169px;
-
+                                style="width: 199px; height: 170px; position: absolute; right: -50.9px; bottom: -181px;"
                                 alt="">
                         </li>
                     </ul>

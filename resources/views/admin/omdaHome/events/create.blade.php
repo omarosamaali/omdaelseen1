@@ -98,7 +98,9 @@
             <!-- Image Upload -->
             <div class="mb-4">
                 <label for="avatar" class="block text-sm font-medium text-gray-700">الصورة</label>
-                <input type="file" name="avatar" id="avatar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm @error('avatar') border-red-500 @enderror">
+                <input type="file" 
+                name="avatar" id="avatar" 
+                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm @error('avatar') border-red-500 @enderror">
                 @error('avatar')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror

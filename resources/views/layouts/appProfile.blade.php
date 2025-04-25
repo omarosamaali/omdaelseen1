@@ -38,7 +38,7 @@
             height: calc(100vh - 170px);
             /* box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); */
             padding: 20px;
-            z-index: 0;
+            z-index: 99999999999999999;
             direction: rtl;
             align-items: center;
             justify-content: start;
@@ -345,13 +345,7 @@
                                 المتابعين
                             </a>
                         </li>
-                        <li>
-                            <a href="#">
-                                <x-icon />
 
-                                المفضلة
-                            </a>
-                        </li>
                         <li>
                             <a href="#">
                                 <x-icon />
@@ -404,7 +398,7 @@
     height: 178px;
     position: absolute;
     right: -44.9px;
-    bottom: -169px;
+    bottom: -227px;
 
                                 alt="">
                         </li>
