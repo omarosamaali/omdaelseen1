@@ -448,16 +448,87 @@
 
                     </ul>
                 </div>
+                {{-- جمع الصور للسلايدر --}}
+                @php
+                    $sliderImages = [];
+                    // تجميع الصور من مجموعة البانرات
+                    foreach ($banners as $banner) {
+                        if (isset($banner->avatar) && !empty($banner->avatar)) {
+                            $sliderImages[] = asset('storage/' . $banner->avatar);
+                        }
+                    }
+                @endphp
 
+                {{-- كود السلايدر --}}
+                <script>
+                    // نقل مصفوفة الصور من PHP إلى JavaScript
+                    const bannerImages = {!! json_encode($sliderImages) !!};
+
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // تحديد الصورة المراد تغييرها
+                        const bannerImage = document.getElementById('home-man');
+
+                        // في حالة عدم وجود صور متعددة، لا داعي لإنشاء سلايدر
+                        if (bannerImages.length <= 1) {
+                            return;
+                        }
+
+                        // مؤشر الصورة الحالية
+                        let currentImageIndex = 0;
+
+                        // وظيفة تغيير الصورة
+                        function changeImage() {
+                            // الانتقال للصورة التالية في المصفوفة
+                            currentImageIndex = (currentImageIndex + 1) % bannerImages.length;
+
+                            // إخفاء الصورة الحالية
+                            bannerImage.style.opacity = '0';
+
+                            // تغيير الصورة بعد الإخفاء
+                            setTimeout(function() {
+                                bannerImage.src = bannerImages[currentImageIndex];
+
+                                // إظهار الصورة الجديدة
+                                bannerImage.style.opacity = '1';
+                            }, 500);
+                        }
+
+                        // إضافة تأثير الانتقال للصورة
+                        bannerImage.style.transition = 'opacity 0.5s ease-in-out';
+
+                        // تشغيل السلايدر كل ثانيتين
+                        setInterval(changeImage, 2000);
+                    });
+                </script>
+
+                {{-- عرض الصورة الأولى من المجموعة --}}
                 <div style="position: absolute; bottom: 55px; left: 11%;">
-                    <img src="{{ asset('assets/img/home-ads.svg') }}" style="
+                    <img src="{{ asset('assets/img/home-ads.svg') }}"
+                        style="
+                                position: relative;
+                                z-index: 99;
+                                width: 400px; height: 400px;"
+                        alt="">
+
+                    @if ($banners->count() > 0)
+                        <img src="{{ asset('storage/' . $banners->first()->avatar) }}" id="home-man" alt="Banner Image">
+                    @else
+                        <img src="{{ asset('assets/img/default-banner.jpg') }}" id="home-man" alt="Banner Image">
+                    @endif
+                </div>
+                {{-- <div style="position: absolute; bottom: 55px; left: 11%;">
+                    <img src="{{ asset('assets/img/home-ads.svg') }}"
+                        style="
                         position: relative;
                         z-index: 99;
-                        width: 400px; height: 400px;" alt="">
+                        width: 400px; height: 400px;"
+                        alt="">
+
+
                     <img src="{{ asset('storage/' . $banners->avatar) }}" id="home-man" alt="Banner Image">
 
 
-                </div>
+                </div> --}}
                 <!-- Main Content with Background -->
                 <div class="main-content">
                     <img class="chair-image" src="{{ asset('assets/img/chinaomda-man.svg') }}" alt="unkown image">

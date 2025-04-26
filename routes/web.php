@@ -52,6 +52,18 @@ Route::prefix('admin/contact-messages')->name('admin.contact-messages.')->group(
 });
 Route::get('/contact', [ContactMessageController::class, 'show'])->name('contact.show');
 Route::post('/contact', [ContactMessageController::class, 'submit'])->name('contact.submit');
+
+Route::get('/test-email-view', function () {
+    $contactMessage = new \App\Models\ContactMessage([
+        'name' => 'Test Name',
+        'email' => 'test@example.com',
+        'phone' => '1234567890',
+        'message' => 'This is a test message.',
+        'receipt_date' => now(),
+    ]);
+    return view('emails.contact-notification', compact('contactMessage'));
+});
+
 Route::get('users/help_words/index', function () {
     $help_words = HelpWord::where('status', 1)->orderBy('order')->get();
     return view('users.help_words.index', compact('help_words'));
@@ -63,14 +75,28 @@ Route::get('users/faq/index', function () {
 })->name('faq.index');
 
 Route::get('users/meet/index', function () {
-    $event = Event::first();
-    return view('users.meet.index', compact('event'));
+    $events = Event::where('type', 'مناسبة')->get();
+    return view('users.meet.index', compact('events'));
 })->name('meet.index');
 
+
+Route::get('users/meet/{event}', function (Event $event) {
+    return view('users.meet.show', compact('event'));
+})->name('users.meet.show');
+
+
+
 Route::get('users/event/index', function () {
-    $event = Event::first();
-    return view('users.event.index', compact('event'));
+    $events = Event::where('type', 'معرض')->get();
+    return view('users.event.index', compact('events'));
 })->name('event.index');
+
+
+Route::get('users/event/{event}', function (Event $event) {
+    return view('users.event.show', compact('event'));
+})->name('users.event.show');
+
+
 
 Route::get('users/terms/index', function () {
     $terms = Terms::first();
@@ -93,7 +119,7 @@ Route::get('users/about/index', function () {
 })->name('about.index');
 
 Route::get('users/omdaHome/index', function () {
-    $banners = Banner::first();
+    $banners = Banner::all();
     return view('users.omdaHome.index', compact('banners'));
 })->name('omdaHome.index');
 
@@ -108,7 +134,6 @@ Route::prefix('admin/events')->name('admin.events.')->group(function () {
     Route::post('/delete-image', [EventController::class, 'deleteImage'])->name('delete-image');
 });
 
-
 Route::prefix('admin/help_words')->name('admin.help_words.')->group(function () {
     Route::get('/', [HelpWordsController::class, 'index'])->name('index');
     Route::get('/create', [HelpWordsController::class, 'create'])->name('create');
@@ -117,7 +142,10 @@ Route::prefix('admin/help_words')->name('admin.help_words.')->group(function () 
     Route::put('/{id}', [HelpWordsController::class, 'update'])->name('update');
     Route::get('/{id}', [HelpWordsController::class, 'show'])->name('show');
     Route::delete('/{id}', [HelpWordsController::class, 'destroy'])->name('destroy');
+    Route::post('/translate', [HelpWordsController::class, 'translate'])->name('translate');
 });
+// مسار لتوليد الملف الصوتي
+Route::post('/generate-audio', [App\Http\Controllers\AudioController::class, 'generateAudio'])->name('generate.audio');
 
 Route::prefix('admin/faq')->name('admin.faq.')->group(function () {
     Route::get('/', [FaqController::class, 'index'])->name('index');
@@ -225,12 +253,12 @@ Route::prefix('admin/users')->name('admin.users.')->group(function () {
     Route::delete('/{id}', [UserAdminController::class, 'destroy'])->name('destroy');
 });
 
-
 Route::get('/', function () {
-    $banners = Banner::first();
+    $banners = Banner::all();
     $event = Event::first();
-    return view('welcome', compact('banners'), compact('event'));
+return view('welcome', ['banners' => $banners, 'event' => $event]);
 });
+
 Route::get('/omdaHome
 ', function () {
     return view('omdaHome

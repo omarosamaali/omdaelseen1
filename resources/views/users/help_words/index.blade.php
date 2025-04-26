@@ -3,27 +3,28 @@
 @section('content')
     <div class="help-container">
         <h2 class="help-title">كلمات مساعدة</h2>
-        <div class="help-list">
-            @foreach ($help_words as $index => $faq)
-                <div class="help-item" style="margin: auto; align-items: center; justify-content: center;">
-                    <h3 class="help-word"> <span style="font-weight: bold; color: red;">بالعربية</span>
-                        <br />
-                        {{ $faq->word_ar }}
-                    </h3>
-                    <h3 class="help-word">
-                        <span style="font-weight: bold; color: red;">بالإنجليزية</span>
-                        <br />
-                        {{ $faq->word_en }}
-                    </h3>
-                    <h3 class="help-word" style="">
-                        <span style="font-weight: bold; color: red;">بالصينية</span>
-                        <br />
-                        {{ $faq->word_zh }}
 
+        {{-- حقل البحث --}}
+        <div class="search-container"
+            style="margin-bottom: 20px; display: flex; justify-content: center; align-items: center;">
+            <input type="text" id="searchInput" onkeyup="searchWords()" placeholder="ابحث عن كلمة..."
+                style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 80%; max-width: 400px; text-align: right;">
+            {{-- لو عايز زر بحث منفصل --}}
+            {{-- <button onclick="searchWords()" style="padding: 10px 15px; background-color: #071739; color: white; border: none; border-radius: 5px; margin-right: 10px; cursor: pointer;">بحث</button> --}}
+        </div>
+
+        <div class="help-list" id="helpList">
+            @foreach ($help_words as $index => $faq)
+                <div class="help-item">
+                    <h3 class="help-word"> <span style="font-weight: bold; color: red;">بالعربية</span> <br />
+                        {{ $faq->word_ar }} </h3>
+                    <h3 class="help-word"> <span style="font-weight: bold; color: red;">بالإنجليزية</span> <br />
+                        {{ $faq->word_en }} </h3>
+                    <h3 class="help-word">
+                        <span style="font-weight: bold; color: red;">بالصينية</span> <br /> {{ $faq->word_zh }}
                         @if ($faq->word_zh)
-                            <svg class="text-blue-600 speak-btn" style="margin: auto; margin-top: 5px;"
-                                data-text="{{ $faq->word_zh }}" title="تشغيل النطق"
-                                style="width: 24px; height: 24px; margin-right: 10px; cursor: pointer; color: #1e40af;"
+                            <svg class="text-blue-600 speak-btn" data-text="{{ $faq->word_zh }}" title="تشغيل النطق"
+                                style="width: 24px; height: 24px; margin: auto; cursor: pointer; color: #1e40af;"
                                 aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                 fill="currentColor" viewBox="0 0 24 24">
                                 <path fill-rule="evenodd"
@@ -33,7 +34,8 @@
                             </svg>
                         @endif
                     </h3>
-                    <button style="font-weight: bold; background-color: rgb(54, 148, 0); padding: 3px; width: 33px;
+                    <button
+                        style="font-weight: bold; background-color: rgb(54, 148, 0); padding: 3px; width: 33px;
                         border-radius: 10px; color:white; margin: auto; text-align: center; display: flex; align-items: center; justify-content: center;">+</button>
                 </div>
             @endforeach
@@ -42,10 +44,8 @@
 
     <style>
         .help-container {
-            max-width: 800px;
-            margin: 3rem auto;
-            padding: 0 1rem;
-        }
+margin: 3rem auto;
+    padding: 0 1rem;        }
 
         .help-title {
             text-align: center;
@@ -57,8 +57,9 @@
 
         .help-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(153px, 1fr));
-            width: 800px;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            width: 1015px;
+            gap: 20px;
         }
 
         .help-item {
@@ -94,51 +95,27 @@
     </style>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // التحقق من دعم Web Speech API
-            if (!('speechSynthesis' in window)) {
-                console.error('Web Speech API غير مدعوم في هذا المتصفح.');
-                alert('النطق الصوتي غير مدعوم في متصفحك. جرب متصفحًا آخر مثل Chrome أو Edge.');
-                return;
+        function searchWords() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toUpperCase();
+            const helpList = document.getElementById('helpList');
+            const helpItems = helpList.getElementsByClassName('help-item');
+
+            for (let i = 0; i < helpItems.length; i++) {
+                const wordAr = helpItems[i].querySelector('.help-word:nth-child(1)').textContent.toUpperCase();
+                const wordEn = helpItems[i].querySelector('.help-word:nth-child(2)').textContent.toUpperCase();
+                const wordZh = helpItems[i].querySelector('.help-word:nth-child(3)').textContent.toUpperCase();
+
+                if (wordAr.includes(filter) || wordEn.includes(filter) || wordZh.includes(filter)) {
+                    helpItems[i].style.display = "";
+                } else {
+                    helpItems[i].style.display = "none";
+                }
             }
+        }
 
-            // تشغيل النطق الصوتي للكلمة الصينية
-            const speakButtons = document.querySelectorAll('.speak-btn');
-            speakButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const text = this.getAttribute('data-text');
-                    if (text) {
-                        // إلغاء أي نطق سابق
-                        window.speechSynthesis.cancel();
-
-                        const utterance = new SpeechSynthesisUtterance(text);
-                        utterance.lang = 'zh-CN'; // اللغة الصينية
-
-                        // اختيار صوت صيني إذا كان متاحًا
-                        const voices = window.speechSynthesis.getVoices();
-                        const chineseVoice = voices.find(voice => voice.lang === 'zh-CN');
-                        if (chineseVoice) {
-                            utterance.voice = chineseVoice;
-                        } else {
-                            console.warn(
-                                'لا يوجد صوت صيني متاح. تأكد من تثبيت أصوات اللغة الصينية على جهازك.'
-                            );
-                        }
-
-                        utterance.volume = 1;
-                        utterance.rate = 1;
-                        utterance.pitch = 1;
-
-                        // تشغيل النطق
-                        window.speechSynthesis.speak(utterance);
-
-                        // تسجيل الأخطاء إن وجدت
-                        utterance.onerror = function(event) {
-                            console.error('خطأ في النطق:', event.error);
-                        };
-                    }
-                });
-            });
+        document.addEventListener('DOMContentLoaded', function() {
+            // ... كود النطق الصوتي اللي كان موجود ...
 
             // تحميل الأصوات (قد يتطلب بعض المتصفحات تحميل الأصوات أولاً)
             window.speechSynthesis.onvoiceschanged = function() {

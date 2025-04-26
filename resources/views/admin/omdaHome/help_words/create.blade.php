@@ -13,20 +13,23 @@
             @enderror
         </div>
         <div class="mb-4">
-            <label for="word_en" class="block text-sm font-medium text-gray-700">الكلمة (إنجليزي)</label>
+            <label for="word_en" class="block text-sm font-medium text-gray-700">الكلمة (إنجليزي) - اختياري، سيتم الترجمة تلقائيًا</label>
             <input type="text" name="word_en" id="word_en" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm @error('word_en') border-red-500 @enderror">
             @error('word_en')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
             @enderror
         </div>
-        <div class="mb-4">
-            <label for="word_zh" class="block text-sm font-medium text-gray-700">الكلمة (صيني)</label>
-            <input type="text" name="word_zh" id="word_zh" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm @error('word_zh') border-red-500 @enderror">
-            @error('word_zh')
-                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-            @enderror
-        </div>
-        <div class="mb-4">
+<div class="mb-4">
+    <label for="word_zh" class="block text-sm font-medium text-gray-700">الكلمة (صيني) - اختياري، سيتم الترجمة تلقائيًا</label>
+    <input type="text" name="word_zh" id="word_zh" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm @error('word_zh') border-red-500 @enderror">
+    @error('word_zh')
+        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+    @enderror
+    <div id="audio-preview" class="mt-2" style="display: none;">
+        <audio id="word_zh_audio_player" controls></audio>
+        <input type="hidden" name="word_zh_audio" id="word_zh_audio">
+    </div>
+</div>        <div class="mb-4">
             <label for="status" class="block text-sm font-medium text-gray-700">الحالة</label>
             <select name="status" id="status" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm @error('status') border-red-500 @enderror" required>
                 <option value="نشط">نشط</option>
@@ -43,9 +46,11 @@
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
             @enderror
         </div>
+        
         <div class="text-center">
             <button type="submit" class="bg-black text-white px-4 py-2 rounded-md">إضافة</button>
         </div>
+        
     </form>
 </div>
 
@@ -71,6 +76,7 @@
             const text = inputField.val().trim();
             if (!text) {
                 targetFields.forEach(field => field.val(''));
+                $('#audio-preview').hide();
                 return;
             }
 
@@ -86,6 +92,11 @@
                 success: function(response) {
                     targetFields[0].val(response[targetLangs[0]] || '');
                     targetFields[1].val(response[targetLangs[1]] || '');
+                    
+                    // بعد الحصول على الترجمة الصينية، قم بإنشاء الصوت
+                    if (response[targetLangs[1]]) {
+                        generateChineseAudio(response[targetLangs[1]]);
+                    }
                 },
                 error: function(xhr) {
                     console.error('Translation failed:', xhr.responseJSON?.error);
@@ -94,21 +105,37 @@
             });
         }
 
+        // دالة لإنشاء الصوت الصيني
+        function generateChineseAudio(chineseText) {
+            if (!chineseText) return;
+            
+            $.ajax({
+                url: '{{ route('generate.audio') }}', // سنقوم بإنشاء هذا المسار
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    text: chineseText
+                },
+                success: function(response) {
+                    if (response.audio_path) {
+                        // عرض مشغل الصوت
+                        $('#audio-preview').show();
+                        $('#word_zh_audio_player').attr('src', response.audio_path);
+                        $('#word_zh_audio').val(response.audio_path);
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Audio generation failed:', xhr.responseJSON?.error);
+                }
+            });
+        }
+
         // مراقبة التغييرات في الحقول مع تأخير
         const debouncedTranslate = debounce(translateText, 500);
 
-        // ترجمة الكلمة
+        // ترجمة الكلمة تلقائيًا عند كتابة النص العربي
         $('#word_ar').on('input', function() {
             debouncedTranslate($(this), 'ar', ['en', 'zh-CN'], [$('#word_en'), $('#word_zh')]);
         });
-
-        $('#word_en').on('input', function() {
-            debouncedTranslate($(this), 'en', ['ar', 'zh-CN'], [$('#word_ar'), $('#word_zh')]);
-        });
-
-        $('#word_zh').on('input', function() {
-            debouncedTranslate($(this), 'zh-CN', ['ar', 'en'], [$('#word_ar'), $('#word_en')]);
-        });
     });
-</script>
-@endsection
+</script>@endsection

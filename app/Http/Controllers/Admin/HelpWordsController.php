@@ -4,18 +4,21 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\HelpWord;
+use App\Services\TextToSpeechService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class HelpWordsController extends Controller
 {
     protected $layout;
+    protected $textToSpeechService;
 
-    public function __construct()
+    public function __construct(TextToSpeechService $textToSpeechService)
     {
         $this->layout = Auth::check() && Auth::user()->role === 'admin'
             ? 'layouts.appProfileAdmin'
             : 'layouts.appProfile';
+        $this->textToSpeechService = $textToSpeechService;
     }
 
     public function index()
@@ -39,24 +42,20 @@ class HelpWordsController extends Controller
             'order' => 'required|integer|min:0',
         ]);
 
-        HelpWord::create($request->only([
+        $data = $request->only([
             'word_ar', 'word_en', 'word_zh',
             'status', 'order'
-        ]));
+        ]);
+
+        // إذا كان هناك نص صيني، قم بإنشاء ملف صوتي له
+        if (!empty($data['word_zh'])) {
+            $audioPath = $this->textToSpeechService->convertChineseTextToSpeech($data['word_zh']);
+            $data['word_zh_audio'] = $audioPath;
+        }
+
+        HelpWord::create($data);
 
         return redirect()->route('admin.help_words.index')->with('success', 'تم إضافة الكلمة بنجاح');
-    }
-
-    public function show(string $id)
-    {
-        $helpWord = HelpWord::findOrFail($id);
-        return view('admin.omdaHome.help_words.show', compact('helpWord'))->with('layout', $this->layout);
-    }
-
-    public function edit(string $id)
-    {
-        $helpWord = HelpWord::findOrFail($id);
-        return view('admin.omdaHome.help_words.edit', compact('helpWord'))->with('layout', $this->layout);
     }
 
     public function update(Request $request, string $id)
@@ -70,12 +69,34 @@ class HelpWordsController extends Controller
         ]);
 
         $helpWord = HelpWord::findOrFail($id);
-        $helpWord->update($request->only([
+        
+        $data = $request->only([
             'word_ar', 'word_en', 'word_zh',
             'status', 'order'
-        ]));
+        ]);
+
+        // إذا تم تعديل النص الصيني، قم بإنشاء ملف صوتي جديد
+        if (!empty($data['word_zh']) && $data['word_zh'] !== $helpWord->word_zh) {
+            $audioPath = $this->textToSpeechService->convertChineseTextToSpeech($data['word_zh']);
+            $data['word_zh_audio'] = $audioPath;
+        }
+
+        $helpWord->update($data);
 
         return redirect()->route('admin.help_words.index')->with('success', 'تم تحديث الكلمة بنجاح');
+    }
+
+
+    public function show(string $id)
+    {
+        $helpWord = HelpWord::findOrFail($id);
+        return view('admin.omdaHome.help_words.show', compact('helpWord'))->with('layout', $this->layout);
+    }
+
+    public function edit(string $id)
+    {
+        $helpWord = HelpWord::findOrFail($id);
+        return view('admin.omdaHome.help_words.edit', compact('helpWord'))->with('layout', $this->layout);
     }
 
     public function destroy(string $id)

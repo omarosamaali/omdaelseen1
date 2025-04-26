@@ -11,6 +11,12 @@
         </div>
     @endif
 
+    @if (session('error'))
+        <div class="error-message">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <form id="contactForm" action="{{ route('contact.submit') }}" method="POST" class="contact-form">
         @csrf
         <div class="form-group">
@@ -48,6 +54,59 @@
         <button type="submit" class="submit-button">إرسال الرسالة</button>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('contactForm');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const phoneInput = document.getElementById('phone');
+    const messageInput = document.getElementById('message');
+    const termsInput = document.getElementById('accept_terms');
+
+    form.addEventListener('submit', function (e) {
+        let hasError = false;
+
+        // Reset error messages
+        document.querySelectorAll('.error').forEach(error => error.textContent = '');
+
+        // Name validation
+        if (!nameInput.value.trim()) {
+            document.getElementById('nameError').textContent = 'الاسم مطلوب';
+            hasError = true;
+        }
+
+        // Email validation
+        if (!emailInput.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
+            document.getElementById('emailError').textContent = 'البريد الإلكتروني غير صالح';
+            hasError = true;
+        }
+
+        // Phone validation
+        if (!phoneInput.value.trim() || !/^\+?\d{10,15}$/.test(phoneInput.value.replace(/\s/g, ''))) {
+            document.getElementById('phoneError').textContent = 'رقم الهاتف غير صالح';
+            hasError = true;
+        }
+
+        // Message validation
+        if (!messageInput.value.trim()) {
+            document.getElementById('messageError').textContent = 'الرسالة مطلوبة';
+            hasError = true;
+        }
+
+        // Terms validation
+        if (!termsInput.checked) {
+            document.getElementById('termsError').textContent = 'يجب الموافقة على الشروط والأحكام';
+            hasError = true;
+        }
+
+        if (hasError) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+
 
 <style>
 .contact-container {
@@ -172,55 +231,4 @@
 }
 </style>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('contactForm');
-    const nameInput = document.getElementById('name');
-    const emailInput = document.getElementById('email');
-    const phoneInput = document.getElementById('phone');
-    const messageInput = document.getElementById('message');
-    const termsInput = document.getElementById('accept_terms');
-
-    form.addEventListener('submit', function (e) {
-        let hasError = false;
-
-        // Reset error messages
-        document.querySelectorAll('.error').forEach(error => error.textContent = '');
-
-        // Name validation
-        if (!nameInput.value.trim()) {
-            document.getElementById('nameError').textContent = 'الاسم مطلوب';
-            hasError = true;
-        }
-
-        // Email validation
-        if (!emailInput.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
-            document.getElementById('emailError').textContent = 'البريد الإلكتروني غير صالح';
-            hasError = true;
-        }
-
-        // Phone validation
-        if (!phoneInput.value.trim() || !/^\+?\d{10,15}$/.test(phoneInput.value.replace(/\s/g, ''))) {
-            document.getElementById('phoneError').textContent = 'رقم الهاتف غير صالح';
-            hasError = true;
-        }
-
-        // Message validation
-        if (!messageInput.value.trim()) {
-            document.getElementById('messageError').textContent = 'الرسالة مطلوبة';
-            hasError = true;
-        }
-
-        // Terms validation
-        if (!termsInput.checked) {
-            document.getElementById('termsError').textContent = 'يجب الموافقة على الشروط والأحكام';
-            hasError = true;
-        }
-
-        if (hasError) {
-            e.preventDefault();
-        }
-    });
-});
-</script>
 @endsection

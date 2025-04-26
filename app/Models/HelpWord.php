@@ -11,6 +11,6 @@ class HelpWord extends Model
 
     protected $fillable = [
         'word_ar', 'word_en', 'word_zh',
-        'status', 'order'
+        'status', 'order', 'word_zh_audio'
     ];
 }

@@ -141,7 +141,13 @@
         .logo-container {
             display: none;
         }
-
+.sidebar ul li a.active,
+.sidebar ul li.active a { /* عشان لو ضفت الكلاس للـ <a> أو الـ <li> */
+    background-color: #f0f0f0; /* مثال: تغيير لون الخلفية */
+    color: #007bff; /* مثال: تغيير لون النص */
+    font-weight: bold; /* مثال: جعل النص عريض */
+    /* ممكن تضيف أي ستايلات تانية عايزها */
+}
         @media (max-width:760px) {
             #app {
 
@@ -316,98 +322,90 @@
             </div>
             <div>
                 <!-- Sidebar here -->
-                <div class="sidebar">
-
-                    <ul>
-                        <div type="button" class="flex mx-3 text-sm  md:mr-0" id="user-menu-button"
-                            aria-expanded="false">
-                            <img src="{{ asset('assets/img/logo.png') }}"
-                                alt="Avatar" class="h-24 w-24 ">
-                        </div>
-                        <div
-                            style="display: flex; align-items: center; justify-content: end; flex-direction: column; margin-bottom: 10px; ">
-                            {{-- <p style="display: flex; flex-direction: column; color: rgb(0, 0, 0);"><span
-                                    style="color: #c00000">مرحبا بك</span>
-                                {{ Auth::user()->name }}</p> --}}
-                        </div>
-                        <li>
-                            <a href="{{ route('omdaHome.index') }}">
-                                <x-icon />
-                                مدخل المنزل
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('about.index') }}">
-                                <x-icon />
-                                من نحن
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('work.index') }}">
-                                <x-icon />
-                                كيف نعمل
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('privacy.index') }}">
-                                <x-icon />
-                                سياسة الخصوصية
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('terms.index') }}">
-                                <x-icon />
-                                الشروط والأحكام
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('event.index') }}">
-                                <x-icon />
-                                المعارض
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('meet.index') }}">
-                                <x-icon />
-                                المناسبات
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('faq.index') }}">
-                                <x-icon />
-                                الأسئلة الشائعة
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('help_words.index') }}">
-                                <x-icon />
-                                كلمات مساعدة
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('contact.submit') }}">
-                                <x-icon />
-                                تواصل معنا
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('home') }}">
-                                <x-icon />
-
-                                الخروج من المنزل
-                            </a>
-                        </li>
-
-                        <li>
-                            <img src="{{ asset('assets/img/dragon.svg') }}"
-                                style="width: 199px; height: 170px; position: absolute; right: -50.9px; bottom: -181px;"
-                                alt="">
-                        </li>
-                    </ul>
-
-
-                </div>
-            </div>
+<div class="sidebar">
+    <ul>
+        <div type="button" class="flex mx-3 text-sm  md:mr-0" id="user-menu-button" aria-expanded="false">
+            <img src="{{ asset('assets/img/logo.png') }}" alt="Avatar" class="h-24 w-24 ">
+        </div>
+        <div
+            style="display: flex; align-items: center; justify-content: end; flex-direction: column; margin-bottom: 10px; ">
+            {{-- <p style="display: flex; flex-direction: column; color: rgb(0, 0, 0);"><span
+                    style="color: #c00000">مرحبا بك</span>
+                {{ Auth::user()->name }}</p> --}}
+        </div>
+        <li class="{{ request()->routeIs('omdaHome.index') ? 'active' : '' }}">
+            <a href="{{ route('omdaHome.index') }}">
+                <x-icon />
+                مدخل المنزل
+            </a>
+        </li>
+        <li class="{{ request()->routeIs('about.index') ? 'active' : '' }}">
+            <a href="{{ route('about.index') }}">
+                <x-icon />
+                من نحن
+            </a>
+        </li>
+        <li class="{{ request()->routeIs('work.index') ? 'active' : '' }}">
+            <a href="{{ route('work.index') }}">
+                <x-icon />
+                كيف نعمل
+            </a>
+        </li>
+        <li class="{{ request()->routeIs('privacy.index') ? 'active' : '' }}">
+            <a href="{{ route('privacy.index') }}">
+                <x-icon />
+                سياسة الخصوصية
+            </a>
+        </li>
+        <li class="{{ request()->routeIs('terms.index') ? 'active' : '' }}">
+            <a href="{{ route('terms.index') }}">
+                <x-icon />
+                الشروط والأحكام
+            </a>
+        </li>
+        <li class="{{ request()->routeIs('event.index') ? 'active' : '' }}">
+            <a href="{{ route('event.index') }}">
+                <x-icon />
+                المعارض
+            </a>
+        </li>
+        <li class="{{ request()->routeIs('meet.index') ? 'active' : '' }}">
+            <a href="{{ route('meet.index') }}">
+                <x-icon />
+                المناسبات
+            </a>
+        </li>
+        <li class="{{ request()->routeIs('faq.index') ? 'active' : '' }}">
+            <a href="{{ route('faq.index') }}">
+                <x-icon />
+                الأسئلة الشائعة
+            </a>
+        </li>
+        <li class="{{ request()->routeIs('help_words.index') ? 'active' : '' }}">
+            <a href="{{ route('help_words.index') }}">
+                <x-icon />
+                كلمات مساعدة
+            </a>
+        </li>
+        <li class="{{ request()->routeIs('contact.submit') ? 'active' : '' }}">
+            <a href="{{ route('contact.submit') }}">
+                <x-icon />
+                تواصل معنا
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('home') }}">
+                <x-icon />
+                الخروج من المنزل
+            </a>
+        </li>
+        <li>
+            <img src="{{ asset('assets/img/dragon.svg') }}"
+                style="width: 199px; height: 170px; position: absolute; right: -50.9px; bottom: -181px;"
+                alt="">
+        </li>
+    </ul>
+</div>            </div>
         </div>
 
         <div style="position: relative;">
