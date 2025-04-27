@@ -5,11 +5,11 @@
     <h2 class="faq-title">الأسئلة الشائعة</h2>
     <div class="faq-accordion">
         @foreach($faqs as $index => $faq)
-        <div class="faq-item">
+        <div class="faq-item {{ $index === 0 ? 'active' : '' }}">
             <div class="faq-header" id="heading{{ $index }}">
-                <button class="faq-button" type="button" aria-expanded="{{ $index === 0 ? 'true' : 'false' }}" data-target="#collapse{{ $index }}">
+                <button style="font-weight: bold; color: green;" class="faq-button" type="button" aria-expanded="{{ $index === 0 ? 'true' : 'false' }}" data-target="#collapse{{ $index }}">
                     {{ $faq->question_ar }}
-                    <span class="faq-icon">{{ $index === 0 ? '−' : '+' }}</span>
+                    <span class="faq-icon" style="font-weight: bold; color: green;">{{ $index === 0 ? '؟' : '؟' }}</span>
                 </button>
             </div>
             <div id="collapse{{ $index }}" class="faq-collapse {{ $index === 0 ? 'open' : '' }}" aria-labelledby="heading{{ $index }}">
@@ -47,6 +47,12 @@
 .faq-item {
     border-radius: 0.5rem;
     overflow: hidden;
+    background-color: transparent; /* Default background for non-active items */
+    transition: background-color 0.3s ease;
+}
+
+.faq-item.active {
+    background-color: #ffffff; /* White background for active item only */
 }
 
 .faq-header {
@@ -65,7 +71,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: background 0.3s ease;
+    background: transparent;
+    transition: color 0.3s ease;
 }
 
 .faq-icon {
@@ -99,31 +106,35 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', function () {
             const targetId = this.getAttribute('data-target');
             const collapseElement = document.querySelector(targetId);
+            const faqItem = collapseElement.closest('.faq-item');
             const isOpen = collapseElement.classList.contains('open');
             const icon = this.querySelector('.faq-icon');
 
-            // Close all accordion items
+            // Close all accordion items and remove active class
             document.querySelectorAll('.faq-collapse').forEach(collapse => {
                 collapse.classList.remove('open');
                 collapse.style.maxHeight = '0';
+                collapse.closest('.faq-item').classList.remove('active');
             });
             document.querySelectorAll('.faq-icon').forEach(icon => {
-                icon.textContent = '+';
+                icon.textContent = '؟';
             });
 
             // Toggle the clicked accordion item
             if (!isOpen) {
                 collapseElement.classList.add('open');
+                faqItem.classList.add('active');
                 collapseElement.style.maxHeight = collapseElement.scrollHeight + 'px';
                 icon.textContent = '−';
             }
         });
     });
 
-    // Ensure the first accordion item is expanded by default
+    // Ensure the first accordion item is expanded and active by default
     const firstCollapse = document.querySelector('.faq-collapse.open');
     if (firstCollapse) {
         firstCollapse.style.maxHeight = firstCollapse.scrollHeight + 'px';
+        firstCollapse.closest('.faq-item').classList.add('active');
     }
 });
 </script>

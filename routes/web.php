@@ -11,6 +11,7 @@ use App\Models\Terms;
 use App\Models\Event;
 use App\Models\Faq;
 use App\Models\HelpWord;
+use App\Models\Regions;
 
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\Admin\ExplorersController;
@@ -27,10 +28,28 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\HelpWordsController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Api\UserInterestController;
 
 Route::post('/translate', [TranslationController::class, 'translate'])->name('translate');
 
 
+Route::prefix('admin/omdaHome/user_interests')->name('admin.user_interests.')->group(function () {
+    Route::get('/', [App\Http\Controllers\Admin\UserInterestController::class, 'index'])->name('index');
+    Route::get('/{userInterest}', [App\Http\Controllers\Admin\UserInterestController::class, 'show'])->name('show');
+    Route::delete('/{userInterest}', [App\Http\Controllers\Admin\UserInterestController::class, 'destroy'])->name('destroy');
+});
+
+Route::prefix('users/user_interests')->name('user.user_interests.')->group(function () {
+    Route::get('/', [App\Http\Controllers\UserInterestController::class, 'index'])->name('index');
+    Route::get('/{userInterest}', [App\Http\Controllers\UserInterestController::class, 'show'])->name('show');
+    Route::delete('/{userInterest}', [App\Http\Controllers\UserInterestController::class, 'destroy'])->name('destroy');
+});
+
+
+// Without sanctum, using regular auth
+Route::post('/api/user-interests', [App\Http\Controllers\Api\UserInterestController::class, 'store'])
+    ->middleware('auth') 
+    ->name('api.user_interests.store');
 
 Route::prefix('admin/banners')->name('admin.banners.')->group(function () {
     Route::get('/', [BannerController::class, 'index'])->name('index');
@@ -132,6 +151,7 @@ Route::prefix('admin/events')->name('admin.events.')->group(function () {
     Route::get('/{id}', [EventController::class, 'show'])->name('show');
     Route::delete('/{id}', [EventController::class, 'destroy'])->name('destroy');
     Route::post('/delete-image', [EventController::class, 'deleteImage'])->name('delete-image');
+    
 });
 
 Route::prefix('admin/help_words')->name('admin.help_words.')->group(function () {
@@ -211,7 +231,16 @@ Route::prefix('admin/places')->name('admin.places.')->group(function () {
     Route::delete('/{id}', [PlacesController::class, 'destroy'])->name('destroy');
     Route::post('/delete-image', [PlacesController::class, 'deleteImage'])->name('delete-image');
 });
-
+Route::prefix('users/places')->name('users.places.')->group(function () {
+    Route::get('/', [App\Http\Controllers\PlacesController::class, 'index'])->name('index');
+    Route::get('/create', [App\Http\Controllers\PlacesController::class, 'create'])->name('create');
+    Route::post('/', [App\Http\Controllers\PlacesController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [App\Http\Controllers\PlacesController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [App\Http\Controllers\PlacesController::class, 'update'])->name('update');
+    Route::get('/{id}', [App\Http\Controllers\PlacesController::class, 'show'])->name('show');
+    Route::delete('/{id}', [App\Http\Controllers\PlacesController::class, 'destroy'])->name('destroy');
+    Route::post('/delete-image', [App\Http\Controllers\PlacesController::class, 'deleteImage'])->name('delete-image');
+});
 
 Route::prefix('admin/regions')->name('admin.regions.')->group(function () {
     Route::get('/', [RegionsController::class, 'index'])->name('index');

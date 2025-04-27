@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\TextToSpeechService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage; // Add this import
 
 class AudioController extends Controller
 {
@@ -17,32 +18,25 @@ class AudioController extends Controller
     /**
      * توليد ملف صوتي من النص
      */
+    public function generateAudio(Request $request)
     {
-    "success": true,
-    "audio_path": "/storage/audio/chinese_audio_abc123.mp3",
-    "full_path": "F:\\Omda\\public\\storage\\audio\\chinese_audio_abc123.mp3",
-    "file_exists": true,
-    "storage_exists": true,
-    "storage_linked": true,
-    "folder_permissions": "0755"
-}
-public function generateAudio(Request $request)
-{
-    $request->validate([
-        'text' => 'required|string'
-    ]);
+        $request->validate([
+            'text' => 'required|string'
+        ]);
 
-    $audioPath = $this->textToSpeechService->convertChineseTextToSpeech($request->text);
+        $audioPath = $this->textToSpeechService->convertChineseTextToSpeech($request->text);
 
-    // إضافة معلومات تشخيصية
-    $debug = [
-        'success' => !empty($audioPath),
-        'audio_path' => $audioPath,
-        'full_path' => $audioPath ? public_path(ltrim($audioPath, '/')) : null,
-        'file_exists' => $audioPath ? file_exists(public_path(ltrim($audioPath, '/'))) : false,
-        'storage_exists' => $audioPath ? Storage::exists('public/audio/' . basename($audioPath)) : false
-    ];
+        // إضافة معلومات تشخيصية
+        $debug = [
+            'success' => !empty($audioPath),
+            'audio_path' => $audioPath,
+            'full_path' => $audioPath ? public_path(ltrim($audioPath, '/')) : null,
+            'file_exists' => $audioPath ? file_exists(public_path(ltrim($audioPath, '/'))) : false,
+            'storage_exists' => $audioPath ? Storage::exists('public/audio/' . basename($audioPath)) : false,
+            'storage_linked' => is_link(public_path('storage')),
+            'folder_permissions' => $audioPath ? substr(sprintf('%o', fileperms(public_path('storage/audio'))), -4) : null
+        ];
 
-    return response()->json($debug);
-}
+        return response()->json($debug);
+    }
 }

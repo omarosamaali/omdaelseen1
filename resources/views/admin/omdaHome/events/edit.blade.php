@@ -70,7 +70,21 @@
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
-
+<!-- Region Selection -->
+<div class="mb-4">
+    <label for="region_id" class="block text-sm font-medium text-gray-700">المنطقة</label>
+    <select name="region_id" id="region_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm @error('region_id') border-red-500 @enderror">
+        <option value="">اختر منطقة</option>
+        @foreach ($regions as $region)
+            <option value="{{ $region->id }}" {{ old('region_id', $event->region_id) == $region->id ? 'selected' : '' }}>
+                {{ $region->name_ar }}
+            </option>
+        @endforeach
+    </select>
+    @error('region_id')
+        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+    @enderror
+</div>
             <!-- Type Selection -->
             <div class="mb-4">
                 <label for="type" class="block text-sm font-medium text-gray-700">النوع</label>

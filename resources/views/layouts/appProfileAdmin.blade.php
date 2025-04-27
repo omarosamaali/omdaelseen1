@@ -482,7 +482,7 @@
                                         <x-iconSub />
                                         المراسلات
                                     </a></li>
-                                <li><a href="#" class="{{ Route::is('interests') ? 'active' : '' }}">
+                                <li><a href="{{ route('admin.user_interests.index') }}" class="{{ Route::is('interests') ? 'active' : '' }}">
                                         <x-iconSub />
                                         الاهتمامات</a></li>
                                 <li><a href="{{ route('admin.events.index') }}" class="{{ Route::is('events') ? 'active' : '' }}">

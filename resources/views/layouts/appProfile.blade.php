@@ -306,7 +306,7 @@
 
         <!-- Page Content -->
         <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-            <main style="margin-top: 90px; margin-bottom: 50px; direction: rtl;">
+            <main style="margin-top: 90px; margin-bottom: 50px; direction: rtl; width: 81%; margin-right: 100px;">
                 {{-- {{ $slot }} --}}
                 @yield(section: 'content')
 
@@ -332,7 +332,7 @@
                         </div>
 
                         <li>
-                            <a href="#">
+                            <a href="{{ route('profile.edit') }}">
                                 <x-icon />
                                 الملف الشخصي
                             </a>
@@ -354,9 +354,8 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#">
+                            <a href="{{ route('users.places.index') }}">
                                 <x-icon />
-
                                 أماكني
                             </a>
                         </li>
@@ -368,7 +367,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#">
+                            <a href="{{ route('user.user_interests.index') }}">
                                 <x-icon />
                                 إهتماماتي
                             </a>

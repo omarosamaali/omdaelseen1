@@ -312,7 +312,7 @@
 
         <!-- Page Content -->
         <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-            <main style="margin-top: 90px; margin-bottom: 50px; direction: rtl;">
+            <main style="margin-top: 90px; margin-bottom: 50px; direction: rtl; gap: 20px;">
                 {{-- {{ $slot }} --}}
                 @yield(section: 'content')
 

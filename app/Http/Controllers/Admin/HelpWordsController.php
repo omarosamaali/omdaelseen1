@@ -21,9 +21,17 @@ class HelpWordsController extends Controller
         $this->textToSpeechService = $textToSpeechService;
     }
 
-    public function index()
+
+    public function index(Request $request)
     {
-        $helpWords = HelpWord::orderBy('order')->get();
+        $helpWords = HelpWord::query()->orderBy('order');
+
+        if ($request->has('interest_id')) {
+            $helpWords->where('id', $request->input('interest_id'));
+        }
+
+        $helpWords = $helpWords->get();
+
         return view('admin.omdaHome.help_words.index', compact('helpWords'))->with('layout', $this->layout);
     }
 

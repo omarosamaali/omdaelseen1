@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
@@ -20,15 +19,36 @@ class EventController extends Controller
             : 'layouts.appProfile';
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $events = Event::all();
+        $events = Event::with('region')->where('type', 'معرض');
+
+        if ($request->has('interest_id')) {
+            $events->where('id', $request->input('interest_id'));
+        }
+
+        $events = $events->get();
+
         return view('admin.omdaHome.events.index', compact('events'))->with('layout', $this->layout);
+    }
+
+    public function meetIndex(Request $request)
+    {
+        $events = Event::with('region')->where('type', 'مناسبة');
+
+        if ($request->has('interest_id')) {
+            $events->where('id', $request->input('interest_id'));
+        }
+
+        $events = $events->get();
+
+        return view('users.meet.index', compact('events'))->with('layout', $this->layout);
     }
 
     public function create()
     {
-        return view('admin.omdaHome.events.create')->with('layout', $this->layout);
+        $regions = \App\Models\Regions::all();
+        return view('admin.omdaHome’em”.events.create', compact('regions'))->with('layout', $this->layout);
     }
 
     public function store(Request $request)
@@ -40,21 +60,26 @@ class EventController extends Controller
             'description_ar' => 'required|max:1000000',
             'description_en' => 'nullable|max:1000000',
             'description_zh' => 'nullable|max:1000000',
-            // 'address_ar' => 'required|max:255',
-            // 'address_en' => 'nullable|max:255',
-            // 'address_zh' => 'nullable|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'type' => 'required|in:معرض,مناسبة',
             'status' => 'required|in:نشط,غير نشط',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'region_id' => 'required|exists:regions,id',
         ]);
 
         $eventData = $request->only([
-            'title_ar', 'title_en', 'title_zh',
-            'description_ar', 'description_en', 'description_zh',
-            // 'address_ar', 'address_en', 'address_zh',
-            'start_date', 'end_date', 'type', 'status'
+            'title_ar',
+            'title_en',
+            'title_zh',
+            'description_ar',
+            'description_en',
+            'description_zh',
+            'start_date',
+            'end_date',
+            'type',
+            'status',
+            'region_id'
         ]);
 
         if ($request->hasFile('avatar')) {
@@ -70,13 +95,14 @@ class EventController extends Controller
     public function show(string $id)
     {
         $event = Event::findOrFail($id);
-        return view('admin.omdaHome.events.show', compact('event'));
+        return view('admin.omdaHome.events.show', compact('event'))->with('layout', $this->layout);
     }
 
     public function edit(string $id)
     {
         $event = Event::findOrFail($id);
-        return view('admin.omdaHome.events.edit', compact('event'))->with('layout', $this->layout);
+        $regions = \App\Models\Regions::all();
+        return view('admin.omdaHome.events.edit', compact('event', 'regions'))->with('layout', $this->layout);
     }
 
     public function update(Request $request, string $id)
@@ -88,23 +114,28 @@ class EventController extends Controller
             'description_ar' => 'required|max:1000000',
             'description_en' => 'nullable|max:1000000',
             'description_zh' => 'nullable|max:1000000',
-            // 'address_ar' => 'required|max:255',
-            // 'address_en' => 'nullable|max:255',
-            // 'address_zh' => 'nullable|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'type' => 'required|in:معرض,مناسبة',
             'status' => 'required|in:نشط,غير نشط',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'region_id' => 'required|exists:regions,id',
         ]);
 
         $event = Event::findOrFail($id);
 
         $eventData = $request->only([
-            'title_ar', 'title_en', 'title_zh',
-            'description_ar', 'description_en', 'description_zh',
-            // 'address_ar', 'address_en', 'address_zh',
-            'start_date', 'end_date', 'type', 'status'
+            'title_ar',
+            'title_en',
+            'title_zh',
+            'description_ar',
+            'description_en',
+            'description_zh',
+            'start_date',
+            'end_date',
+            'type',
+            'status',
+            'region_id'
         ]);
 
         if ($request->hasFile('avatar')) {
