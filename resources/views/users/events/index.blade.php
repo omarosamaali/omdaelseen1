@@ -1,6 +1,10 @@
 @extends('layouts.appOmdahome')
 
 @section('content')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <style>
         .exhibition-container {
             margin-top: 20px;
@@ -39,7 +43,7 @@
         }
 
         .exhibition-image {
-    min-width: 383px;
+            min-width: 383px;
             height: 212px;
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
@@ -108,9 +112,8 @@
             transform: translateY(0);
         }
 
-        /* إضافة أنماط جديدة لشريط البحث والمناطق */
         .search-container {
-            margin: 20px 68px 30px 0;
+            margin: 0 68px 30px 0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -145,11 +148,11 @@
 
         .regions-container {
             display: flex;
-            flex-direction: row-reverse;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: flex-end;
             gap: 15px;
-            margin-bottom: 30px;
+            transition: transform 0.3s ease;
             width: 100%;
         }
 
@@ -157,6 +160,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-width: 100px;
             cursor: pointer;
             transition: all 0.3s;
             padding: 10px;
@@ -188,31 +192,6 @@
             text-align: center;
         }
 
-        .active-filters {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-
-        .filter-badge {
-            background-color: #071739;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-        }
-
-        .clear-filter {
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* المؤشر عند عدم وجود مناسبات */
         .no-exhibitions {
             width: 100%;
             text-align: center;
@@ -222,7 +201,6 @@
             font-weight: bold;
         }
 
-        /* أسلوب زر مشاهدة الجميع */
         .view-all-btn {
             display: inline-block;
             padding: 10px 20px;
@@ -241,54 +219,120 @@
         .view-all-btn:hover {
             background-color: #1e40af;
         }
+
+        .regions-container-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+
+        .regions-slider-container {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .region-slider-btn {
+            background-color: rgb(0, 0, 0);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 15%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 10px;
+            z-index: 2;
+            position: relative;
+            top: -20px;
+        }
+
+        .region-slider-btn:hover {
+            background-color: rgb(20, 20, 20);
+        }
+
+        .region-slider-btn.disabled {
+            background-color: rgb(102, 102, 102);
+            cursor: not-allowed;
+        }
+
+        .fixed-region-item {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #e0e7ff;
+        }
+
+        .fixed-region-item:hover {
+            background-color: #f0f4ff;
+        }
+
+        .fixed-region-item.active {
+            background-color: #e0e7ff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
     </style>
 
-    <h1
-        style="color: #071739; font-weight: bold; margin-bottom: 20px; font-size: 35px; margin-right: 200px; margin-top: 50px;">
+    <h1 style="color: #071739; font-weight: bold; margin-bottom: 20px; font-size: 35px; margin-right: 200px; margin-top: 50px;">
         جميع المعارض المتاحة
     </h1>
 
-    <!-- شريط البحث الجديد -->
     <div class="search-container">
         <div class="search-box">
             <input type="text" id="search-input" class="search-input" placeholder="البحث عن المعارض...">
             <i class="fas fa-search search-icon"></i>
         </div>
 
-        <!-- عرض المناطق للتصفية -->
-        <div class="regions-container">
-            <div class="region-item all-regions active" data-region-id="all">
-<x-iconAll />                <div class="region-name">جميع المناطق</div>
+        <div class="regions-container-wrapper">
+            <div class="fixed-region-item all-regions active" style="background: #edc4b5; box-shadow: none !important; right: 51px;" data-region-id="all">
+                <x-iconAll />
+                <div class="region-name">جميع المعارض</div>
             </div>
-            @php
-                $allRegions = \App\Models\Regions::all();
-            @endphp
-            @foreach ($allRegions as $region)
-                <div class="region-item" data-region-id="{{ $region->id }}">
-                    @if ($region->avatar)
-                        <img src="{{ asset('storage/' . $region->avatar) }}" alt="{{ $region->name_ar }}"
-                            class="region-image">
-                    @else
-                        <img src="{{ asset('storage/default-image.png') }}" alt="صورة افتراضية" class="region-image">
-                    @endif
-                    <div class="region-name">{{ $region->name_ar }}</div>
+
+            <button class="region-slider-btn next-btn" id="next-region-btn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+
+            <div class="regions-slider-container">
+                <div class="regions-container" id="regions-slider">
+                    @php
+                        $allRegions = \App\Models\Regions::all();
+                        $displayCount = 5;
+                    @endphp
+                    @foreach ($allRegions as $region)
+                        <div class="region-item" data-region-id="{{ $region->id }}">
+                            @if ($region->avatar)
+                                <img src="{{ asset('storage/' . $region->avatar) }}" alt="{{ $region->name_ar }}"
+                                    class="region-image">
+                            @else
+                                <img src="{{ asset('storage/default-image.png') }}" alt="صورة افتراضية"
+                                    class="region-image">
+                            @endif
+                            <div class="region-name">{{ $region->name_ar }}</div>
+                        </div>
+                    @endforeach
                 </div>
-            @endforeach
+            </div>
+            <button class="region-slider-btn prev-btn" id="prev-region-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
         </div>
 
-        <!-- عرض الفلاتر النشطة -->
-        <div class="active-filters" id="active-filters" style="display: none;">
-            <div class="filter-badge" id="region-filter">
-                <span id="selected-region-name">جميع المناطق</span>
-                <span class="clear-filter" onclick="clearRegionFilter()">×</span>
-            </div>
-            <div class="filter-badge" id="search-filter" style="display: none;">
-                <span id="search-term"></span>
-                <span class="clear-filter" onclick="clearSearchFilter()">×</span>
-            </div>
-        </div>
-
-        <!-- زر مشاهدة الجميع (يظهر فقط إذا كان هناك interest_id) -->
         @if (request()->query('interest_id'))
             <div style="text-align: center; margin-bottom: 20px;">
                 <a href="{{ route('users.events.index') }}" class="view-all-btn">مشاهدة الجميع</a>
@@ -298,10 +342,7 @@
 
     <div class="container exhibition-container" id="exhibitions-container">
         @php
-            // Get the interest_id from the URL
             $interestId = request()->query('interest_id');
-
-            // Filter $events based on interest_id if it exists
             if ($interestId) {
                 $filteredEvents = $events->where('id', $interestId)->where('type', 'معرض');
             } else {
@@ -348,10 +389,67 @@
                                 style="background: #071739; color: #fff; padding: 4px 11px; border-radius: 4px; text-decoration: none;">
                                 المزيد
                             </a>
+                            <style>
+                                .add-interest-btn {
+                                    font-weight: bold;
+                                    background-color: rgb(255, 255, 255);
+                                    padding: 3px;
+                                    width: 54px;
+                                    position: relative;
+                                    height: 53px;
+                                    top: -138px;
+                                    right: 8px;
+                                    color: white;
+                                    text-align: center;
+                                    display: flex;
+                                    align-items: center;
+                                    box-shadow: 0px 0px 7px #c4c4c4;
+                                    justify-content: center;
+                                    overflow: hidden;
+                                    transition: color 0.2s ease-in-out;
+                                }
+
+                                .add-interest-btn svg {
+                                    position: relative;
+                                    z-index: 1;
+                                }
+
+                                .add-interest-btn::before {
+                                    content: '';
+                                    position: absolute;
+                                    bottom: 0;
+                                    left: 0;
+                                    width: 100%;
+                                    height: 0;
+                                    background-color: #B11023;
+                                    z-index: 0;
+                                    transition: height 0.2s ease-in-out;
+                                }
+
+                                .add-interest-btn:hover::before {
+                                    height: 100%;
+                                }
+
+                                .add-interest-btn:hover {
+                                    color: white;
+                                }
+
+                                .add-interest-btn:hover i.fa-heart {
+                                    border: 2px solid white !important;
+                                    padding: 2px !important;
+                                    border-radius: 50% !important;
+                                    z-index: 99999999999999999999999999999999;
+                                    color: white !important;
+                                }
+
+                                .add-interest-btn:hover i.fa-heart {
+                                    color: white !important;
+                                    fill: #B11023 !important;
+                                }
+                            </style>
                             <button class="add-interest-btn" data-interest-type="event"
-                                data-interest-id="{{ $event->id }}" data-event-type="{{ $event->type }}"
-                                style="font-weight: bold; background-color: rgb(54, 148, 0); padding: 3px; width: 33px; border-radius: 10px; color:white; text-align: center; display: flex; align-items: center; justify-content: center;">
-                                +
+                                data-interest-id="{{ $event->id }}" data-event-type="{{ $event->type }}">
+                                <i class="fa-regular fa-heart" style="color: #B11023;"></i>
                             </button>
                         </div>
                     </div>
@@ -365,11 +463,40 @@
             initAddInterestButtons();
             initRegionFilters();
             initSearchFilter();
+            initRegionSlider();
         });
 
         function initAddInterestButtons() {
             const addInterestButtons = document.querySelectorAll('.add-interest-btn');
             addInterestButtons.forEach(button => {
+                const interestId = button.getAttribute('data-interest-id');
+                const heartIcon = button.querySelector('i');
+
+                fetch(`/api/user-interests/check?interest_type=event&interest_id=${interestId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.is_added) {
+                        button.setAttribute('data-added', 'true');
+                        button.classList.add('added');
+                        heartIcon.classList.remove('fa-regular', 'fa-heart');
+                        heartIcon.classList.add('fa-solid', 'fa-heart');
+                    } else {
+                        button.setAttribute('data-added', 'false');
+                        button.classList.remove('added');
+                        heartIcon.classList.remove('fa-solid', 'fa-heart');
+                        heartIcon.classList.add('fa-regular', 'fa-heart');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking interest:', error);
+                });
+
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -377,42 +504,55 @@
                     const interestType = this.getAttribute('data-interest-type');
                     const interestId = this.getAttribute('data-interest-id');
                     const eventType = this.getAttribute('data-event-type');
+                    const isAdded = this.getAttribute('data-added') === 'true';
                     const btn = this;
+                    const heartIcon = this.querySelector('i');
 
                     btn.disabled = true;
 
-                    fetch('/api/user-interests', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                    .content
-                            },
-                            body: JSON.stringify({
-                                interest_type: interestType,
-                                interest_id: interestId
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                let message = interestType === 'help_word' ?
-                                    'تم إضافة الكلمة إلى اهتماماتك بنجاح!' :
-                                    `تم إضافة ${eventType} إلى اهتماماتك بنجاح!`;
-                                showNotification(message, 'success');
-                                btn.style.backgroundColor = '#ccc';
-                                btn.textContent = '✓';
+                    const method = isAdded ? 'DELETE' : 'POST';
+                    const url = isAdded ? `/api/user-interests/${interestType}/${interestId}` :
+                        '/api/user-interests';
+
+                    fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: method === 'POST' ? JSON.stringify({
+                            interest_type: interestType,
+                            interest_id: interestId
+                        }) : null
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            if (isAdded) {
+                                showNotification(`تم إزالة ${eventType} من اهتماماتك بنجاح!`, 'success');
+                                btn.classList.remove('added');
+                                btn.setAttribute('data-added', 'false');
+                                heartIcon.classList.remove('fa-solid', 'fa-heart');
+                                heartIcon.classList.add('fa-regular', 'fa-heart');
                             } else {
-                                showNotification(data.message || 'فشل إضافة الإهتمام', 'error');
-                                btn.disabled = false;
+                                showNotification(`تم إضافة ${eventType} إلى اهتماماتك بنجاح!`, 'success');
+                                btn.classList.add('added');
+                                btn.setAttribute('data-added', 'true');
+                                heartIcon.classList.remove('fa-regular', 'fa-heart');
+                                heartIcon.classList.add('fa-solid', 'fa-heart');
                             }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            showNotification('حدث خطأ أثناء إضافة الإهتمام.', 'error');
                             btn.disabled = false;
-                        });
+                        } else {
+                            showNotification(data.message || 'فشل في تعديل الاهتمام', 'error');
+                            btn.disabled = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showNotification('حدث خطأ أثناء تعديل الاهتمام.', 'error');
+                        btn.disabled = false;
+                    });
                 });
             });
         }
@@ -445,72 +585,72 @@
             }, 3000);
         }
 
-        // تهيئة فلتر المناطق
+        function initRegionSlider() {
+            const slider = document.getElementById('regions-slider');
+            const prevBtn = document.getElementById('prev-region-btn');
+            const nextBtn = document.getElementById('next-region-btn');
+            const regionItems = slider.querySelectorAll('.region-item');
+
+            let currentPosition = 0;
+            const itemWidth = 195;
+            const visibleItems = 5;
+            const maxPosition = Math.max(0, regionItems.length - visibleItems);
+
+            updateSliderButtons();
+
+            prevBtn.addEventListener('click', function() {
+                if (currentPosition > 0) {
+                    currentPosition--;
+                    updateSliderPosition();
+                    updateSliderButtons();
+                }
+            });
+
+            nextBtn.addEventListener('click', function() {
+                if (currentPosition < maxPosition) {
+                    currentPosition++;
+                    updateSliderPosition();
+                    updateSliderButtons();
+                }
+            });
+
+            function updateSliderPosition() {
+                slider.style.transform = `translateX(-${currentPosition * itemWidth}px)`;
+            }
+
+            function updateSliderButtons() {
+                prevBtn.classList.toggle('disabled', currentPosition === 0);
+                nextBtn.classList.toggle('disabled', currentPosition >= maxPosition);
+            }
+        }
+
         function initRegionFilters() {
-            const regionItems = document.querySelectorAll('.region-item');
+            const regionItems = document.querySelectorAll('.region-item, .fixed-region-item');
             const exhibitionItems = document.querySelectorAll('.exhibition-item');
-            const activeFilters = document.getElementById('active-filters');
-            const regionFilter = document.getElementById('region-filter');
-            const selectedRegionName = document.getElementById('selected-region-name');
 
             regionItems.forEach(item => {
                 item.addEventListener('click', function() {
-                    // إزالة الكلاس النشط من جميع المناطق
                     regionItems.forEach(ri => ri.classList.remove('active'));
-                    // إضافة الكلاس النشط للمنطقة المختارة
                     this.classList.add('active');
-
-                    const regionId = this.getAttribute('data-region-id');
-                    const regionName = this.querySelector('.region-name').textContent;
-
-                    // تحديث شارة الفلتر
-                    if (regionId === 'all') {
-                        regionFilter.style.display = 'none';
-                        if (document.getElementById('search-filter').style.display === 'none') {
-                            activeFilters.style.display = 'none';
-                        }
-                    } else {
-                        selectedRegionName.textContent = regionName;
-                        regionFilter.style.display = 'flex';
-                        activeFilters.style.display = 'flex';
-                    }
 
                     applyFilters();
                 });
             });
         }
 
-        // تهيئة فلتر البحث
         function initSearchFilter() {
             const searchInput = document.getElementById('search-input');
-            const searchFilter = document.getElementById('search-filter');
-            const searchTerm = document.getElementById('search-term');
-            const activeFilters = document.getElementById('active-filters');
 
             searchInput.addEventListener('input', function() {
-                const term = this.value.trim();
-
-                if (term) {
-                    searchTerm.textContent = `"${term}"`;
-                    searchFilter.style.display = 'flex';
-                    activeFilters.style.display = 'flex';
-                } else {
-                    searchFilter.style.display = 'none';
-                    if (document.getElementById('region-filter').style.display === 'none') {
-                        activeFilters.style.display = 'none';
-                    }
-                }
-
                 applyFilters();
             });
         }
 
-        // تطبيق الفلاتر
         function applyFilters() {
             const exhibitionItems = document.querySelectorAll('.exhibition-item');
             const exhibitionsContainer = document.getElementById('exhibitions-container');
             const searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
-            const activeRegionItem = document.querySelector('.region-item.active');
+            const activeRegionItem = document.querySelector('.region-item.active, .fixed-region-item.active');
             const regionId = activeRegionItem.getAttribute('data-region-id');
 
             let visibleCount = 0;
@@ -531,21 +671,17 @@
                 }
             });
 
-            // التحقق إذا لم يتم العثور على معارض
             if (visibleCount === 0) {
-                // إزالة رسالة عدم وجود معارض إذا كانت موجودة
                 const existingNoExhibitions = exhibitionsContainer.querySelector('.no-exhibitions');
                 if (existingNoExhibitions) {
                     existingNoExhibitions.remove();
                 }
 
-                // إنشاء وإضافة رسالة عدم وجود معارض
                 const noExhibitions = document.createElement('div');
                 noExhibitions.className = 'no-exhibitions';
                 noExhibitions.textContent = 'لا توجد معارض تطابق معايير البحث';
                 exhibitionsContainer.appendChild(noExhibitions);
             } else {
-                // إزالة رسالة عدم وجود معارض إذا كانت موجودة
                 const existingNoExhibitions = exhibitionsContainer.querySelector('.no-exhibitions');
                 if (existingNoExhibitions) {
                     existingNoExhibitions.remove();
@@ -553,45 +689,12 @@
             }
         }
 
-        // مسح فلتر المنطقة
         function clearRegionFilter() {
-            const allRegionsItem = document.querySelector('.region-item[data-region-id="all"]');
-            const regionItems = document.querySelectorAll('.region-item');
-            const regionFilter = document.getElementById('region-filter');
-            const activeFilters = document.getElementById('active-filters');
+            const allRegionsItem = document.querySelector('.fixed-region-item[data-region-id="all"]');
+            const regionItems = document.querySelectorAll('.region-item, .fixed-region-item');
 
-            // إزالة الكلاس النشط من جميع المناطق
             regionItems.forEach(ri => ri.classList.remove('active'));
-            // إضافة الكلاس النشط لزر "جميع المناطق"
             allRegionsItem.classList.add('active');
-
-            // إخفاء شارة فلتر المنطقة
-            regionFilter.style.display = 'none';
-
-            // إخفاء قسم الفلاتر النشطة إذا كان فلتر البحث أيضاً غير نشط
-            if (document.getElementById('search-filter').style.display === 'none') {
-                activeFilters.style.display = 'none';
-            }
-
-            applyFilters();
-        }
-
-        // مسح فلتر البحث
-        function clearSearchFilter() {
-            const searchInput = document.getElementById('search-input');
-            const searchFilter = document.getElementById('search-filter');
-            const activeFilters = document.getElementById('active-filters');
-
-            // مسح حقل البحث
-            searchInput.value = '';
-
-            // إخفاء شارة فلتر البحث
-            searchFilter.style.display = 'none';
-
-            // إخفاء قسم الفلاتر النشطة إذا كان فلتر المنطقة أيضاً غير نشط
-            if (document.getElementById('region-filter').style.display === 'none') {
-                activeFilters.style.display = 'none';
-            }
 
             applyFilters();
         }

@@ -1,6 +1,10 @@
 @extends('layouts.appOmdahome')
 
 @section('content')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <style>
         /* أضف هذا للأنماط الموجودة */
         .notification {
@@ -80,7 +84,7 @@
             @php
                 // Get the interest_id from the URL
                 $interestId = request()->query('interest_id');
-                
+
                 // Filter $help_words based on interest_id if it exists
                 if ($interestId) {
                     $filteredHelpWords = $help_words->where('id', $interestId);
@@ -113,9 +117,85 @@
                                 </svg>
                             @endif
                         </h3>
-                        <button class="add-interest-btn" data-interest-type="help_word" data-interest-id="{{ $faq->id }}"
-                            style="font-weight: bold; background-color: rgb(54, 148, 0); padding: 3px; width: 33px; border-radius: 10px; color:white; margin: auto; text-align: center; display: flex; align-items: center; justify-content: center;">
-                            +
+                                                     <style>
+                                .add-interest-btn {
+                                    font-weight: bold;
+                                    background-color: rgb(255, 255, 255);
+                                    padding: 3px;
+                                    width: 54px;
+                                    position: relative;
+                                    height: 53px;
+                                    border-radius: 6px;
+                                    /* top: -138px;
+                                    right: 8px; */
+                                    color: white;
+                                    text-align: center;
+                                    display: flex;
+                                    align-items: center;
+                                    box-shadow: 0px 0px 7px #c4c4c4;
+                                    justify-content: center;
+                                    overflow: hidden;
+                                    /* Ensures the pseudo-element stays within bounds */
+                                    transition: color 0.2s ease-in-out;
+                                    /* Smooth text/icon color transition */
+                                }
+
+                                .add-interest-btn svg {
+                                    /* fill: #B11023; */
+                                    position: relative;
+                                    z-index: 1;
+                                    /* transition: fill 0.2s ease-in-out; */
+                                }
+
+                                .add-interest-btn::before {
+                                    content: '';
+                                    position: absolute;
+                                    bottom: 0;
+                                    left: 0;
+                                    width: 100%;
+                                    height: 0;
+                                    /* Start with no height */
+                                    background-color: #B11023;
+                                    z-index: 0;
+                                    transition: height 0.2s ease-in-out;
+                                    /* Animate height */
+                                }
+
+                                .add-interest-btn:hover::before {
+                                    height: 100%;
+                                    /* Expand to full height on hover */
+                                }
+
+                                .add-interest-btn:hover {
+                                    color: white;
+                                    /* Ensure text/icon color changes */
+                                }
+
+                                .add-interest-btn:hover svg {
+                                    /* fill: white; */
+                                }
+
+                                .add-interest-btn:hover i.fa-heart {
+                                    /* border: 2px solid white !important; */
+                                    padding: 2px !important;
+                                    border-radius: 50% !important;
+                                    z-index: 99999999999999999999999999999999;
+                                    color: white !important;
+                                    /* إذا كنت تريد تغيير اللون أيضًا */
+                                }
+
+                                /* يمكنك أيضًا تعديل لون الأيقونة نفسها عند الهوفر إذا أردت */
+                                .add-interest-btn:hover i.fa-heart {
+                                    color: white !important;
+                                    fill: #B11023 !important;
+                                    /* مثال لتغيير لون الأيقونة إلى الأبيض عند الهوفر */
+                                }
+                            </style>
+
+                        <button class="add-interest-btn" data-interest-type="help_word"
+                            data-interest-id="{{ $faq->id }}"
+                            >
+                            <i class="fa-regular fa-heart" style="color: #B11023;"></i>
                         </button>
                     </div>
                 @endforeach
@@ -148,55 +228,93 @@
             }
 
             // Inicializar botones de interés
-            function initAddInterestButtons() {
-                const addInterestButtons = document.querySelectorAll('.add-interest-btn');
-                addInterestButtons.forEach(button => {
-                    button.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
+function initAddInterestButtons() {
+    const addInterestButtons = document.querySelectorAll('.add-interest-btn');
+    addInterestButtons.forEach(button => {
+        const interestId = button.getAttribute('data-interest-id');
+        const heartIcon = button.querySelector('i'); // احصل على عنصر الأيقونة داخل الزر
 
-                        const interestType = this.getAttribute('data-interest-type');
-                        const interestId = this.getAttribute('data-interest-id');
-                        const btn = this;
-
-                        // Deshabilitar botón para prevenir múltiples clics
-                        btn.disabled = true;
-
-                        fetch('/api/user-interests', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Accept': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector(
-                                        'meta[name="csrf-token"]').content
-                                },
-                                body: JSON.stringify({
-                                    interest_type: interestType,
-                                    interest_id: interestId
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    showNotification('تم إضافة الكلمة إلى اهتماماتك بنجاح!',
-                                        'success');
-                                    btn.style.backgroundColor = '#ccc';
-                                    btn.textContent = '✓';
-                                } else {
-                                    showNotification(data.message || 'فشل إضافة الإهتمام',
-                                        'error');
-                                    btn.disabled = false;
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                showNotification('حدث خطأ أثناء إضافة الإهتمام.', 'error');
-                                btn.disabled = false;
-                            });
-                    });
-                });
+        // فحص حالة الإضافة عند تحميل الصفحة (إذا كنت تنفذ هذه الميزة)
+        fetch(`/api/user-interests/check?interest_type=help_word&interest_id=${interestId}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
             }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.is_added) {
+                button.classList.add('added'); // يمكنك استخدام هذا الكلاس لتغيير الألوان
+                if (heartIcon) {
+                    heartIcon.classList.remove('fa-regular', 'fa-heart');
+                    heartIcon.classList.add('fa-solid', 'fa-heart');
+                }
+            } else {
+                button.classList.remove('added');
+                if (heartIcon) {
+                    heartIcon.classList.remove('fa-solid', 'fa-heart');
+                    heartIcon.classList.add('fa-regular', 'fa-heart');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error checking interest:', error);
+        });
 
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const interestType = this.getAttribute('data-interest-type');
+            const interestId = this.getAttribute('data-interest-id');
+            const btn = this;
+            const heartIcon = this.querySelector('i'); // احصل على عنصر الأيقونة عند النقر
+
+            btn.disabled = true;
+
+            const method = btn.classList.contains('added') ? 'DELETE' : 'POST';
+            const url = btn.classList.contains('added') ? `/api/user-interests/${interestType}/${interestId}` : '/api/user-interests';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: method === 'POST' ? JSON.stringify({
+                    interest_type: interestType,
+                    interest_id: interestId
+                }) : null
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const isAddedNow = method === 'POST';
+                    showNotification(isAddedNow ? 'تم إضافة الكلمة إلى اهتماماتك بنجاح!' : 'تم إزالة الكلمة من اهتماماتك بنجاح!', 'success');
+                    btn.disabled = false;
+
+                    if (heartIcon) {
+                        heartIcon.classList.toggle('fa-regular');
+                        heartIcon.classList.toggle('fa-solid');
+                    }
+                    btn.classList.toggle('added');
+                    btn.style.backgroundColor = isAddedNow ? '#ccc' : 'rgb(54, 148, 0)';
+                    btn.textContent = ''; // امسح النص السابق إذا كان موجودًا
+                } else {
+                    showNotification(data.message || 'فشل تعديل الإهتمام', 'error');
+                    btn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('حدث خطأ أثناء تعديل الإهتمام.', 'error');
+                btn.disabled = false;
+            });
+        });
+    });
+}
             // Función para mostrar notificaciones (sin cambios)
             function showNotification(message, type = 'success') {
                 const notification = document.createElement('div');

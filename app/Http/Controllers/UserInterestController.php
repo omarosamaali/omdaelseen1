@@ -36,7 +36,8 @@ class UserInterestController extends Controller
         }
 
         return view('users.user_interests.index', compact('userInterests'))->with('layout', $this->layout);
-    }    public function show(UserInterest $userInterest)
+    }
+    public function show(UserInterest $userInterest)
     {
         // Load the user relationship
         $userInterest->load('user');
@@ -51,8 +52,22 @@ class UserInterestController extends Controller
         return view('users.user_interests.show', compact('userInterest'))->with('layout', $this->layout);
     }
 
-    public function destroy(UserInterest $userInterest)
+    public function destroy($interestType, $interestId)
     {
-        $userInterest->delete();
-        return redirect()->route('user.user_interests.index')->with('success', 'تم حذف الإهتمام بنجاح.');    }
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'غير مصادق'], 401);
+        }
+
+        $deleted = $user->interests()
+            ->where('interest_type', $interestType)
+            ->where('interest_id', $interestId)
+            ->delete();
+
+        if ($deleted) {
+            return response()->json(['success' => true, 'message' => 'تم إزالة الاهتمام بنجاح']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'الاهتمام غير موجود'], 404);
+    }
 }

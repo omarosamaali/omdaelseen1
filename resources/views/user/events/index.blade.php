@@ -1,6 +1,11 @@
 @extends('layouts.appOmdahome')
 
 @section('content')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
     <style>
         .exhibition-container {
             margin-top: 20px;
@@ -349,11 +354,85 @@
                                 style="background: #071739; color: #fff; padding: 4px 11px; border-radius: 4px; text-decoration: none;">
                                 المزيد
                             </a>
+                                            <style>
+                                .add-interest-btn {
+                                    font-weight: bold;
+                                    background-color: rgb(255, 255, 255);
+                                    padding: 3px;
+                                    width: 54px;
+                                    position: relative;
+                                    height: 53px;
+                                    border-radius: 6px;
+                                    top: -138px;
+                                    right: 8px;
+                                    color: white;
+                                    text-align: center;
+                                    display: flex;
+                                    align-items: center;
+                                    box-shadow: 0px 0px 7px #c4c4c4;
+                                    justify-content: center;
+                                    overflow: hidden;
+                                    /* Ensures the pseudo-element stays within bounds */
+                                    transition: color 0.2s ease-in-out;
+                                    /* Smooth text/icon color transition */
+                                }
+
+                                .add-interest-btn svg {
+                                    /* fill: #B11023; */
+                                    position: relative;
+                                    z-index: 1;
+                                    /* transition: fill 0.2s ease-in-out; */
+                                }
+
+                                .add-interest-btn::before {
+                                    content: '';
+                                    position: absolute;
+                                    bottom: 0;
+                                    left: 0;
+                                    width: 100%;
+                                    height: 0;
+                                    /* Start with no height */
+                                    background-color: #B11023;
+                                    z-index: 0;
+                                    transition: height 0.2s ease-in-out;
+                                    /* Animate height */
+                                }
+
+                                .add-interest-btn:hover::before {
+                                    height: 100%;
+                                    /* Expand to full height on hover */
+                                }
+
+                                .add-interest-btn:hover {
+                                    color: white;
+                                    /* Ensure text/icon color changes */
+                                }
+
+                                .add-interest-btn:hover svg {
+                                    /* fill: white; */
+                                }
+
+                                .add-interest-btn:hover i.fa-heart {
+                                    /* border: 2px solid white !important; */
+                                    padding: 2px !important;
+                                    border-radius: 50% !important;
+                                    z-index: 99999999999999999999999999999999;
+                                    color: white !important;
+                                    /* إذا كنت تريد تغيير اللون أيضًا */
+                                }
+
+                                /* يمكنك أيضًا تعديل لون الأيقونة نفسها عند الهوفر إذا أردت */
+                                .add-interest-btn:hover i.fa-heart {
+                                    color: white !important;
+                                    fill: #B11023 !important;
+                                    /* مثال لتغيير لون الأيقونة إلى الأبيض عند الهوفر */
+                                }
+                            </style>
                             <button class="add-interest-btn" data-interest-type="event"
-                                data-interest-id="{{ $event->id }}" data-event-type="{{ $event->type }}"
-                                style="font-weight: bold; background-color: rgb(54, 148, 0); padding: 3px; width: 33px; border-radius: 10px; color:white; text-align: center; display: flex; align-items: center; justify-content: center;">
-                                +
+                                data-interest-id="{{ $event->id }}" data-event-type="{{ $event->type }}">
+                                <i class="fa-regular fa-heart" style="color: #B11023;"></i>
                             </button>
+
                         </div>
                     </div>
                 </div>
@@ -368,9 +447,40 @@
             initSearchFilter();
         });
 
+
         function initAddInterestButtons() {
             const addInterestButtons = document.querySelectorAll('.add-interest-btn');
             addInterestButtons.forEach(button => {
+                const interestId = button.getAttribute('data-interest-id');
+                const heartIcon = button.querySelector('i'); // افترض أن أيقونة القلب هي العنصر <i> داخل الزر
+
+                fetch(`/api/user-interests/check?interest_type=event&interest_id=${interestId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.is_added) {
+                            button.setAttribute('data-added', 'true');
+                            button.classList.add('added');
+                            // تغيير الأيقونة إلى القلب الممتلئ
+                            heartIcon.classList.remove('fa-regular', 'fa-heart');
+                            heartIcon.classList.add('fa-solid', 'fa-heart');
+                        } else {
+                            button.setAttribute('data-added', 'false');
+                            button.classList.remove('added');
+                            // تغيير الأيقونة إلى القلب الفارغ
+                            heartIcon.classList.remove('fa-solid', 'fa-heart');
+                            heartIcon.classList.add('fa-regular', 'fa-heart');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking interest:', error);
+                    });
+
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -378,45 +488,64 @@
                     const interestType = this.getAttribute('data-interest-type');
                     const interestId = this.getAttribute('data-interest-id');
                     const eventType = this.getAttribute('data-event-type');
+                    const isAdded = this.getAttribute('data-added') === 'true';
                     const btn = this;
+                    const heartIcon = this.querySelector('i'); // احصل على الأيقونة داخل الزر عند النقر
 
                     btn.disabled = true;
 
-                    fetch('/api/user-interests', {
-                            method: 'POST',
+                    const method = isAdded ? 'DELETE' : 'POST';
+                    const url = isAdded ? `/api/user-interests/${interestType}/${interestId}` :
+                        '/api/user-interests';
+
+                    fetch(url, {
+                            method: method,
                             headers: {
                                 'Content-Type': 'application/json',
                                 'Accept': 'application/json',
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
                                     .content
                             },
-                            body: JSON.stringify({
+                            body: method === 'POST' ? JSON.stringify({
                                 interest_type: interestType,
                                 interest_id: interestId
-                            })
+                            }) : null
                         })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                let message = interestType === 'help_word' ?
-                                    'تم إضافة الكلمة إلى اهتماماتك بنجاح!' :
-                                    `تم إضافة ${eventType} إلى اهتماماتك بنجاح!`;
-                                showNotification(message, 'success');
-                                btn.style.backgroundColor = '#ccc';
-                                btn.textContent = '✓';
+                                if (isAdded) {
+                                    showNotification(`تم إزالة ${eventType} من اهتماماتك بنجاح!`,
+                                        'success');
+                                    btn.classList.remove('added');
+                                    btn.setAttribute('data-added', 'false');
+                                    // تغيير الأيقونة إلى القلب الفارغ عند الإزالة
+                                    heartIcon.classList.remove('fa-solid', 'fa-heart');
+                                    heartIcon.classList.add('fa-regular', 'fa-heart');
+                                } else {
+                                    showNotification(`تم إضافة ${eventType} إلى اهتماماتك بنجاح!`,
+                                        'success');
+                                    btn.classList.add('added');
+                                    btn.setAttribute('data-added', 'true');
+                                    // تغيير الأيقونة إلى القلب الممتلئ عند الإضافة
+                                    heartIcon.classList.remove('fa-regular', 'fa-heart');
+                                    heartIcon.classList.add('fa-solid', 'fa-heart');
+                                }
+                                btn.disabled = false;
                             } else {
-                                showNotification(data.message || 'فشل إضافة الإهتمام', 'error');
+                                showNotification(data.message || 'فشل في تعديل الاهتمام', 'error');
                                 btn.disabled = false;
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            showNotification('حدث خطأ أثناء إضافة الإهتمام.', 'error');
+                            showNotification('حدث خطأ أثناء تعديل الاهتمام.', 'error');
                             btn.disabled = false;
                         });
                 });
             });
         }
+
 
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');

@@ -11,6 +11,7 @@ class UserInterest extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+        
     }
 
     // Dynamically resolve the related interest based on type
@@ -52,4 +53,6 @@ public function help_word()
 
         return 'غير معروف';
     }
+
+    
 }

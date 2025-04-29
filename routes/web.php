@@ -143,6 +143,12 @@ Route::get('users/omdaHome/index', function () {
     return view('users.omdaHome.index', compact('banners'));
 })->name('omdaHome.index');
 
+Route::middleware('auth')->group(function () {
+    Route::post('/api/user-interests', [App\Http\Controllers\Api\UserInterestController::class, 'store'])->name('api.user_interests.store');
+    Route::get('/api/user-interests/check', [App\Http\Controllers\Api\UserInterestController::class, 'check']);
+    Route::delete('/api/user-interests/{interestType}/{interestId}', [App\Http\Controllers\Api\UserInterestController::class, 'destroy']);
+});
+
 Route::prefix('admin/events')->name('admin.events.')->group(function () {
     Route::get('/', [EventController::class, 'index'])->name('index');
     Route::get('/create', [EventController::class, 'create'])->name('create');

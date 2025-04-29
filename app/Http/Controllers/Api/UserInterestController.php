@@ -11,8 +11,54 @@ use Illuminate\Support\Facades\Auth;
 
 class UserInterestController extends Controller
 {
-public function store(Request $request)
+    public function destroy($interestType, $interestId)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'غير مصادق'], 401);
+        }
+
+        $deleted = $user->interests()
+            ->where('interest_type', $interestType)
+            ->where('interest_id', $interestId)
+            ->delete();
+
+        if ($deleted) {
+            return response()->json(['success' => true, 'message' => 'تم إزالة الاهتمام بنجاح']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'الاهتمام غير موجود'], 404);
+    }
+
+
+    public function check(Request $request)
+    {
+        $user = Auth::user();
+
+        // If the user is not authenticated, return false (interest is not added)
+        if (!$user) {
+            return response()->json(['is_added' => false], 401);
+        }
+
+        $interestType = $request->query('interest_type');
+        $interestId = $request->query('interest_id');
+
+        $isAdded = $user->interests()
+            ->where('interest_type', $interestType)
+            ->where('interest_id', $interestId)
+            ->exists();
+
+        return response()->json(['is_added' => $isAdded]);
+    }
+    
+    
+    
+    
+    
+    
+    public function store(Request $request)
 {
+    
     $request->validate([
         'interest_type' => 'required|in:event,help_word',
         'interest_id' => [

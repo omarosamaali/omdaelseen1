@@ -37,7 +37,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
+    public function interests()
+    {
+        return $this->hasMany(UserInterest::class, 'user_id');
+    }
     /**
      * Define the relationship with Places.
      */
