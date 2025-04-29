@@ -21,7 +21,7 @@ class EventController extends Controller
 
     public function index(Request $request)
     {
-        $events = Event::with('region')->where('type', 'معرض');
+        $events = Event::with('region');
 
         if ($request->has('interest_id')) {
             $events->where('id', $request->input('interest_id'));

@@ -34,7 +34,7 @@
                             </span>
                             <input aria-autocomplete="off" autocomplete="off" type="text" id="user_search"
                                 name="user_search"
-                                style="text-align: right; width: 100%; padding: 0.5rem 2.5rem 0.5rem 0.5rem; border: 1px solid #d1d5db; border-radius: 30px; background-color: transparent;"
+                                style="text-align: right; width: 100%; padding: 0.5rem 2.5rem 0.5rem 0.5rem; border: 1px solid #d1d5db; border-radius: 30px; background-color: white;"
                                 placeholder="بحث" required>
                         </div>
                     </div>
@@ -78,7 +78,7 @@
                                 المفضلة
                             </th>
                             <th scope="col" class="th">
-                                المراجعات
+                                الملاحظات
                             </th>
                             <th scope="col" class="th">
                                 حالة
@@ -91,8 +91,14 @@
                     <tbody>
                         @foreach ($places as $place)
                             <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
+                                                    @php
+                                    if (!isset($counter)) {
+                                        $counter = 1;
+                                    }
+                                @endphp
+
                                 <td class="th">
-                                    {{ $place->id }}
+                                    {{ $counter }}
                                 </td>
                                 <td class="th">
                                     {{ $place->name_ar }}

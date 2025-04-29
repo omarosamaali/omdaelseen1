@@ -25,13 +25,10 @@ class HelpWordsController extends Controller
     public function index(Request $request)
     {
         $helpWords = HelpWord::query()->orderBy('order');
-
         if ($request->has('interest_id')) {
             $helpWords->where('id', $request->input('interest_id'));
         }
-
         $helpWords = $helpWords->get();
-
         return view('admin.omdaHome.help_words.index', compact('helpWords'))->with('layout', $this->layout);
     }
 

@@ -39,7 +39,7 @@
         }
 
         .exhibition-image {
-            min-width: 383px;
+    min-width: 383px;
             height: 212px;
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
@@ -245,13 +245,13 @@
 
     <h1
         style="color: #071739; font-weight: bold; margin-bottom: 20px; font-size: 35px; margin-right: 200px; margin-top: 50px;">
-        جميع المناسبات المتاحة
+        جميع المعارض المتاحة
     </h1>
 
     <!-- شريط البحث الجديد -->
     <div class="search-container">
         <div class="search-box">
-            <input type="text" id="search-input" class="search-input" placeholder="البحث عن المناسبات...">
+            <input type="text" id="search-input" class="search-input" placeholder="البحث عن المعارض...">
             <i class="fas fa-search search-icon"></i>
         </div>
 
@@ -292,7 +292,7 @@
         <!-- زر مشاهدة الجميع (يظهر فقط إذا كان هناك interest_id) -->
         @if (request()->query('interest_id'))
             <div style="text-align: center; margin-bottom: 20px;">
-                <a href="{{ route('users.meet.index') }}" class="view-all-btn">مشاهدة الجميع</a>
+                <a href="{{ route('users.events.index') }}" class="view-all-btn">مشاهدة الجميع</a>
             </div>
         @endif
     </div>
@@ -304,15 +304,15 @@
 
             // Filter $events based on interest_id if it exists
             if ($interestId) {
-                $filteredEvents = $events->where('id', $interestId)->where('type', 'مناسبة');
+                $filteredEvents = $events->where('id', $interestId)->where('type', 'معرض');
             } else {
-                $filteredEvents = $events->where('type', 'مناسبة');
+                $filteredEvents = $events->where('type', 'معرض');
             }
         @endphp
 
         @if ($filteredEvents->isEmpty())
             <div class="no-exhibitions">
-                لا يوجد مناسبات
+                لا يوجد معارض
             </div>
         @else
             @foreach ($filteredEvents as $event)
@@ -335,9 +335,7 @@
                     </div>
                     <div class="exhibition-details">
                         <div class="exhibition-title">
-
                             {{ Str::limit($event->title_ar, 28) }}
-
                         </div>
                         <div class="exhibition-dates">
                             <span>من {{ \Carbon\Carbon::parse($event->start_date)->format('d M Y') }}</span> -
@@ -346,8 +344,8 @@
                         <div class="exhibition-description" style="margin-bottom: 20px;">
                             {{ Str::limit($event->description_ar, 50) }}
                         </div>
-                        <div style="display: flex; align-items: center; justify-content: space-between; bottom: -33px; ">
-                            <a href="{{ route('users.meet.show', $event->id) }}"
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <a href="{{ route('users.events.show', $event->id) }}"
                                 style="background: #071739; color: #fff; padding: 4px 11px; border-radius: 4px; text-decoration: none;">
                                 المزيد
                             </a>
@@ -534,21 +532,21 @@
                 }
             });
 
-            // التحقق إذا لم يتم العثور على مناسبات
+            // التحقق إذا لم يتم العثور على معارض
             if (visibleCount === 0) {
-                // إزالة رسالة عدم وجود مناسبات إذا كانت موجودة
+                // إزالة رسالة عدم وجود معارض إذا كانت موجودة
                 const existingNoExhibitions = exhibitionsContainer.querySelector('.no-exhibitions');
                 if (existingNoExhibitions) {
                     existingNoExhibitions.remove();
                 }
 
-                // إنشاء وإضافة رسالة عدم وجود مناسبات
+                // إنشاء وإضافة رسالة عدم وجود معارض
                 const noExhibitions = document.createElement('div');
                 noExhibitions.className = 'no-exhibitions';
-                noExhibitions.textContent = 'لا توجد مناسبات تطابق معايير البحث';
+                noExhibitions.textContent = 'لا توجد معارض تطابق معايير البحث';
                 exhibitionsContainer.appendChild(noExhibitions);
             } else {
-                // إزالة رسالة عدم وجود مناسبات إذا كانت موجودة
+                // إزالة رسالة عدم وجود معارض إذا كانت موجودة
                 const existingNoExhibitions = exhibitionsContainer.querySelector('.no-exhibitions');
                 if (existingNoExhibitions) {
                     existingNoExhibitions.remove();

@@ -497,7 +497,7 @@
                         bannerImage.style.transition = 'opacity 0.5s ease-in-out';
 
                         // تشغيل السلايدر كل ثانيتين
-                        setInterval(changeImage, 2000);
+                        setInterval(changeImage, 30000);
                     });
                 </script>
 

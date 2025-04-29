@@ -29,7 +29,7 @@
                             </span>
                             <input aria-autocomplete="off" autocomplete="off" type="text" id="interest_search"
                                 name="interest_search"
-                                style="text-align: right; width: 100%; padding: 0.5rem 2.5rem 0.5rem 0.5rem; border: 1px solid #d1d5db; border-radius: 30px; background-color: transparent;"
+                                style="background: white; text-align: right; width: 100%; padding: 0.5rem 2.5rem 0.5rem 0.5rem; border: 1px solid #d1d5db; border-radius: 30px; background-color: transparent;"
                                 placeholder="بحث" required>
                         </div>
                     </div>
@@ -71,22 +71,23 @@
                                 <td class="th">{{ $userInterest->created_at->format('Y-m-d H:i') }}</td>
                                 <td class="th">
                                     <div style="display: flex; gap: 10px;">
-                                        <!-- Show Button -->
-<!-- Show Button -->
-<a href="
-{{-- {{ route('admin.user_interests.redirect', $userInterest->id) }} --}}
-#
- "
-   class="font-medium text-blue-600">
-    <svg class="w-6 h-6 text-green-800" aria-hidden="true"
-         xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-         fill="none" viewBox="0 0 24 24">
-        <path stroke="currentColor" stroke-width="2"
-              d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z" />
-        <path stroke="currentColor" stroke-width="2"
-              d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                           @php
+    $viewUrl = '#';
+    if ($userInterest->interest_type_name == 'معرض') {
+        $viewUrl = route('users.events.index', ['interest_id' => $userInterest->interest_id]);
+    } elseif ($userInterest->interest_type_name == 'مناسبة') {
+        $viewUrl = route('users.meet.index', ['interest_id' => $userInterest->interest_id]);
+    } elseif ($userInterest->interest_type_name == 'كلمة مساعدة') {
+        $viewUrl = route('help_words.index', ['interest_id' => $userInterest->interest_id]);
+    }
+@endphp
+<a href="{{ $viewUrl }}" class="font-medium text-blue-600">
+    <svg class="w-6 h-6 text-green-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+        <path stroke="currentColor" stroke-width="2" d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z" />
+        <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
     </svg>
-</a>                                        <!-- Delete Button -->
+</a>
+                                        <!-- Delete Button -->
                                         <form action="{{ route('admin.user_interests.destroy', $userInterest->id) }}"
                                             method="POST"
                                             onsubmit="return confirm('هل أنت متأكد أنك تريد حذف هذا الإهتمام؟');">

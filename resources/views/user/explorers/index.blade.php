@@ -195,14 +195,13 @@
                                         if (!empty($nextOccasion->end_date)) {
                                             $endDate = new DateTime($nextOccasion->end_date);
                                             $duration = $startDate->diff($endDate)->days + 1;
-                                            $occasionDuration = "عطلة $duration يوم";
                                         }
                                     }
                                 @endphp
 
                                 @if ($nextOccasion)
                                     بعد ({{ $daysUntilOccasion }}) <br />
-                                    يوم {{ $occasionTitle }} <br />
+                                     {{ $occasionTitle }} <br />
                                     {{ $occasionDuration }}
                                 @else
                                     لا توجد مناسبات قادمة

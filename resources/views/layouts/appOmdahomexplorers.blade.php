@@ -349,7 +349,7 @@
                         <li class="{{ request()->routeIs('about.index') ? 'active' : '' }}">
                             <a href="{{ route('about.index') }}">
                                 <x-icon />
-                                من نحن
+                                الأماكن
                             </a>
                         </li>
                         <li class="{{ request()->routeIs('work.index') ? 'active' : '' }}">

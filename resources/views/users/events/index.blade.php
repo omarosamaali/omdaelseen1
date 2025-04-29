@@ -27,7 +27,8 @@
             right: 0px;
             height: 48px;
             min-width: 83px;
-            top: 17px;
+            top: 0px;
+            border-top-right-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -38,14 +39,18 @@
         }
 
         .exhibition-image {
-            width: 383px;
+    min-width: 383px;
             height: 212px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
         }
 
         .exhibition-details {
             background-color: #f8faff;
             padding: 10px 20px;
-            height: 169px;
+            height: 168px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
         }
 
         .exhibition-title {
@@ -207,7 +212,7 @@
             font-weight: bold;
         }
 
-        /* المؤشر عند عدم وجود معارض */
+        /* المؤشر عند عدم وجود مناسبات */
         .no-exhibitions {
             width: 100%;
             text-align: center;
@@ -215,6 +220,26 @@
             color: #071739;
             font-size: 22px;
             font-weight: bold;
+        }
+
+        /* أسلوب زر مشاهدة الجميع */
+        .view-all-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #071739;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px auto;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .view-all-btn:hover {
+            background-color: #1e40af;
         }
     </style>
 
@@ -233,8 +258,7 @@
         <!-- عرض المناطق للتصفية -->
         <div class="regions-container">
             <div class="region-item all-regions active" data-region-id="all">
-                <img src="https://img.freepik.com/free-photo/beautiful-collage-travel-concept_23-2149232172.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="جميع المناطق" class="region-image">
-                <div class="region-name">جميع المناطق</div>
+<x-iconAll />                <div class="region-name">جميع المناطق</div>
             </div>
             @php
                 $allRegions = \App\Models\Regions::all();
@@ -242,7 +266,8 @@
             @foreach ($allRegions as $region)
                 <div class="region-item" data-region-id="{{ $region->id }}">
                     @if ($region->avatar)
-                        <img src="{{ asset('storage/' . $region->avatar) }}" alt="{{ $region->name_ar }}" class="region-image">
+                        <img src="{{ asset('storage/' . $region->avatar) }}" alt="{{ $region->name_ar }}"
+                            class="region-image">
                     @else
                         <img src="{{ asset('storage/default-image.png') }}" alt="صورة افتراضية" class="region-image">
                     @endif
@@ -262,57 +287,76 @@
                 <span class="clear-filter" onclick="clearSearchFilter()">×</span>
             </div>
         </div>
+
+        <!-- زر مشاهدة الجميع (يظهر فقط إذا كان هناك interest_id) -->
+        @if (request()->query('interest_id'))
+            <div style="text-align: center; margin-bottom: 20px;">
+                <a href="{{ route('users.events.index') }}" class="view-all-btn">مشاهدة الجميع</a>
+            </div>
+        @endif
     </div>
 
     <div class="container exhibition-container" id="exhibitions-container">
-        @if (count($events) > 0)
-            @foreach ($events as $event)
-                @if ($event->type === 'معرض')
-                    <div class="exhibition-item" data-region-id="{{ $event->region_id ?? 'none' }}">
-                        <div>
-                            <img src="{{ asset('storage/' . $event->avatar) }}" alt="{{ $event->title_ar }}"
-                                class="exhibition-image">
-                            <p style="position: absolute; right: 0px; color: white;">
-                                {{ $event->region ? $event->region->name_ar : 'غير محدد' }}
-                                @if ($event->region && $event->region->avatar)
-                                    <img style="width: 39px; height: 39px; border-radius: 50%;"
-                                        src="{{ asset('storage/' . $event->region->avatar) }}"
-                                        alt="{{ $event->region->name_ar }}" class="exhibition-image">
-                                @else
-                                    <img style="width: 39px; height: 39px; border-radius: 50%;"
-                                        src="{{ asset('storage/default-image.png') }}" alt="صورة افتراضية"
-                                        class="exhibition-image">
-                                @endif
-                            </p>
-                        </div>
-                        <div class="exhibition-details">
-                            <div class="exhibition-title">{{ $event->title_ar }}</div>
-                            <div class="exhibition-dates">
-                                <span>من {{ \Carbon\Carbon::parse($event->start_date)->format('d M Y') }}</span> -
-                                <span>إلى {{ \Carbon\Carbon::parse($event->end_date)->format('d M Y') }}</span>
-                            </div>
-                            <div class="exhibition-description" style="margin-bottom: 20px;">
-                                {{ Str::limit($event->description_ar, 50) }}
-                            </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between;">
-                                <a href="{{ route('users.event.show', $event->id) }}"
-                                    style="background: #071739; color: #fff; padding: 4px 11px; border-radius: 4px; text-decoration: none;">
-                                    المزيد
-                                </a>
-                                <button class="add-interest-btn" data-interest-type="event"
-                                    data-interest-id="{{ $event->id }}" data-event-type="{{ $event->type }}"
-                                    style="font-weight: bold; background-color: rgb(54, 148, 0); padding: 3px; width: 33px; border-radius: 10px; color:white; text-align: center; display: flex; align-items: center; justify-content: center;">
-                                    +
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            @endforeach
-        @else
+        @php
+            // Get the interest_id from the URL
+            $interestId = request()->query('interest_id');
+
+            // Filter $events based on interest_id if it exists
+            if ($interestId) {
+                $filteredEvents = $events->where('id', $interestId)->where('type', 'معرض');
+            } else {
+                $filteredEvents = $events->where('type', 'معرض');
+            }
+        @endphp
+
+        @if ($filteredEvents->isEmpty())
             <div class="no-exhibitions">
                 لا يوجد معارض
             </div>
+        @else
+            @foreach ($filteredEvents as $event)
+                <div class="exhibition-item" data-region-id="{{ $event->region_id ?? 'none' }}">
+                    <div>
+                        <img src="{{ asset('storage/' . $event->avatar) }}" alt="{{ $event->title_ar }}"
+                            class="exhibition-image">
+                        <p style="position: absolute; right: 0px; color: white;">
+                            {{ $event->region ? $event->region->name_ar : 'غير محدد' }}
+                            @if ($event->region && $event->region->avatar)
+                                <img style="min-width: 39px; height: 39px; border-radius: 50%;"
+                                    src="{{ asset('storage/' . $event->region->avatar) }}"
+                                    alt="{{ $event->region->name_ar }}" class="exhibition-image">
+                            @else
+                                <img style="min-width: 39px; height: 39px; border-radius: 50%;"
+                                    src="{{ asset('storage/default-image.png') }}" alt="صورة افتراضية"
+                                    class="exhibition-image">
+                            @endif
+                        </p>
+                    </div>
+                    <div class="exhibition-details">
+                        <div class="exhibition-title">
+                            {{ Str::limit($event->title_ar, 28) }}
+                        </div>
+                        <div class="exhibition-dates">
+                            <span>من {{ \Carbon\Carbon::parse($event->start_date)->format('d M Y') }}</span> -
+                            <span>إلى {{ \Carbon\Carbon::parse($event->end_date)->format('d M Y') }}</span>
+                        </div>
+                        <div class="exhibition-description" style="margin-bottom: 20px;">
+                            {{ Str::limit($event->description_ar, 50) }}
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <a href="{{ route('users.events.show', $event->id) }}"
+                                style="background: #071739; color: #fff; padding: 4px 11px; border-radius: 4px; text-decoration: none;">
+                                المزيد
+                            </a>
+                            <button class="add-interest-btn" data-interest-type="event"
+                                data-interest-id="{{ $event->id }}" data-event-type="{{ $event->type }}"
+                                style="font-weight: bold; background-color: rgb(54, 148, 0); padding: 3px; width: 33px; border-radius: 10px; color:white; text-align: center; display: flex; align-items: center; justify-content: center;">
+                                +
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         @endif
     </div>
 

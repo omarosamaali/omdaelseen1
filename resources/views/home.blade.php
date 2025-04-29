@@ -235,7 +235,7 @@
 
         .home-containers {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 20px;
             justify-items: center;
             align-items: baseline;
@@ -574,16 +574,15 @@
 
                         <p class="home-title">بيت العمدة</p>
                     </a>
-                    <a href="">
+                    <a href="{{ route('user.index') }}">
                         <img style="bottom: 8.6%; position: relative; max-width: 300px;" src="{{ asset('assets/img/h1.svg') }}" alt="بيت صيني 3">
 
                         <p class="home-title"> مستكشفي الصين</p>
                     </a>
-                    <a href="">
+                    {{-- <a href="">
                         <img style="bottom: 8.6%; position: relative;" src="{{ asset('assets/img/h5.svg') }}" alt="بيت صيني 5">
-
                         <p class="home-title">مركز المعلومات</p>
-                    </a>
+                    </a> --}}
                     <a href="">
                         <img style="max-width: 400px; bottom: 8.6%; position: relative;" src="{{ asset('assets/img/h6.svg') }}" alt="بيت صيني 6">
 

@@ -81,7 +81,7 @@
                         </div>
                         
                         <div class="mb-4 text-right">
-                            <label for="link" class="block text-gray-700 font-bold mb-2">الرابط *</label>
+                            <label for="link" class="block text-gray-700 font-bold mb-2">رابط المكان *</label>
                             <input type="url" name="link" id="link" value="{{ old('link') }}" class="w-full border-gray-300 rounded-md shadow-sm" required>
                             @error('link')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>

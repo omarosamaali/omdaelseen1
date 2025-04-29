@@ -32,6 +32,15 @@ use App\Http\Controllers\Api\UserInterestController;
 
 Route::post('/translate', [TranslationController::class, 'translate'])->name('translate');
 
+Route::get('users/events/index', function () {
+    $events = Event::where('type', 'معرض')->get();
+    return view('users.events.index', compact('events'));
+})->name('users.events.index');
+
+Route::get('users/meet/index', function () {
+    $events = Event::where('type', 'مناسبة')->get();
+    return view('users.meet.index', compact('events'));
+})->name('users.meet.index');
 
 Route::prefix('admin/omdaHome/user_interests')->name('admin.user_interests.')->group(function () {
     Route::get('/', [App\Http\Controllers\Admin\UserInterestController::class, 'index'])->name('index');
@@ -93,27 +102,14 @@ Route::get('users/faq/index', function () {
     return view('users.faq.index', compact('faqs'));
 })->name('faq.index');
 
-Route::get('users/meet/index', function () {
-    $events = Event::where('type', 'مناسبة')->get();
-    return view('users.meet.index', compact('events'));
-})->name('meet.index');
-
 
 Route::get('users/meet/{event}', function (Event $event) {
     return view('users.meet.show', compact('event'));
 })->name('users.meet.show');
 
-
-
-Route::get('users/event/index', function () {
-    $events = Event::where('type', 'معرض')->get();
-    return view('users.event.index', compact('events'));
-})->name('event.index');
-
-
-Route::get('users/event/{event}', function (Event $event) {
-    return view('users.event.show', compact('event'));
-})->name('users.event.show');
+Route::get('users/events/{event}', function (Event $event) {
+    return view('users.events.show', compact('event'));
+})->name('users.events.show');
 
 
 
@@ -136,6 +132,11 @@ Route::get('users/about/index', function () {
     $abouts = About::first();
     return view('users.about.index', compact('abouts'));
 })->name('about.index');
+
+Route::get('user/explorers/index', function () {
+    $banners = Banner::all();
+    return view('user.explorers.index', compact('banners'));
+})->name('user.index');
 
 Route::get('users/omdaHome/index', function () {
     $banners = Banner::all();
