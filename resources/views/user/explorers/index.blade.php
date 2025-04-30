@@ -1,4 +1,4 @@
-@extends('layouts.appOmdahome')
+@extends('layouts.appOmdahomexplorers')
 
 @section('content')
     <style>

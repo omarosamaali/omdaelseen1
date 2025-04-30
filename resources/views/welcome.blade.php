@@ -388,7 +388,7 @@
                     <img style="left: 20px; position: absolute; width: 150px;" src="{{ asset('assets/img/sgin.svg') }}"
                         alt="">
                     <div id="next-date-2">
-                        <p style="font-weight: bold;">المعرض القادم</p>
+                        <p style="font-weight: bold; margin-right: 15px;">المعرض القادم</p>
                         @php
                             // Get the next active exhibition event
                             $nextExhibition = DB::table('events')
@@ -411,7 +411,8 @@
                         @endphp
 
                         @if ($nextExhibition)
-                            {{ $exhibitionTitle }}
+                            {{-- {{ Str::limit($exhibitionTitle, 1) }} <br /> --}}
+                            بعد ({{ $daysUntilExhibition }}) يوم
                         @else
                             لا توجد معارض قادمة
                         @endif

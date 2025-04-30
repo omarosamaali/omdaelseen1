@@ -303,7 +303,7 @@
                 
                 background: #edc4b5; box-shadow: none !important; right: 51px;" data-region-id="all">
                 <x-iconAll />
-                <div class="region-name">جميع المناسبات</div>
+                <div class="region-name">الجميع</div>
             </div>
 
             <button class="region-slider-btn next-btn" id="next-region-btn">
