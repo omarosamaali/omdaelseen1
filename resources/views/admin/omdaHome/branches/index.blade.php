@@ -98,7 +98,7 @@
             </div>
         </td>
         <td class="th">
-            {{ $branche->status }}
+            {{ $branche->status == 'active' ? 'نشط' : 'غير نشط' }}
         </td>
                                 <td class="th" style="display: flex; ">
                                     <a href="{{ route('admin.branches.show', $branche->id) }}"
