@@ -59,7 +59,7 @@ class BranchesController extends Controller
             'name_ch' => 'required|string|max:255',
             'status' => 'required|in:نشط,غير نشط',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'parent_id' => 'nullable|exists:branches,id', // تغيير لـ branches
+            'parent_id' => 'nullable|exists:explorers,id',
         ]);
 
         if ($request->hasFile('avatar')) {
@@ -67,7 +67,7 @@ class BranchesController extends Controller
         }
 
         $data['status'] = $data['status'] === 'نشط' ? 'active' : 'inactive';
-        // $data['main'] = $request->input('parent_id', null);
+        $data['main'] = $request->input('parent_id', null);
 
         Branches::create($data);
 
