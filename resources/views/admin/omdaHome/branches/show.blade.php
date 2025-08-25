@@ -33,7 +33,7 @@
         <div>
             <div class="info-label">الحالة</div>
             <div class="info-value">
-                @if($explorer->status == 'active' || $explorer->status == 'نشط')
+                @if($branch->status == 'active' || $branch->status == 'نشط')
                     <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full">نشط</span>
                 @else
                     <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full">غير نشط</span>
@@ -41,13 +41,13 @@
             </div>
 
             <div class="info-label">عدد الأماكن</div>
-            <div class="info-value">{{ $explorer->places ?? 0 }}</div>
+            <div class="info-value">{{ $branch->places ?? 0 }}</div>
 
             <div class="info-label">تاريخ الإضافة</div>
-            <div class="info-value">{{ $explorer->created_at ? $explorer->created_at->format('Y-m-d H:i:s') : '-' }}</div>
+            <div class="info-value">{{ $branch->created_at ? $branch->created_at->format('Y-m-d H:i:s') : '-' }}</div>
 
             <div class="info-label">تاريخ التحديث</div>
-            <div class="info-value">{{ $explorer->updated_at ? $explorer->updated_at->format('Y-m-d H:i:s') : '-' }}</div>
+            <div class="info-value">{{ $branch->updated_at ? $branch->updated_at->format('Y-m-d H:i:s') : '-' }}</div>
         </div>
     </div>
 
@@ -57,29 +57,29 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="mb-4">
                 <div class="info-label">الاسم بالعربي</div>
-                <div class="info-value">{{ $explorer->name_ar ?? '-' }}</div>
+                <div class="info-value">{{ $branch->name_ar ?? '-' }}</div>
             </div>
 
             <div class="mb-4">
                 <div class="info-label">الاسم بالإنجليزي</div>
-                <div class="info-value">{{ $explorer->name_en ?? '-' }}</div>
+                <div class="info-value">{{ $branch->name_en ?? '-' }}</div>
             </div>
 
             <div class="mb-4">
                 <div class="info-label">الاسم بالصيني</div>
-                <div class="info-value">{{ $explorer->name_ch ?? '-' }}</div>
+                <div class="info-value">{{ $branch->name_ch ?? '-' }}</div>
             </div>
 
             <div class="mb-4">
                 <div class="info-label">التصنيف الرئيسي</div>
-                <div class="info-value">{{ $explorer->parentCategory->name_ar ?? 'لا يوجد تصنيف رئيسي' }}</div>
+                <div class="info-value">{{ $branch->parentCategory->name_ar ?? 'لا يوجد تصنيف رئيسي' }}</div>
             </div>
 
             <div class="mb-4 col-span-2">
                 <div class="info-label">الصورة الشخصية</div>
                 <div class="info-value">
-                    @if($explorer->avatar)
-                        <img src="{{ asset('storage/' . $explorer->avatar) }}" alt="{{ $explorer->name_ar }}" class="branches-avatar">
+                    @if($branch->avatar)
+                        <img src="{{ asset('storage/' . $branch->avatar) }}" alt="{{ $branch->name_ar }}" class="branches-avatar">
                     @else
                         <span class="text-gray-400">لا توجد صورة</span>
                     @endif
@@ -88,7 +88,7 @@
         </div>
 
         <div class="mt-6 flex justify-end gap-2">
-            <a href="{{ route('admin.branches.edit', $explorer->id) }}" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">تعديل</a>
+            <a href="{{ route('admin.branches.edit', $branch->id) }}" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">تعديل</a>
             <a href="{{ route('admin.branches.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">العودة</a>
         </div>
     </div>
