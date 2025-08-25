@@ -80,7 +80,7 @@
 @foreach ($branches as $branche)
     <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
         <td class="th">
-            {{ $branche->id }}
+            {{ $branche->index + 1 }}
         </td>
         <td class="th">
             {{ $branche->name_ar }}
