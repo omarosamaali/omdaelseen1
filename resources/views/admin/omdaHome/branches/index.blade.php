@@ -201,8 +201,11 @@
                     </ul>
                 </nav> --}}
 
+                <div style="direction: ltr; padding: 20px;">
+                    {{ $branches->links() }}
+                </div>
             </div>
-
+            {{-- add pagination --}}
         </div>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
