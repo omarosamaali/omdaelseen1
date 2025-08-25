@@ -12,7 +12,7 @@
     <div>
         <div class="info-label" style="margin-bottom: 10px;">الحالة</div>
         <div class="info-value">
-            @if($explorer->status == 'active' || $explorer->status == 'نشط')
+            @if($branch->status == 'active' || $branch->status == 'نشط')
                 <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full">نشط</span>
             @else
                 <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full">غير نشط</span>
@@ -20,19 +20,19 @@
         </div>
 
         <div class="info-label" style="margin-top: 10px;">عدد الأماكن</div>
-        <div class="info-value">{{ $explorer->places ?? 0 }}</div>
+        <div class="info-value">{{ $branch->places ?? 0 }}</div>
 
         <div class="info-label">تاريخ الإضافة</div>
-        <div class="info-value">{{ $explorer->created_at ? $explorer->created_at->format('Y-m-d H:i:s') : '-' }}</div>
+        <div class="info-value">{{ $branch->created_at ? $branch->created_at->format('Y-m-d H:i:s') : '-' }}</div>
 
         <div class="info-label">تاريخ التحديث</div>
-        <div class="info-value">{{ $explorer->updated_at ? $explorer->updated_at->format('Y-m-d H:i:s') : '-' }}</div>
+        <div class="info-value">{{ $branch->updated_at ? $branch->updated_at->format('Y-m-d H:i:s') : '-' }}</div>
     </div>
 </div>
         <div class="container py-4 mx-auto max-w-4xl"
             style="position: relative; right: -50px; margin-top: 24px; background: white; border-radius: 10px; padding: 20px;">
             <h2 class="text-right mb-4 font-bold text-xl">تعديل تصنيف فرعي</h2>
-            <form action="{{ route('admin.branches.update', $explorer->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.branches.update', $branch->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -40,7 +40,7 @@
                         <label class="block text-sm font-medium text-gray-700">الإسم بالعربي</label>
                         <input type="text" id="name_ar" name="name_ar"
                             class="input-field @error('name_ar') border-red-500 @enderror"
-                            value="{{ old('name_ar', $explorer->name_ar) }}" required>
+                            value="{{ old('name_ar', $branch->name_ar) }}" required>
                         @error('name_ar')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
@@ -50,7 +50,7 @@
                         <label class="block text-sm font-medium text-gray-700">الإسم بالإنجليزي</label>
                         <input type="text" id="name_en" name="name_en"
                             class="input-field @error('name_en') border-red-500 @enderror"
-                            value="{{ old('name_en', $explorer->name_en) }}" required>
+                            value="{{ old('name_en', $branch->name_en) }}" required>
                         @error('name_en')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
@@ -60,7 +60,7 @@
                         <label class="block text-sm font-medium text-gray-700">الإسم بالصيني</label>
                         <input type="text" id="name_ch" name="name_ch"
                             class="input-field @error('name_ch') border-red-500 @enderror"
-                            value="{{ old('name_ch', $explorer->name_ch) }}" required>
+                            value="{{ old('name_ch', $branch->name_ch) }}" required>
                         @error('name_ch')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
@@ -70,10 +70,10 @@
                         <label class="block text-sm font-medium text-gray-700">الحالة</label>
                         <select name="status" style="direction: ltr;"
                             class="input-field @error('status') border-red-500 @enderror rtl-select">
-                            <option value="نشط" {{ old('status', $explorer->status) == 'active' || old('status', $explorer->status) == 'نشط' ? 'selected' : '' }}>
+                            <option value="نشط" {{ old('status', $branch->status) == 'active' || old('status', $branch->status) == 'نشط' ? 'selected' : '' }}>
                                 نشط
                             </option>
-                            <option value="غير نشط" {{ old('status', $explorer->status) == 'inactive' || old('status', $explorer->status) == 'غير نشط' ? 'selected' : '' }}>
+                            <option value="غير نشط" {{ old('status', $branch->status) == 'inactive' || old('status', $branch->status) == 'غير نشط' ? 'selected' : '' }}>
                                 غير نشط
                             </option>
                         </select>
@@ -89,7 +89,7 @@
                             <option value="">-- اختر التصنيف الرئيسي --</option>
                             @foreach($mainCategories as $category)
                                 <option value="{{ $category->id }}"
-                                    {{ old('parent_id', $explorer->main) == $category->id ? 'selected' : '' }}>
+                                    {{ old('parent_id', $branch->main) == $category->id ? 'selected' : '' }}>
                                     {{ $category->name_ar }}
                                 </option>
                             @endforeach
@@ -103,10 +103,10 @@
                         <label class="block text-sm font-medium text-gray-700">الصورة الشخصية</label>
                         <input type="file" name="avatar"
                             class="input-field @error('avatar') border-red-500 @enderror">
-                        @if($explorer->avatar)
+                        @if($branch->avatar)
                             <div class="mt-2">
-                                <img src="{{ asset('storage/' . $explorer->avatar) }}"
-                                    alt="{{ $explorer->name_ar }}"
+                                <img src="{{ asset('storage/' . $branch->avatar) }}"
+                                    alt="{{ $branch->name_ar }}"
                                     style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px;">
                             </div>
                         @endif
