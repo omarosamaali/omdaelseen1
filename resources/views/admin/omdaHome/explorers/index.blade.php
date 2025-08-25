@@ -91,7 +91,7 @@
                                     </div>
                                 </td>
                                 <td class="th">
-                                    {{ $explorer->status }}
+                                    {{ $explorer->status == 'active' ? 'نشط' : 'غير نشط' }}
                                 </td>
                                 <td class="th" style="display: flex; ">
                                     <a href="{{ route('admin.explorers.show', $explorer->id) }}"
