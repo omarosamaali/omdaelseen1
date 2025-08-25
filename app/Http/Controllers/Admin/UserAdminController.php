@@ -515,7 +515,7 @@ class UserAdminController extends Controller
 
     public function show($id)
     {
-        $user = User::with(['places' => function ($query) {
+        $usser = User::with(['places' => function ($query) {
             $query->with(['mainCategory', 'subCategory', 'region']);
         }])->findOrFail($id);
 
@@ -714,7 +714,7 @@ class UserAdminController extends Controller
             'ZW' => 'زيمبابوي',
         ];
 
-        return view('admin.omdaHome.users.show', compact('user', 'countries'))->with('layout', $this->layout);
+        return view('admin.omdaHome.users.show', compact('usser', 'countries'))->with('layout', $this->layout);
     }
 
     public function destroy($id)

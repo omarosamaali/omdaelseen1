@@ -28,14 +28,14 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-        if ($user->status == 'banned') { // محظور
+        if ($user->status == 'banned') {
             Auth::logout();
             return back()->withErrors([
                 'email' => 'حسابك محظور. يرجى التواصل مع الإدارة.',
             ]);
         }
 
-        if ($user->status == 'inactive') { // غير مفعل
+        if ($user->status == 'inactive') {
             Auth::logout();
             return back()->withErrors([
                 'email' => 'حسابك غير مفعل. يرجى التحقق من بريدك الإلكتروني لتفعيله.',

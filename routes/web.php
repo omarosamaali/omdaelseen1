@@ -28,6 +28,16 @@ use App\Http\Controllers\Admin\HelpWordsController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\EventController;
 
+Route::prefix('admin/users')->name('admin.users.')->group(function () {
+    Route::get('/', [UserAdminController::class, 'index'])->name('index');
+    Route::get('/create', [UserAdminController::class, 'create'])->name('create');
+    Route::post('/', [UserAdminController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [UserAdminController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [UserAdminController::class, 'update'])->name('update');
+    Route::get('/{id}', [UserAdminController::class, 'show'])->name('show');
+    Route::delete('/{id}', [UserAdminController::class, 'destroy'])->name('destroy');
+});
+
 Route::post('/translate', [TranslationController::class, 'translate'])->name('translate');
 
 
@@ -52,6 +62,7 @@ Route::prefix('admin/contact-messages')->name('admin.contact-messages.')->group(
 });
 Route::get('/contact', [ContactMessageController::class, 'show'])->name('contact.show');
 Route::post('/contact', [ContactMessageController::class, 'submit'])->name('contact.submit');
+
 Route::get('users/help_words/index', function () {
     $help_words = HelpWord::where('status', 1)->orderBy('order')->get();
     return view('users.help_words.index', compact('help_words'));
@@ -215,16 +226,15 @@ Route::prefix('admin/branches')->name('admin.branches.')->group(function () {
     Route::delete('/{id}', [BranchesController::class, 'destroy'])->name('destroy');
 });
 
-Route::prefix('admin/users')->name('admin.users.')->group(function () {
-    Route::get('/', [UserAdminController::class, 'index'])->name('index');
-    Route::get('/create', [UserAdminController::class, 'create'])->name('create');
-    Route::post('/', [UserAdminController::class, 'store'])->name('store');
-    Route::get('/{id}/edit', [UserAdminController::class, 'edit'])->name('edit');
-    Route::put('/{id}', [UserAdminController::class, 'update'])->name('update');
-    Route::get('/{id}', [UserAdminController::class, 'show'])->name('show');
-    Route::delete('/{id}', [UserAdminController::class, 'destroy'])->name('destroy');
-});
-
+// Route::prefix('admin/users')->name('admin.users.')->group(function () {
+//     Route::get('/', [UserAdminController::class, 'index'])->name('index');
+//     Route::get('/create', [UserAdminController::class, 'create'])->name('create');
+//     Route::post('/', [UserAdminController::class, 'store'])->name('store');
+//     Route::get('/{id}/edit', [UserAdminController::class, 'edit'])->name('edit');
+//     Route::put('/{id}', [UserAdminController::class, 'update'])->name('update');
+//     Route::get('/{id}', [UserAdminController::class, 'show'])->name('show');
+//     Route::delete('/{id}', [UserAdminController::class, 'destroy'])->name('destroy');
+// });
 
 Route::get('/', function () {
     $banners = Banner::first();
@@ -242,10 +252,6 @@ Route::get('/home', function () {
 })->name('home');
 });
 
-// Route::get('/home', function () {
-//     return view('home');
-// })->middleware(['auth', 'verified'])->name('home');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -253,3 +259,5 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+require __DIR__.'/mobile.php';
+require __DIR__.'/mobile_auth.php';

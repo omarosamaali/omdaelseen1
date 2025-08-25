@@ -38,11 +38,6 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // أحدث البلاغات (آخر 5 بلاغات)
-        // $latestReports = Reports::orderBy('created_at', 'desc')
-        //     ->take(5)
-        //     ->get();
-
         return view('admin.omdaHome.dashboard.index', compact(
             'totalMainCategories',
             'totalSubCategories',

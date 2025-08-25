@@ -15,8 +15,7 @@
         max-width: 100%;
     }
 </style>
-<div>
-</div>
+
 <div style="display: flex
 ;
     flex-direction: row-reverse;
@@ -28,13 +27,13 @@
     <div style="height: fit-content; background: white; border-radius: 10px; padding: 20px; margin-top: 24px; width: 400px;">
         <div>
             <div class="info-label">الصلاحية</div>
-            <div class="info-value">{{ $user->role == 'admin' ? 'مدير' : ($user->role == 'user' ? 'مستخدم' : ($user->role ?? '-')) }}</div>
+            <div class="info-value">{{ $usser->role == 'admin' ? 'مدير' : ($usser->role == 'user' ? 'مستخدم' : ($usser->role ?? '-')) }}</div>
 
             <div class="info-label">تاريخ التسجيل</div>
-            <div class="info-value">{{ $user->created_at ? $user->created_at->format('Y-m-d H:i:s') : '-' }}</div>
+            <div class="info-value">{{ $usser->created_at ? $usser->created_at->format('Y-m-d H:i:s') : '-' }}</div>
 
             <div class="info-label">تاريخ التحديث</div>
-            <div class="info-value">{{ $user->updated_at ? $user->updated_at->format('Y-m-d H:i:s') : '-' }}</div>
+            <div class="info-value">{{ $usser->updated_at ? $usser->updated_at->format('Y-m-d H:i:s') : '-' }}</div>
         </div>
     </div>
 
@@ -44,39 +43,39 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="mb-4">
                 <div class="info-label">الاسم</div>
-                <div class="info-value">{{ $user->name ?? '-' }}</div>
+                <div class="info-value">{{ $usser->name ?? '-' }}</div>
             </div>
 
             <div class="mb-4">
                 <div class="info-label">رقم الهاتف</div>
-                <div class="info-value">{{ $user->phone ?? '-' }}</div>
+                <div class="info-value">{{ $usser->phone ?? '-' }}</div>
             </div>
 
             <div class="mb-4">
                 <div class="info-label">البريد الإلكتروني</div>
-                <div class="info-value">{{ $user->email ?? '-' }}</div>
+                <div class="info-value">{{ $usser->email ?? '-' }}</div>
             </div>
 
             <div class="mb-4">
                 <div class="info-label">الدولة</div>
-                <div class="info-value">{{ $countries[$user->country] ?? '-' }}</div>
+                <div class="info-value">{{ $countries[$usser->country] ?? '-' }}</div>
             </div>
 
             <div class="mb-4">
                 <div class="info-label">الصلاحية</div>
-                <div class="info-value">{{ $user->role == 'admin' ? 'مدير' : ($user->role == 'user' ? 'مستخدم' : ($user->role ?? '-')) }}</div>
+                <div class="info-value">{{ $usser->role == 'admin' ? 'مدير' : ($usser->role == 'user' ? 'مستخدم' : ($usser->role ?? '-')) }}</div>
             </div>
 
             <div class="mb-4">
                 <div class="info-label">الحالة</div>
-                <div class="info-value">{{ $user->status ?? '-' }}</div>
+                <div class="info-value">{{ $usser->status ?? '-' }}</div>
             </div>
 
             <div class="mb-4">
                 <div class="info-label">الصورة الشخصية</div>
                 <div class="info-value">
-                    @if ($user->avatar)
-                        <a href="{{ Storage::url($user->avatar) }}" target="_blank">عرض الصورة</a>
+                    @if ($usser->avatar)
+                        <a href="{{ Storage::url($usser->avatar) }}" target="_blank">عرض الصورة</a>
                     @else
                         -
                     @endif

@@ -36,15 +36,12 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('guest')->group(function () {
-    // Existing routes...
 
-    // OTP verification page
-Route::get('otp/verify', [RegisteredUserController::class, 'showOtpForm'])
-    ->name('otp.verify');
+    Route::get('otp/verify', [RegisteredUserController::class, 'showOtpForm'])
+        ->name('otp.verify');
 
-Route::post('otp/verify', [RegisteredUserController::class, 'verifyOtp'])
-    ->name('otp.verify.post');
-
+    Route::post('otp/verify', [RegisteredUserController::class, 'verifyOtp'])
+        ->name('otp.verify.post');
 });
 
 Route::middleware('auth')->group(function () {

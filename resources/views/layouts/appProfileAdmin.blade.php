@@ -424,23 +424,19 @@
             </div>
             <div>
                 <!-- Sidebar here -->
-                <div class="user-profile">
-                    <div type="button" class="flex mx-3 text-sm rounded-full md:mr-0" id="user-menu-button"
-                        aria-expanded="false">
-                        <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : 'assets/img/avatar.gif' }}"
-                            alt="Avatar" class="h-20 w-20 rounded-full object-cover border">
-                    </div>
-                    @if (isset($user) && $user->country)
-                        <img style="position: absolute; right: 6px; width: 30px; height: 20px; border-radius: 0px; border: 0px;"
-                            src="https://flagcdn.com/32x24/{{ strtolower($user->country) }}.png"
-                            alt="{{ $user->country }} Flag">
-                    @else
-                        <img style="position: absolute; right: 6px; width: 30px; height: 20px; border-radius: 0px; border: 0px;"
-                            src="https://flagcdn.com/32x24/xx.png" alt="Default Flag">
-                    @endif
-                    <p style="margin-left: 29px;"><span style="display: block;">مرحبا </span>
-                        {{ Auth::user()->name }}</p>
-                </div>
+                  <div class="user-profile">
+                      <div type="button" class="flex mx-3 text-sm rounded-full md:mr-0" id="user-menu-button" aria-expanded="false">
+                          <img src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : 'assets/img/avatar.gif' }}" alt="Avatar" class="h-20 w-20 rounded-full object-cover border">
+                      </div>
+                      @if (Auth::user()->country)
+                      <img style="position: absolute; right: 6px; width: 30px; height: 20px; border-radius: 0px; border: 0px;" src="https://flagcdn.com/32x24/{{ strtolower(Auth::user()->country) }}.png" alt="{{ Auth::user()->country }} Flag">
+                      @else
+                      <img style="position: absolute; right: 6px; width: 30px; height: 20px; border-radius: 0px; border: 0px;" src="https://flagcdn.com/32x24/xx.png" alt="Default Flag">
+                      @endif
+                      <p style="margin-left: 29px;"><span style="display: block;">مرحبا </span>
+                          {{ Auth::user()->name }}</p>
+                  </div>
+
                 <div class="sidebar">
                     <ul>
                         <li>
