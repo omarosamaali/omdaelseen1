@@ -235,7 +235,7 @@ Route::prefix('admin/branches')->name('admin.branches.')->group(function () {
         ->name('sub-branches');
 });
 
-Route::get('/admin/branches/by-explorer/{explorerId}', [BranchesController::class, 'getBranchesByExplorer'])->name('admin.branches.by-explorer');
+// Route::get('/admin/branches/by-explorer/{explorerId}', [BranchesController::class, 'getBranchesByExplorer'])->name('admin.branches.by-explorer');
 // Route::prefix('admin/users')->name('admin.users.')->group(function () {
 //     Route::get('/', [UserAdminController::class, 'index'])->name('index');
 //     Route::get('/create', [UserAdminController::class, 'create'])->name('create');
