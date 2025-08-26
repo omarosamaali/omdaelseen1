@@ -106,27 +106,6 @@
             <div class="absolute -left-[53%] -top-[620px] min-[370px]:-top-[650px] min-[380px]:-top-[680px] min-[400px]:-top-[720px] min-[420px]:-top-[750px]">
                 <div class="flex justify-around items-center rounded-full relative rotate-0 circleSliders duration-700 max-[430px]:size-[209vw] size-[900px]">
 
-                    {{-- <a href="#" class="flex flex-col justify-center items-center text-center gap-3 absolute -left-[1%] bottom-[35%] rotate-[58deg]">
-                        <img src="{{ asset('assets/assets/images/h1.svg') }}" alt="" class="" />
-                        <p class="text-xs font-semibold dark:text-white">مستكشفي الصين</p>
-                    </a>
-                    <div class="flex flex-col justify-center items-center text-center gap-3 absolute left-[2%] bottom-[24%] rotate-[58deg]">
-                        <img src="{{ asset('assets/assets/images/h2.svg') }}" alt="" class="" />
-                        <p class="text-xs font-semibold dark:text-white">متجر القرية</p>
-                    </div>
-                    <div class="flex flex-col justify-center items-center text-center gap-3 absolute left-[7%] bottom-[14.5%] rotate-[58deg]">
-                        <img src="{{ asset('assets/assets/images/h3.svg') }}" alt="" class="" />
-                        <p class="text-xs font-semibold dark:text-white">
-                            مكتب السفريات
-                        </p>
-                    </div>
-                    <div class="flex flex-col justify-center items-center text-center gap-3 absolute left-[15.5%] bottom-[7.5%] rotate-[58deg]">
-                        <img src="{{ asset('assets/assets/images/h4.svg') }}" alt="" class="" />
-                        <p class="text-xs font-semibold dark:text-white">
-                            بيت العمدة
-                        </p>
-                    </div> --}}
-
                     <div class="flex flex-col justify-center items-center text-center gap-3 absolute left-[29%] bottom-0">
                         <img src="{{ asset('assets/assets/images/h5.svg') }}" alt="" class="" />
                         <p class="text-xs font-semibold dark:text-white">المعارض والمناسبات</p>
@@ -181,7 +160,11 @@
 
         <div class="container-btns">
             <a href="" type="button">الرحلات التجارية والسياحية</a>
-            <a href="" type="button">مستكشفي الصين</a>
+            @auth
+            <a href="{{ route('mobile.china-discovers.index') }}">مستكشفي الصين</a>
+            @else
+            <a href="{{ route('mobile.auth.login') }}">مستكشفي الصين</a>
+            @endauth
         </div>
 
         <div class="slider-container">

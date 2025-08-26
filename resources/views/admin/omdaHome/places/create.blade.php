@@ -1,6 +1,16 @@
 @extends($layout)
 
 @section('content')
+{{-- Dislayed all erros --}}
+@if ($errors->any())
+<div class="alert alert-danger">
+    <ul>
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
 <div class="py-4" style="margin-top: 30px;">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -37,7 +47,7 @@
 
                         <div class="mb-4 text-right">
                             <label for="main" class="block text-gray-700 font-bold mb-2">التصنيف الرئيسي *</label>
-                            <select name="main" id="main" class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
+                            <select name="main_category_id" id="main" class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
                                 <option value="">اختر التصنيف الرئيسي</option>
                                 @foreach($explorers as $explorer)
                                 <option value="{{ $explorer->id }}" {{ old('main') == $explorer->id ? 'selected' : '' }}>
@@ -54,7 +64,8 @@
                         <div class="mb-4 text-right">
                             <label for="parent_id" class="block text-gray-700 font-bold mb-2"> التصنيف الفرعي</label>
 
-                            <select name="parent_id" id="parent_id" class="w-full border-gray-300 rounded-md shadow-sm text-right">
+                            <select name="sub_category_id" id="parent_id" class="w-full border-gray-300 rounded-md shadow-sm text-right">
+
                                 <option value="">اختر</option>
 
                             </select>
@@ -70,7 +81,7 @@
 
                                 mainSelect.addEventListener('change', function() {
                                     const explorerId = this.value;
-                                    parentSelect.innerHTML = '<option value="">إختر</option>';
+                                    parentSelect.innerHTML = '<option value="">اختر</option>';
                                     if (explorerId) {
                                         fetch(`/admin/branches/by-explorer/${explorerId}`, {
                                                 headers: {
@@ -237,7 +248,7 @@
                     targetFields[1].val(response[targetLangs[1]] || '');
                 }
                 , error: function(xhr) {
-                    console.error('Translation failed:', xhr.responseJSON?.error);
+                    console.error('Translation failed:', xhr.responseJSON ? .error);
                     alert('فشل في الترجمة، حاول مرة أخرى لاحقًا.');
                 }
             });

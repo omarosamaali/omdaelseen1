@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Mobile\ProfileController;
+use App\Http\Controllers\Mobile\ChinaDiscoverController;
+
+Route::get('mobile/china-discovers', [ChinaDiscoverController::class, 'index'])->name('mobile.china-discovers.index');
 
 Route::get('mobile', function () {
     return view('mobile.welcome');
