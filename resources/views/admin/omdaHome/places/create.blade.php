@@ -52,11 +52,12 @@
 
                         <!-- التصنيف الفرعي الأب (اختياري) -->
                         <div class="mb-4 text-right">
-                            <label for="parent_id" class="block text-gray-700 font-bold mb-2">التصنيف الفرعي الأب (اختياري)</label>
+                            <label for="parent_id" class="block text-gray-700 font-bold mb-2"> التصنيف الفرعي</label>
+
                             <select name="parent_id" id="parent_id" class="w-full border-gray-300 rounded-md shadow-sm text-right">
-                                <option value="">لا يوجد (تصنيف فرعي رئيسي)</option>
+                                <option value="">اختر</option>
+
                             </select>
-                            <small class="text-gray-500">اتركه فارغاً إذا كان هذا تصنيف فرعي رئيسي</small>
                             @error('parent_id')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
