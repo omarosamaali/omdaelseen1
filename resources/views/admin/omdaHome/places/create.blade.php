@@ -70,7 +70,7 @@
 
                                 mainSelect.addEventListener('change', function() {
                                     const explorerId = this.value;
-                                    parentSelect.innerHTML = '<option value="">لا يوجد (تصنيف فرعي رئيسي)</option>';
+                                    // parentSelect.innerHTML = '<option value="">لا يوجد (تصنيف فرعي رئيسي)</option>';
                                     if (explorerId) {
                                         fetch(`/admin/branches/by-explorer/${explorerId}`, {
                                                 headers: {
