@@ -53,6 +53,7 @@ Route::prefix('admin/banners')->name('admin.banners.')->group(function () {
     Route::post('/delete-image', [BannerController::class, 'deleteImage'])->name('delete-image');
 });
 
+
 Route::get('admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard.index');
 Route::prefix('admin/contact-messages')->name('admin.contact-messages.')->group(function () {
     Route::get('/', [ContactMessageController::class, 'index'])->name('index');
@@ -216,6 +217,8 @@ Route::prefix('admin/explorers')->name('admin.explorers.')->group(function () {
     Route::delete('/{id}', [ExplorersController::class, 'destroy'])->name('destroy');
 });
 
+// إضافة هذه الروابط إلى ملف web.php
+
 Route::prefix('admin/branches')->name('admin.branches.')->group(function () {
     Route::get('/', [BranchesController::class, 'index'])->name('index');
     Route::get('/create', [BranchesController::class, 'create'])->name('create');
@@ -224,8 +227,15 @@ Route::prefix('admin/branches')->name('admin.branches.')->group(function () {
     Route::put('/{id}', [BranchesController::class, 'update'])->name('update');
     Route::get('/{id}', [BranchesController::class, 'show'])->name('show');
     Route::delete('/{id}', [BranchesController::class, 'destroy'])->name('destroy');
+
+    // روابط إضافية للـ API
+    Route::get('/by-explorer/{explorerId}', [BranchesController::class, 'getBranchesByExplorer'])
+        ->name('by-explorer');
+    Route::get('/sub-branches/{parentId}', [BranchesController::class, 'getSubBranches'])
+        ->name('sub-branches');
 });
 
+Route::get('/admin/branches/by-explorer/{explorerId}', [BranchesController::class, 'getBranchesByExplorer'])->name('admin.branches.by-explorer');
 // Route::prefix('admin/users')->name('admin.users.')->group(function () {
 //     Route::get('/', [UserAdminController::class, 'index'])->name('index');
 //     Route::get('/create', [UserAdminController::class, 'create'])->name('create');

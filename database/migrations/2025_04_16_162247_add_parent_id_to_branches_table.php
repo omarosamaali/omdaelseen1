@@ -9,7 +9,7 @@ class AddParentIdToBranchesTable extends Migration
     public function up()
     {
         Schema::table('branches', function (Blueprint $table) {
-            $table->foreignId('parent_id')->nullable()->constrained('branches')->onDelete('set null');
+            $table->foreignId('parent_id')->nullable()->constrained('explorers')->onDelete('set null');
         });
     }
 
