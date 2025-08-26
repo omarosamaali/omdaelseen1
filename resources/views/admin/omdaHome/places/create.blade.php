@@ -63,40 +63,42 @@
                             @enderror
                         </div>
 
- <script>
- document.addEventListener('DOMContentLoaded', function() {
- const mainSelect = document.getElementById('main');
- const parentSelect = document.getElementById('parent_id');
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const mainSelect = document.getElementById('main');
+                                const parentSelect = document.getElementById('parent_id');
 
- mainSelect.addEventListener('change', function() {
- const explorerId = this.value;
- parentSelect.innerHTML = '<option value="">لا يوجد (تصنيف فرعي رئيسي)</option>';
- if (explorerId) {
- fetch(`/admin/branches/by-explorer/${explorerId}`, {
- headers: { 'Accept': 'application/json' }
- })
- .then(response => response.json())
- .then(branches => {
- branches.forEach(branch => {
- const option = document.createElement('option');
- option.value = branch.id;
- option.textContent = branch.name_ar;
- parentSelect.appendChild(option);
- });
- })
- .catch(error => {
- console.error('Error fetching branches:', error);
- alert('حدث خطأ أثناء جلب التصنيفات الفرعية');
- });
- }
- });
+                                mainSelect.addEventListener('change', function() {
+                                    const explorerId = this.value;
+                                    parentSelect.innerHTML = '<option value="">لا يوجد (تصنيف فرعي رئيسي)</option>';
+                                    if (explorerId) {
+                                        fetch(`/admin/branches/by-explorer/${explorerId}`, {
+                                                headers: {
+                                                    'Accept': 'application/json'
+                                                }
+                                            })
+                                            .then(response => response.json())
+                                            .then(branches => {
+                                                branches.forEach(branch => {
+                                                    const option = document.createElement('option');
+                                                    option.value = branch.id;
+                                                    option.textContent = branch.name_ar;
+                                                    parentSelect.appendChild(option);
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error('Error fetching branches:', error);
+                                                alert('حدث خطأ أثناء جلب التصنيفات الفرعية');
+                                            });
+                                    }
+                                });
 
- if (mainSelect.value) {
- mainSelect.dispatchEvent(new Event('change'));
- }
- });
+                                if (mainSelect.value) {
+                                    mainSelect.dispatchEvent(new Event('change'));
+                                }
+                            });
 
- </script>
+                        </script>
 
 
 
