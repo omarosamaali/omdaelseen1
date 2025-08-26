@@ -65,7 +65,6 @@
                             <label for="parent_id" class="block text-gray-700 font-bold mb-2"> التصنيف الفرعي</label>
 
                             <select name="sub_category_id" id="parent_id" class="w-full border-gray-300 rounded-md shadow-sm text-right">
-
                                 <option value="">اختر</option>
 
                             </select>
@@ -248,7 +247,7 @@
                     targetFields[1].val(response[targetLangs[1]] || '');
                 }
                 , error: function(xhr) {
-                    console.error('Translation failed:', xhr.responseJSON ? .error);
+                    console.error('Translation failed:', xhr.responseJSON?.error);
                     alert('فشل في الترجمة، حاول مرة أخرى لاحقًا.');
                 }
             });
