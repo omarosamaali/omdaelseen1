@@ -87,16 +87,14 @@ class BranchesController extends Controller
     public function edit($id)
     {
         $branch = Branches::findOrFail($id);
-        $explorers = Explorers::all(['id', 'name_ar']);
-        // الحصول على التصنيفات الفرعية التي يمكن أن تكون آباء (باستثناء التصنيف الحالي وأطفاله)
+        $mainCategories = Explorers::all(['id', 'name_ar']); // تغيير $explorers إلى $mainCategories
         $parentBranches = Branches::whereNull('parent_id')
             ->where('id', '!=', $id)
             ->get(['id', 'name_ar', 'main']);
 
-        return view('admin.omdaHome.branches.edit', compact('branch', 'explorers', 'parentBranches'))
+        return view('admin.omdaHome.branches.edit', compact('branch', 'mainCategories', 'parentBranches'))
             ->with('layout', $this->layout);
     }
-
     public function update(Request $request, $id)
     {
         $branch = Branches::findOrFail($id);
