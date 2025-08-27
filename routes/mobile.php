@@ -4,8 +4,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Mobile\ProfileController;
 use App\Http\Controllers\Mobile\ChinaDiscoverController;
 
-Route::get('mobile/china-discovers', [ChinaDiscoverController::class, 'index'])->name('mobile.china-discovers.index');
+Route::get('mobile/china-discovers/{id?}',[ChinaDiscoverController::class, 'index'])->name('mobile.china-discovers.index');
 
+Route::get('mobile/china-discovers/all-places', [ChinaDiscoverController::class, 'allPlaces'])
+->name('mobile.china-discovers.all-places');
+
+Route::get('mobile/china-discovers/create', [ChinaDiscoverController::class, 'create'])->name('mobile.china-discovers.create');
+Route::post('mobile/china-discovers', [ChinaDiscoverController::class, 'store'])->name('mobile.china-discovers.store');
+Route::get('get-subcategories/{id}', [ChinaDiscoverController::class, 'getSubcategories']);
+Route::get('/all-places/{region_id?}', [ChinaDiscoverController::class, 'allPlaces'])->name('all.places');
 Route::get('mobile', function () {
     return view('mobile.welcome');
 })->name('mobile.welcome');

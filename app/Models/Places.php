@@ -33,6 +33,7 @@ class Places extends Model
     {
         return $this->belongsTo(Explorers::class, 'main_category_id', 'id');
     }
+    
 
     public function subCategory()
     {

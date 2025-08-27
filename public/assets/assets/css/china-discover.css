@@ -1355,3 +1355,7 @@ body {
     display: flex;
     align-items: center;
 }
+
+.slider-container::-webkit-scrollbar {
+    display: none;
+}

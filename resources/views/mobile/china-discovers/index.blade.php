@@ -14,264 +14,144 @@
         <div class="logo-register">مستكشفي الصين</div>
     </div>
 
-
     <div style="width: 100%; display: block; margin-top: 100px;">
-        <img class="fav-image" src="{{ asset('storage/' . $banners->avatar) }}" alt="">
-    </div>
-    <div class="continaer--title">
-        <a class="show--all">عرض الجميع</a>
-        <h6 class="categories">التصنيفات</h6>
-    </div>
-
-    <div style="display: flex; gap: 10px; margin: 10px; justify-content: center;">
-        <div style="width: fit-content;">
-            <img style="width: 99px; border-radius: 15px;" src="./assets/images/premium-features-3.png" alt="">
-            <p style="text-align: center; padding-top: 9px; font-size: 15px;">تصنيف رئيسي 2</p>
-        </div>
-
-        <div style="width: fit-content;">
-            <img style="width: 99px; border-radius: 15px;" src="./assets/images/premium-features-2.png" alt="">
-            <p style="text-align: center; padding-top: 9px; font-size: 15px;"> تصنيف رئيسي 1 </p>
-        </div>
-
-        <div style="width: fit-content;">
-            <img style="width: 99px; border-radius: 15px;" src="./assets/images/premium-features-1.png" alt="">
-            <p style="text-align: center; padding-top: 9px; font-size: 15px;">الجميع</p>
-        </div>
+        @if ($banners->isNotEmpty())
+        @foreach ($banners as $banner)
+        <img class="fav-image" src="{{ asset('storage/' . $banner->avatar) }}" alt="">
+        @endforeach
+        @endif
     </div>
 
-    <button class="add-place-button">إضافة مكان جديد</button>
+    <div>
+        <div class="continaer--title">
+            <h6 class="categories">التصنيفات</h6>
+            <a href={{ route('mobile.china-discovers.all-places') }} class="show--all">عرض الجميع</a>
+        </div>
 
-    <!-- Slider Section -->
+        <div style="display: flex; align-items: center; justify-content: flex-start; gap: 10px; margin: 10px;">
+            <a href="{{ route('mobile.china-discovers.index') }}" style="flex-shrink: 0; text-decoration: none; color: inherit; text-align: center;">
+                <div style="width: 99px; flex-shrink: 0;">
+                    <img style="width: 70%; text-align: center; margin: auto; max-height: 73px;" src="{{ asset('assets/assets/images/logo.png') }}" alt="الجميع">
+                    <p style="padding-top: 9px; font-size: 15px;">الجميع</p>
+                </div>
+            </a>
+
+            <div class="slider-container" style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding: 10px; scrollbar-width: none; -ms-overflow-style: none;">
+                @foreach ($explorers as $explorer)
+                <a href="{{ route('mobile.china-discovers.index', $explorer->id) }}" style="flex-shrink: 0; text-decoration: none; color: inherit; text-align: center; scroll-snap-align: start;">
+                    <div style="width: 99px; flex-shrink: 0;">
+                        <img style="width: 100%; border-radius: 15px;" src="{{ asset('storage/' . $explorer->avatar) }}" alt="{{ $explorer->name_ar }}">
+                        <p style="padding-top: 9px; font-size: 15px;">{{ $explorer->name_ar }}</p>
+                    </div>
+                </a>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
+    <a href="{{ route('mobile.china-discovers.create') }}" class="add-place-button">إضافة مكان جديد</a>
+    @if (session('success'))
+    <div id="success-alert" style="background: #85d185; color: green; margin: 20px 20px 4px;" class="bg-green-500 text-white p-4 rounded-xl my-4 text-center">
+        {{ session('success') }}
+    </div>
+    @endif
+
     <div class="slider-container">
         <div class="slider" id="placesSlider">
-
-            <!-- Place Card 1 -->
+            @forelse ($places as $place)
             <div class="place-card">
-                <img src="https://img.freepik.com/free-photo/restaurant-interior_1127-3394.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="مطعم فاخر">
+                <img src="{{ asset('storage/' . $place->avatar) }}" alt="{{ $place->name_ar }}">
                 <div class="heart-icon" onclick="toggleHeart(this)">
                     <i class="ph ph-heart" style="font-size: 18px;"></i>
                 </div>
                 <div class="category-tag">
-                    <img src="https://img.freepik.com/free-vector/fork-knife-icon_1308-99922.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="مطعم">
-                    <span>مطاعم</span>
+                    @if ($place->mainCategory)
+                    <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}" alt="{{ $place->mainCategory->name_ar }}">
+                    <span>{{ $place->mainCategory->name_ar }}</span>
+                    @else
+                    <img src="{{ asset('storage/placeholders/no-category.png') }}" alt="بدون تصنيف">
+                    <span>بدون تصنيف</span>
+                    @endif
                 </div>
-                <div class="place-name">مطعم التنين الذهبي</div>
+                <div class="place-name">{{ $place->name_ar }}</div>
                 <button class="explore-btn" onclick="explorePlace(this)">استكشف</button>
             </div>
-
-            <!-- Place Card 2 -->
-            <div class="place-card">
-                <img src="https://img.freepik.com/free-photo/luxury-classic-modern-bedroom-suite-hotel_105762-1787.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="فندق فاخر">
-                <div class="heart-icon" onclick="toggleHeart(this)">
-                    <i class="ph ph-heart" style="font-size: 18px;"></i>
-                </div>
-                <div class="category-tag">
-                    <img src="https://img.freepik.com/free-vector/hotel-building-icon_1308-30845.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="فندق">
-                    <span>فنادق</span>
-                </div>
-                <div class="place-name">فندق بكين الكبير</div>
-                <button class="explore-btn" onclick="explorePlace(this)">استكشف</button>
+            @empty
+            <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
+                <p style="color: #6c757d; font-size: 18px;">لا يوجد أماكن للعرض حاليًا.</p>
             </div>
-
-            <!-- Place Card 3 -->
-            <div class="place-card">
-                <img src="https://img.freepik.com/free-photo/ancient-chinese-architecture_1127-3276.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="معبد">
-                <div class="heart-icon" onclick="toggleHeart(this)">
-                    <i class="ph ph-heart" style="font-size: 18px;"></i>
-                </div>
-                <div class="category-tag">
-                    <img src="https://img.freepik.com/free-vector/temple-building-icon_1308-31896.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="معبد">
-                    <span>معابد</span>
-                </div>
-                <div class="place-name">معبد السماء</div>
-                <button class="explore-btn" onclick="explorePlace(this)">استكشف</button>
-            </div>
-
-            <!-- Place Card 4 -->
-            <div class="place-card">
-                <img src="https://img.freepik.com/free-photo/beautiful-park-with-trees_1127-3845.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="حديقة">
-                <div class="heart-icon" onclick="toggleHeart(this)">
-                    <i class="ph ph-heart" style="font-size: 18px;"></i>
-                </div>
-                <div class="category-tag">
-                    <img src="https://img.freepik.com/free-vector/tree-icon_1308-31789.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="حديقة">
-                    <span>حدائق</span>
-                </div>
-                <div class="place-name">حديقة بيهاي</div>
-                <button class="explore-btn" onclick="explorePlace(this)">استكشف</button>
-            </div>
-
-            <!-- Place Card 5 -->
-            <div class="place-card">
-                <img src="https://img.freepik.com/free-photo/museum-interior-with-artifacts_1127-3567.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="متحف">
-                <div class="heart-icon" onclick="toggleHeart(this)">
-                    <i class="ph ph-heart" style="font-size: 18px;"></i>
-                </div>
-                <div class="category-tag">
-                    <img src="https://img.freepik.com/free-vector/museum-building-icon_1308-31567.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="متحف">
-                    <span>متاحف</span>
-                </div>
-                <div class="place-name">المدينة المحرمة</div>
-                <button class="explore-btn" onclick="explorePlace(this)">استكشف</button>
-            </div>
-
-            <!-- Place Card 6 -->
-            <div class="place-card">
-                <img src="https://img.freepik.com/free-photo/traditional-chinese-market_1127-3892.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="سوق">
-                <div class="heart-icon" onclick="toggleHeart(this)">
-                    <i class="ph ph-heart" style="font-size: 18px;"></i>
-                </div>
-                <div class="category-tag">
-                    <img src="https://img.freepik.com/free-vector/shopping-cart-icon_1308-31245.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="سوق">
-                    <span>أسواق</span>
-                </div>
-                <div class="place-name">سوق وانغ فو جينغ</div>
-                <button class="explore-btn" onclick="explorePlace(this)">استكشف</button>
-            </div>
-
+            @endforelse
         </div>
     </div>
 
-    <!-- أحدث الأماكن Section -->
     <div class="continaer--title" style="margin-top: 30px;">
         <a class="show--all">عرض الجميع</a>
         <h6 class="categories">أحدث الأماكن</h6>
     </div>
 
     <div class="slider-container">
-        <div class="slider" id="latestPlacesSlider">
-
-            <!-- Latest Place Card 1 -->
+        <div class="slider" id="placesSlider">
+            @foreach ($latestPlaces as $place)
             <div class="place-card">
-                <img src="https://img.freepik.com/free-photo/modern-cafe-interior_1127-4521.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="كافيه جديد">
+                <img src="{{ asset('storage/' . $place->avatar) }}" alt="{{ $place->name_ar }}">
                 <div class="heart-icon" onclick="toggleHeart(this)">
                     <i class="ph ph-heart" style="font-size: 18px;"></i>
                 </div>
                 <div class="category-tag">
-                    <img src="https://img.freepik.com/free-vector/coffee-cup-icon_1308-31456.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="كافيه">
-                    <span>كافيهات</span>
+                    @if ($place->mainCategory)
+                    <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}" alt="{{ $place->mainCategory->name_ar }}">
+                    <span>{{ $place->mainCategory->name_ar }}</span>
+                    @else
+                    <img src="{{ asset('storage/placeholders/no-category.png') }}" alt="بدون تصنيف">
+                    <span>بدون تصنيف</span>
+                    @endif
                 </div>
-                <div class="place-name">كافيه الياسمين الجديد</div>
+                <div class="place-name">{{ $place->name_ar }}</div>
                 <button class="explore-btn" onclick="explorePlace(this)">استكشف</button>
             </div>
-
-            <!-- Latest Place Card 2 -->
-            <div class="place-card">
-                <img src="https://img.freepik.com/free-photo/shopping-mall-interior_1127-4892.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="مول جديد">
-                <div class="heart-icon" onclick="toggleHeart(this)">
-                    <i class="ph ph-heart" style="font-size: 18px;"></i>
-                </div>
-                <div class="category-tag">
-                    <img src="https://img.freepik.com/free-vector/shopping-bag-icon_1308-31123.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="مول">
-                    <span>مولات</span>
-                </div>
-                <div class="place-name">مول شنغهاي الجديد</div>
-                <button class="explore-btn" onclick="explorePlace(this)">استكشف</button>
-            </div>
-
-            <!-- Latest Place Card 3 -->
-            <div class="place-card">
-                <img src="https://img.freepik.com/free-photo/gym-interior-equipment_1127-3745.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="جيم جديد">
-                <div class="heart-icon" onclick="toggleHeart(this)">
-                    <i class="ph ph-heart" style="font-size: 18px;"></i>
-                </div>
-                <div class="category-tag">
-                    <img src="https://img.freepik.com/free-vector/dumbbell-icon_1308-31234.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="جيم">
-                    <span>رياضة</span>
-                </div>
-                <div class="place-name">نادي التنين الرياضي</div>
-                <button class="explore-btn" onclick="explorePlace(this)">استكشف</button>
-            </div>
-
-            <!-- Latest Place Card 4 -->
-            <div class="place-card">
-                <img src="https://img.freepik.com/free-photo/spa-wellness-center_1127-4231.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="سبا جديد">
-                <div class="heart-icon" onclick="toggleHeart(this)">
-                    <i class="ph ph-heart" style="font-size: 18px;"></i>
-                </div>
-                <div class="category-tag">
-                    <img src="https://img.freepik.com/free-vector/spa-icon_1308-31567.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="سبا">
-                    <span>استجمام</span>
-                </div>
-                <div class="place-name">سبا اللوتس الهادئ</div>
-                <button class="explore-btn" onclick="explorePlace(this)">استكشف</button>
-            </div>
-
+            @endforeach
         </div>
     </div>
 
-    <!-- أماكن مشهورة Section -->
     <div class="continaer--title" style="margin-top: 30px;">
         <a class="show--all">عرض الجميع</a>
         <h6 class="categories">أماكن مشهورة</h6>
     </div>
 
     <div class="slider-container">
-        <div class="slider" id="popularPlacesSlider">
-
-            <!-- Popular Place Card 1 -->
-            <div class="place-card popular-card">
-                <img src="https://img.freepik.com/free-photo/great-wall-china-sunset_1127-2341.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="سور الصين العظيم">
+        <div class="slider" id="placesSlider">
+            @foreach ($latestPlaces as $place)
+            <div class="place-card">
+                <img src="{{ asset('storage/' . $place->avatar) }}" alt="{{ $place->name_ar }}">
                 <div class="heart-icon" onclick="toggleHeart(this)">
                     <i class="ph ph-heart" style="font-size: 18px;"></i>
                 </div>
-                <div class="category-tag popular-tag">
-                    <img src="https://img.freepik.com/free-vector/star-icon_1308-31789.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="مشهور">
-                    <span>مشهور ⭐</span>
+                <div class="category-tag">
+                    @if ($place->mainCategory)
+                    <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}" alt="{{ $place->mainCategory->name_ar }}">
+                    <span>{{ $place->mainCategory->name_ar }}</span>
+                    @else
+                    <img src="{{ asset('storage/placeholders/no-category.png') }}" alt="بدون تصنيف">
+                    <span>بدون تصنيف</span>
+                    @endif
                 </div>
-                <div class="place-name">سور الصين العظيم</div>
-                <button class="explore-btn popular-btn" onclick="explorePlace(this)">استكشف</button>
+                <div class="place-name">{{ $place->name_ar }}</div>
+                <button class="explore-btn" onclick="explorePlace(this)">استكشف</button>
             </div>
-
-            <!-- Popular Place Card 2 -->
-            <div class="place-card popular-card">
-                <img src="https://cdn-front.freepik.com/home/authenticated/cover-cards/photo.webp?im=AspectCrop=(333,300),xPosition=0.75" alt="المدينة المحرمة">
-                <div class="heart-icon" onclick="toggleHeart(this)">
-                    <i class="ph ph-heart" style="font-size: 18px;"></i>
-                </div>
-                <div class="category-tag popular-tag">
-                    <img src="https://img.freepik.com/free-vector/crown-icon_1308-31456.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="تاريخي">
-                    <span>تاريخي ⭐</span>
-                </div>
-                <div class="place-name">القصر الإمبراطوري</div>
-                <button class="explore-btn popular-btn" onclick="explorePlace(this)">استكشف</button>
-            </div>
-
-            <!-- Popular Place Card 3 -->
-            <div class="place-card popular-card">
-                <img src="https://img.freepik.com/free-photo/terracotta-warriors-china_1127-3421.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="محاربو التراكوتا">
-                <div class="heart-icon" onclick="toggleHeart(this)">
-                    <i class="ph ph-heart" style="font-size: 18px;"></i>
-                </div>
-                <div class="category-tag popular-tag">
-                    <img src="https://img.freepik.com/free-vector/warrior-icon_1308-31234.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="أثري">
-                    <span>أثري ⭐</span>
-                </div>
-                <div class="place-name">محاربو التراكوتا</div>
-                <button class="explore-btn popular-btn" onclick="explorePlace(this)">استكشف</button>
-            </div>
-
-            <!-- Popular Place Card 4 -->
-            <div class="place-card popular-card">
-                <img src="https://img.freepik.com/free-photo/li-river-guilin-china_1127-4567.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="نهر لي">
-                <div class="heart-icon" onclick="toggleHeart(this)">
-                    <i class="ph ph-heart" style="font-size: 18px;"></i>
-                </div>
-                <div class="category-tag popular-tag">
-                    <img src="https://img.freepik.com/free-vector/mountain-icon_1308-31567.jpg?uid=R118249704&ga=GA1.1.696324772.1728654570&semt=ais_hybrid&w=740" alt="طبيعة">
-                    <span>طبيعة ⭐</span>
-                </div>
-                <div class="place-name">نهر لي الساحر</div>
-                <button class="explore-btn popular-btn" onclick="explorePlace(this)">استكشف</button>
-            </div>
-
+            @endforeach
         </div>
     </div>
 
 </div>
 
 <script>
+    const successAlert = document.getElementById('success-alert');
+    if (successAlert) {
+        setTimeout(() => {
+            successAlert.style.display = 'none';
+        }, 3000);
+    }
+
     function openModal() {
         Swal.fire({
             title: "بلاغ؟"
@@ -280,14 +160,12 @@
             , confirmButtonText: "نعم"
             , cancelButtonText: "لا"
         }).then((result) => {
-            let reportType = '';
             if (result.isConfirmed) {
-                reportType = 'content_report';
-            } else if (result.isDenied) {
-                reportType = 'fake_account';
-            }
+                if (typeof userId === 'undefined' || userId === null) {
+                    Swal.fire("خطأ!", "لا يمكن إرسال البلاغ. يرجى تسجيل الدخول أولاً.", "error");
+                    return;
+                }
 
-            if (reportType) {
                 fetch(`/chef-profile/report-by-user/${userId}`, {
                         method: 'POST'
                         , headers: {
@@ -296,7 +174,7 @@
                             , 'Accept': 'application/json'
                         }
                         , body: JSON.stringify({
-                            report_type: reportType
+                            report_type: 'content_report'
                         })
                     })
                     .then(response => response.json())
@@ -335,119 +213,182 @@
     function explorePlace(element) {
         const card = element.closest('.place-card');
         const placeName = card.querySelector('.place-name').textContent;
-        const category = card.querySelector('.category-tag span').textContent;
+        const categorySpan = card.querySelector('.category-tag span');
+        const category = categorySpan ? categorySpan.textContent : 'غير محدد';
 
         alert(`استكشف ${placeName} في فئة ${category}`);
     }
 
-    // Auto scroll functionality (optional)
-    let isScrolling = false;
-    const slider = document.getElementById('placesSlider');
+    // متغيرات عامة للتحكم في التمرير التلقائي
+    let autoScrollIntervals = [];
+    let userInteracting = [];
 
     // Touch/drag support for mobile
-    let startX = 0;
-    let scrollLeft = 0;
+    function initializeTouchSupport() {
+        document.querySelectorAll('.slider').forEach((slider, index) => {
+            let startX = 0;
+            let scrollLeft = 0;
+            userInteracting[index] = false;
 
-    slider.addEventListener('touchstart', (e) => {
-        startX = e.touches[0].pageX - slider.offsetLeft;
-        scrollLeft = slider.scrollLeft;
-    });
+            slider.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+                userInteracting[index] = true;
 
-    slider.addEventListener('touchmove', (e) => {
-        if (!startX) return;
-        const x = e.touches[0].pageX - slider.offsetLeft;
-        const walk = (x - startX) * 2;
-        slider.scrollLeft = scrollLeft - walk;
-    });
+                // إيقاف التمرير التلقائي عند التفاعل
+                if (autoScrollIntervals[index]) {
+                    clearInterval(autoScrollIntervals[index]);
+                }
+            });
 
-    slider.addEventListener('touchend', () => {
-        startX = 0;
-    });
+            slider.addEventListener('touchmove', (e) => {
+                if (!startX) return;
+                e.preventDefault();
+                const x = e.touches[0].pageX - slider.offsetLeft;
+                const walk = (x - startX) * 2;
+                slider.scrollLeft = scrollLeft - walk;
+            });
+
+            slider.addEventListener('touchend', () => {
+                startX = 0;
+
+                // إعادة تشغيل التمرير التلقائي بعد 3 ثواني من التوقف
+                setTimeout(() => {
+                    userInteracting[index] = false;
+                    startAutoScroll(slider, index);
+                }, 3000);
+            });
+
+            // إيقاف التمرير عند hover على سطح المكتب
+            slider.addEventListener('mouseenter', () => {
+                userInteracting[index] = true;
+                if (autoScrollIntervals[index]) {
+                    clearInterval(autoScrollIntervals[index]);
+                }
+            });
+
+            slider.addEventListener('mouseleave', () => {
+                setTimeout(() => {
+                    userInteracting[index] = false;
+                    startAutoScroll(slider, index);
+                }, 1000);
+            });
+        });
+    }
+
+    // دالة بدء التمرير التلقائي لسلايدر واحد
+    function startAutoScroll(slider, index) {
+        if (autoScrollIntervals[index]) {
+            clearInterval(autoScrollIntervals[index]);
+        }
+
+        autoScrollIntervals[index] = setInterval(() => {
+            if (userInteracting[index]) return;
+
+            const scrollAmount = 280; // عرض الكارد + المسافة
+            const maxScroll = slider.scrollWidth - slider.clientWidth;
+
+            if (slider.scrollLeft >= maxScroll - 10) { // هامش صغير
+                slider.scrollTo({
+                    left: 0
+                    , behavior: 'smooth'
+                });
+            } else {
+                slider.scrollTo({
+                    left: slider.scrollLeft + scrollAmount
+                    , behavior: 'smooth'
+                });
+            }
+        }, 4000 + (index * 500)); // توقيت مختلف لكل سلايدر
+    }
 
     // Auto-scroll function for all sliders
     function autoScrollSliders() {
         const sliders = document.querySelectorAll('.slider');
 
         sliders.forEach((slider, index) => {
-            setInterval(() => {
-                const scrollAmount = 220; // width of one card + gap
-                const maxScroll = slider.scrollWidth - slider.clientWidth;
-
-                if (slider.scrollLeft >= maxScroll) {
-                    slider.scrollLeft = 0; // Reset to start
-                } else {
-                    slider.scrollLeft += scrollAmount;
-                }
-            }, 4000 + (index * 1000)); // Different timing for each slider
+            userInteracting[index] = false;
+            startAutoScroll(slider, index);
         });
     }
-
-    // Start auto-scroll after page loads
-    window.addEventListener('load', () => {
-        setTimeout(autoScrollSliders, 2000);
-    });
-
-    // Pause auto-scroll on hover
-    document.querySelectorAll('.slider').forEach(slider => {
-        slider.addEventListener('mouseenter', () => {
-            slider.style.scrollBehavior = 'auto';
-        });
-
-        slider.addEventListener('mouseleave', () => {
-            slider.style.scrollBehavior = 'smooth';
-        });
-    });
 
     // Add scroll indicators
     function addScrollIndicators() {
         const sliders = document.querySelectorAll('.slider-container');
 
-        sliders.forEach(container => {
+        sliders.forEach((container, containerIndex) => {
             const slider = container.querySelector('.slider');
+            if (!slider) return;
+
+            const cards = slider.querySelectorAll('.place-card, .chef-card, .recipe-card');
+            if (cards.length === 0) return;
+
             const indicatorContainer = document.createElement('div');
             indicatorContainer.className = 'scroll-indicators';
             indicatorContainer.style.cssText = `
-          display: flex;
-          justify-content: center;
-          gap: 8px;
-          margin-top: 15px;
-        `;
+                display: flex;
+                justify-content: center;
+                gap: 8px;
+                margin-top: 15px;
+            `;
 
-            // Calculate number of indicators based on cards
-            const cards = slider.querySelectorAll('.place-card');
-            const visibleCards = Math.floor(slider.clientWidth / 220);
-            const indicatorCount = Math.ceil(cards.length / visibleCards);
+            // حساب عدد المؤشرات
+            const containerWidth = slider.offsetWidth || slider.parentElement.offsetWidth;
+            const cardWidth = 280; // عرض الكارد المفترض
+            const visibleCards = Math.max(1, Math.floor(containerWidth / cardWidth));
+            const indicatorCount = Math.max(1, Math.ceil(cards.length / visibleCards));
 
             for (let i = 0; i < indicatorCount; i++) {
                 const dot = document.createElement('div');
                 dot.className = 'scroll-dot';
                 dot.style.cssText = `
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255, 181, 49, 0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-          `;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: rgba(255, 181, 49, 0.3);
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                `;
 
                 if (i === 0) {
                     dot.style.background = '#ffb531';
+                    dot.style.transform = 'scale(1.2)';
                 }
 
                 dot.addEventListener('click', () => {
-                    slider.scrollLeft = i * 220 * visibleCards;
+                    const scrollPosition = i * cardWidth * visibleCards;
+                    slider.scrollTo({
+                        left: scrollPosition
+                        , behavior: 'smooth'
+                    });
                     updateIndicators(indicatorContainer, i);
+
+                    // إيقاف التمرير التلقائي مؤقتاً
+                    userInteracting[containerIndex] = true;
+                    setTimeout(() => {
+                        userInteracting[containerIndex] = false;
+                    }, 5000);
                 });
 
                 indicatorContainer.appendChild(dot);
             }
 
+            // التحقق من عدم وجود مؤشرات مسبقاً
+            const existingIndicators = container.querySelector('.scroll-indicators');
+            if (existingIndicators) {
+                existingIndicators.remove();
+            }
+
             container.appendChild(indicatorContainer);
 
-            // Update indicators on scroll
+            // تحديث المؤشرات عند التمرير
+            let scrollTimeout;
             slider.addEventListener('scroll', () => {
-                const currentIndex = Math.round(slider.scrollLeft / (220 * visibleCards));
-                updateIndicators(indicatorContainer, currentIndex);
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    const currentIndex = Math.round(slider.scrollLeft / (cardWidth * visibleCards));
+                    updateIndicators(indicatorContainer, Math.min(currentIndex, indicatorCount - 1));
+                }, 100);
             });
         });
     }
@@ -465,10 +406,37 @@
         });
     }
 
-    // Initialize indicators after DOM loads
+    // تنظيف الـ intervals عند مغادرة الصفحة
+    function cleanup() {
+        autoScrollIntervals.forEach(interval => {
+            if (interval) clearInterval(interval);
+        });
+        autoScrollIntervals = [];
+    }
+
+    // Initialize everything after DOM loads
     document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(addScrollIndicators, 100);
+        // انتظار تحميل الصور والمحتوى
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        function init() {
+            setTimeout(() => {
+                initializeTouchSupport();
+                addScrollIndicators();
+
+                // بدء التمرير التلقائي بعد تأخير
+                setTimeout(autoScrollSliders, 2000);
+            }, 300);
+        }
     });
+
+    // تنظيف عند مغادرة الصفحة
+    window.addEventListener('beforeunload', cleanup);
+    window.addEventListener('pagehide', cleanup);
 
 </script>
 

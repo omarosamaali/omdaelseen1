@@ -1,8 +1,18 @@
 @extends($layout)
 
 @section('content')
-    <div
-        style="display: flex; flex-direction: row-reverse; margin-right: 77px !important; position: relative; margin: 0px 20px; z-index: 9999999999999;">
+
+<div
+style="display: flex; flex-direction: row-reverse; margin-right: 77px !important; position: relative; margin: 0px 20px; z-index: 9999999999999;">
+@if ($errors->any())
+<div class="alert alert-danger">
+    <ul>
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
         <div class="container py-4 mx-auto max-w-4xl"
             style="position: relative; right: -50px; margin-top: 100px; background: white; border-radius: 10px; padding: 20px;">
             <h2 class="text-right mb-4 font-bold text-xl">إضافة تصنيف فرعي</h2>
@@ -53,10 +63,11 @@
                     </div>
 <div class="mb-4">
     <label for="parent_id" class="block text-sm font-medium text-gray-700">التصنيف الرئيسي</label>
-    <select name="parent_id" id="parent_id" style="direction: ltr;"
+    <select name="main" id="parent_id" style="direction: ltr;"
+
         class="input-field @error('parent_id') border-red-500 @enderror rtl-select">
         <option value="">-- اختر التصنيف الرئيسي --</option>
-        @foreach($mainCategories as $category)
+        @foreach($explorers as $category)
             <option value="{{ $category->id }}"
                 {{ old('parent_id') == $category->id ? 'selected' : '' }}>
                 {{ $category->name_ar }}
