@@ -185,6 +185,9 @@
 
                     </tbody>
                 </table>
+                <div style="margin: 10px; direction: ltr;">
+                    {{ $places->links() }}
+                </div>
                 @if (!($places->count() > 0))
                     <div
                         style="padding-top: 20px; text-align: center; display: flex; align-items: center; justify-content: center; margin: auto;">
@@ -192,6 +195,7 @@
                     </div>
                 @endif
             </div>
+            {{-- {{ $places->links() }} --}}
         </div>
 
         <script>

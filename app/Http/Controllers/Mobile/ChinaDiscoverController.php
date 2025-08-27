@@ -17,31 +17,20 @@ class ChinaDiscoverController extends Controller
         $banners = Banner::where('location', 'both')->orWhere('location', 'mobile_app')->get();
         $latestPlaces = Places::with('mainCategory')->latest()->take(5)->get();
         $explorers = Explorers::all();
-        $places = Places::with('mainCategory')->where(column: 'main_category_id', $id ?? '!=', $id)->get();
+        $places = Places::with('mainCategory')->where( 'main_category_id', $id ?? '!=', $id)->get();
         return view('mobile.china-discovers.index', compact('banners', 'explorers', 'places', 'latestPlaces'));
     }
 
     public function allPlaces($region_id = null)
     {
-        // Fetch all banners and regions regardless of the filter
         $banners = Banner::where('location', 'both')->orWhere('location', 'mobile_app')->get();
         $regions = Regions::all();
-
-        // Start a query on the Places table
         $placesQuery = Places::query();
-
-        // If a region is specified, filter the places by that region
         if ($region_id) {
             $placesQuery->where('region_id', $region_id);
         }
-
-        // Get the unique main_category_id's from the filtered places
         $mainCategoryIds = $placesQuery->distinct()->pluck('main_category_id');
-
-        // Fetch the MainCategories that correspond to the collected IDs
         $explorers = Explorers::whereIn('id', $mainCategoryIds)->get();
-
-        // Pass all necessary variables to the view
         return view('mobile.china-discovers.all-places', compact('regions', 'banners', 'explorers', 'region_id'));
     }
 

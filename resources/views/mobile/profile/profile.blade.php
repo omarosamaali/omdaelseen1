@@ -80,8 +80,6 @@
             <div class="flex justify-start items-center gap-1 text-2xl">
                 <p class="font-semibold" style="text-transform: capitalize;">{{ Auth::user()->name }}</p>
                 @if(Auth::user()->is_verified == 1)
-
-
                 <i class="ph-fill ph-seal-check text-p1"></i>
                 @endif
             </div>
@@ -110,12 +108,12 @@
                 <p class="text-xs font-semibold">رحلاتي</p>
                 <p class="font-semibold py-1 px-8 bg-color12 rounded-full">280</p>
             </div>
-            <div class="flex flex-col gap-2 p-4 justify-center items-center border border-color12 rounded-xl dark:border-color24">
+            <a href="{{ route('mobile.china-discovers.my-places') }}" class="flex flex-col gap-2 p-4 justify-center items-center border border-color12 rounded-xl dark:border-color24">
                 <p class="text-xs font-semibold">أماكني</p>
                 <p class="font-semibold py-1 px-8 bg-color14 rounded-full dark:bg-color7">
-                    14
+                    {{ $count }}
                 </p>
-            </div>
+            </a>
             <div class="flex flex-col gap-2 p-4 justify-center items-center border border-color12 rounded-xl dark:border-color24">
                 <p class="text-xs font-semibold">طلباتي</p>
                 <p class="font-semibold py-1 px-8 bg-color14 rounded-full dark:bg-color7">

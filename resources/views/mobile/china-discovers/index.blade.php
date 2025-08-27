@@ -8,7 +8,7 @@
 
     <div class="header-container">
         <img src="{{ asset('assets/assets/images/header-bg.png') }}" alt="">
-        <a href="my-profile.html" class="profile-link dark:bg-color10">
+        <a href="{{ route('mobile.welcome') }}" class="profile-link dark:bg-color10">
             <i class="fa-solid fa-chevron-left"></i>
         </a>
         <div class="logo-register">مستكشفي الصين</div>
@@ -74,7 +74,7 @@
                     @endif
                 </div>
                 <div class="place-name">{{ $place->name_ar }}</div>
-                <button class="explore-btn" onclick="explorePlace(this)">استكشف</button>
+                <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">استكشف</a>
             </div>
             @empty
             <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
@@ -85,8 +85,8 @@
     </div>
 
     <div class="continaer--title" style="margin-top: 30px;">
-        <a class="show--all">عرض الجميع</a>
         <h6 class="categories">أحدث الأماكن</h6>
+        <a class="show--all">عرض الجميع</a>
     </div>
 
     <div class="slider-container">
@@ -114,8 +114,8 @@
     </div>
 
     <div class="continaer--title" style="margin-top: 30px;">
-        <a class="show--all">عرض الجميع</a>
         <h6 class="categories">أماكن مشهورة</h6>
+        <a class="show--all">عرض الجميع</a>
     </div>
 
     <div class="slider-container">

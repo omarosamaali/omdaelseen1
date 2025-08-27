@@ -3,11 +3,21 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Mobile\ProfileController;
 use App\Http\Controllers\Mobile\ChinaDiscoverController;
+use App\Models\Places;
+use Illuminate\Support\Facades\Auth;
 
-Route::get('mobile/china-discovers/{id?}',[ChinaDiscoverController::class, 'index'])->name('mobile.china-discovers.index');
+Route::get('mobile/my-places', function () {
+    $myPlaces = Places::where('user_id', Auth::user()->id)->get();
+    return view('mobile.china-discovers.my-places', compact('myPlaces'));
+})->name('mobile.china-discovers.my-places');
+
+Route::get('mobile/info_place/{place}', function (Places $place) {
+    return view('mobile.china-discovers.info_place', compact('place'));
+})->name('mobile.china-discovers.info_place');
 
 Route::get('mobile/china-discovers/all-places', [ChinaDiscoverController::class, 'allPlaces'])
 ->name('mobile.china-discovers.all-places');
+Route::get('mobile/china-discovers/{id?}',[ChinaDiscoverController::class, 'index'])->name('mobile.china-discovers.index');
 
 Route::get('mobile/china-discovers/create', [ChinaDiscoverController::class, 'create'])->name('mobile.china-discovers.create');
 Route::post('mobile/china-discovers', [ChinaDiscoverController::class, 'store'])->name('mobile.china-discovers.store');
@@ -20,7 +30,8 @@ Route::get('mobile', function () {
 Route::middleware('mobile_auth')->group(function () {
 
     Route::get('mobile/profile', function () {
-        return view('mobile.profile.profile');
+        $count = Places::where('user_id', Auth::user()->id)->count();
+        return view('mobile.profile.profile', compact('count'));
     })->name('mobile.profile.profile');
 
     Route::get('mobile/verify', function () {
