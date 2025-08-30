@@ -10,7 +10,7 @@
 
     <div class="header-container">
         <img src="{{ asset('assets/assets/images/header-bg.png') }}" alt="">
-        <a href="{{ route('mobile.welcome') }}" class="profile-link dark:bg-color10">
+        <a href="{{ route('mobile.profile.profile') }}" class="profile-link dark:bg-color10">
             <i class="fa-solid fa-chevron-left"></i>
         </a>
         <div class="logo-register">أماكني</div>
@@ -37,7 +37,7 @@
             {{ $place->rating ?? 0 }}
         </div>
 
-        <img style="width: 100%; border-top-right-radius: 12px; border-top-left-radius: 12px; height: 273px;" 
+        <img style="width: 100%; border-top-right-radius: 12px; border-top-left-radius: 12px; height: 213px;" 
         src="{{ asset('storage/' . $place->avatar) }}" alt="">
         <p style="text-align: center; padding: 9px 0px; font-size: 15px; position: relative; top: -110px; background-color: rgba(255, 255, 255, 0.5);">
             {{ $place->title ?? 'اماكن سياحية' }}

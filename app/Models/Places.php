@@ -20,13 +20,24 @@ class Places extends Model
         'additional_images',
         'phone',
         'email',
-        'details',
+        'details_ar',
+        'details_en',
+        'details_ch',
+        'website',
         'status',
     ];
 
+    public function favortiedByUsers(){
+        return $this->belongsToMany(User::class, 'favorites', 'place_id', 'user_id');
+    }
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'place_id', 'user_id');
     }
 
     public function mainCategory()

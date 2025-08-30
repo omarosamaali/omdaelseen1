@@ -30,6 +30,36 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    // App/Models/User.php
+
+
+    public function following()
+    {
+        // المستخدم الذي يتابع
+        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'following_id');
+    }
+
+    public function followers()
+    {
+        // المستخدم الذي يتم متابعته
+        return $this->belongsToMany(User::class, 'followers', 'following_id', 'follower_id');
+    }
+
+    // دالة مساعدة للتحقق من المتابعة
+    public function isFollowing(User $user): bool
+    {
+        return $this->following()->where('following_id', $user->id)->exists();
+    }
+    public function favoritePlaces()
+    {
+        return $this->belongsToMany(Places::class, 'favorites', 'user_id', 'place_id');
+    }
+    public function isFavorite(Places $place)
+    {
+        // The `where()` method filters the relationship results.
+        // The `exists()` method efficiently checks if any record matches without fetching all data.
+        return $this->favoritePlaces()->where('place_id', $place->id)->exists();
+    }
     protected function casts(): array
     {
         return [

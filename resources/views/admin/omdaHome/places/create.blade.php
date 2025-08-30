@@ -60,13 +60,10 @@
                             @enderror
                         </div>
 
-                        <!-- التصنيف الفرعي الأب (اختياري) -->
                         <div class="mb-4 text-right">
                             <label for="parent_id" class="block text-gray-700 font-bold mb-2"> التصنيف الفرعي</label>
-
                             <select name="sub_category_id" id="parent_id" class="w-full border-gray-300 rounded-md shadow-sm text-right">
                                 <option value="">اختر</option>
-
                             </select>
                             @error('parent_id')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -109,8 +106,6 @@
                             });
 
                         </script>
-
-
 
                         <div class="mb-4 text-right">
                             <label for="region_id" class="block text-gray-700 font-bold mb-2">المنطقة *</label>
@@ -164,6 +159,14 @@
                         </div>
 
                         <div class="mb-4 text-right">
+                            <label for="website" class="block text-gray-700 font-bold mb-2">الموقع الإلكتروني</label>
+                            <input type="url" name="website" id="website" value="{{ old('website') }}" class="w-full border-gray-300 rounded-md shadow-sm">
+                            @error('website')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4 text-right">
                             <label for="status" class="block text-gray-700 font-bold mb-2">الحالة *</label>
                             <select name="status" id="status" class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
                                 <option value="نشط" {{ old('status') == 'نشط' ? 'selected' : '' }}>نشط</option>
@@ -191,13 +194,34 @@
                             @enderror
                         </div>
 
-                        <div class="mb-4 text-right col-span-2">
-                            <label for="details" class="block text-gray-700 font-bold mb-2">التفاصيل</label>
-                            <textarea name="details" id="details" rows="4" class="w-full border-gray-300 rounded-md shadow-sm text-right">{{ old('details') }}</textarea>
-                            @error('details')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
+                <!-- Arabic Details -->
+                <div class="mb-4 text-right col-span-2">
+                    <label for="details_ar" class="block text-sm font-medium text-gray-700">التفاصيل (بالعربي)</label>
+                    <textarea name="details_ar" id="details_ar" rows="4" class="w-full border-gray-300 rounded-md shadow-sm text-right @error('details_ar') border-red-500 @enderror">{{ old('details_ar') }}</textarea>
+                    @error('details_ar')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- English Details -->
+                <div class="mb-4 text-right col-span-2">
+                    <label for="details_en" class="block text-sm font-medium text-gray-700">التفاصيل (بالإنجليزي)</label>
+                    <textarea name="details_en" id="details_en" rows="4" class="w-full border-gray-300 rounded-md shadow-sm text-right @error('details_en') border-red-500 @enderror">{{ old('details_en') }}</textarea>
+                    @error('details_en')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Chinese Details -->
+                <div class="mb-4 text-right col-span-2">
+                    <label for="details_ch" class="block text-sm font-medium text-gray-700">التفاصيل (بالصيني)</label>
+                    <textarea name="details_ch" id="details_ch" rows="4" class="w-full border-gray-300 rounded-md shadow-sm text-right @error('details_ch') border-red-500 @enderror">{{ old('details_ch') }}</textarea>
+                    @error('details_ch')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+
                     </div>
 
                     <div class="flex justify-end gap-2">
@@ -234,7 +258,7 @@
             }
 
             $.ajax({
-                url: '{{ route('translate') }}'
+                url: '{{ route('mobile.translate') }}'
                 , method: 'POST'
                 , data: {
                     _token: '{{ csrf_token() }}'
@@ -266,6 +290,23 @@
         $('#name_ch').on('input', function() {
             debouncedTranslate($(this), 'zh-CN', ['ar', 'en'], [$('#name_ar'), $('#name_en')]);
         });
+
+                // Details translations
+                $('#details_ar').on('input', function() {
+                console.log('Input detected in details_ar:', $(this).val());
+                debouncedTranslate($(this), 'ar', ['en', 'zh-CN'], [$('#details_en'), $('#details_ch')]);
+                });
+
+                $('#details_en').on('input', function() {
+                console.log('Input detected in details_en:', $(this).val());
+                debouncedTranslate($(this), 'en', ['ar', 'zh-CN'], [$('#details_ar'), $('#details_ch')]);
+                });
+
+                $('#details_ch').on('input', function() {
+                console.log('Input detected in details_ch:', $(this).val());
+                debouncedTranslate($(this), 'zh-CN', ['ar', 'en'], [$('#details_ar'), $('#details_en')]);
+                });
+
     });
 
 </script>

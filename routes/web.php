@@ -27,6 +27,10 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\HelpWordsController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\FavoriteController;
+
+Route::post('/translate', [TranslationController::class, 'translate'])->name('translate');
+Route::post('/favorites/toggle', [FavoriteController::class, 'toggleFavorite'])->middleware('auth')->name('favorites.toggle');
 
 Route::prefix('admin/users')->name('admin.users.')->group(function () {
     Route::get('/', [UserAdminController::class, 'index'])->name('index');
@@ -38,7 +42,6 @@ Route::prefix('admin/users')->name('admin.users.')->group(function () {
     Route::delete('/{id}', [UserAdminController::class, 'destroy'])->name('destroy');
 });
 
-Route::post('/translate', [TranslationController::class, 'translate'])->name('translate');
 
 
 

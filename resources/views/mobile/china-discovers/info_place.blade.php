@@ -1,24 +1,117 @@
 @extends('layouts.mobile')
 
 @section('title', 'تفاصيل المكان | Place Info')
-{{-- <link rel="stylesheet" href="{{ asset('assets/assets/css/china-discover.css') }}"> --}}
 <link rel="stylesheet" href="{{ asset('assets/assets/css/info_place.css') }}">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<style>
+    .tab-details-content-headpone {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
 
+    .tab-details-content-headpone:hover {
+        background: #3b3129;
+    }
+</style>
 
 @section('content')
 <div class="container dark:text-white dark:bg-black">
 
     <div class="container--header">
+        @auth
+        <a class="report-button" href={{ route('mobile.china-discovers.edit', $place->id) }} style="min-width: fit-content; left: 82%;">
+            تعديل
+        </a>
+        @else
         <button class="report-button" onclick="openModal()" style="min-width: fit-content; left: 82%;">
             إبلاغ
         </button>
+        @endauth
         <div class="">تفاصيل المكان</div>
-        <x-back-button href="{{ route('mobile.welcome') }}" />
+        <x-back-button href="{{ route('mobile.china-discovers.index') }}" />
     </div>
 
-    <div class="heart-container">
-        <i class="fa-regular fa-heart heart-icon-main"></i>
+    @php
+    $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
+    @endphp
+
+    @if(auth()->check() && auth()->id() != $place->user_id)
+    <div style="    top: 58px;
+    left: 38px;
+right: unset;
+" class="heart-icon @if($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
+        <i class="fa @if($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif" style="font-size: 18px;"></i>
     </div>
+    @endif
+    <style>
+        .heart-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .heart-icon:hover {
+            transform: scale(1.2);
+        }
+
+        .heart-icon.favorited i {
+            color: #e91e63 !important;
+        }
+
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // استمع للنقرات على جميع أيقونات القلب
+            document.querySelectorAll('.heart-icon').forEach(icon => {
+                icon.addEventListener('click', function() {
+                    const placeId = this.getAttribute('data-place-id');
+                    const iconElement = this;
+                    const heartSvg = iconElement.querySelector('i');
+
+                    fetch('{{ route('favorites.toggle') }}', {
+                                method: 'POST'
+                                , headers: {
+                                    'Content-Type': 'application/json'
+                                    , 'X-CSRF-TOKEN': csrfToken
+                                , }
+                                , body: JSON.stringify({
+                                    place_id: placeId
+                                })
+                            , })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.status === 'added') {
+                                iconElement.classList.add('favorited');
+                                // تبديل كلاسات Font Awesome
+                                heartSvg.classList.remove('fa-regular');
+                                heartSvg.classList.add('fa-solid');
+                            } else if (data.status === 'removed') {
+                                iconElement.classList.remove('favorited');
+                                // تبديل كلاسات Font Awesome
+                                heartSvg.classList.remove('fa-solid');
+                                heartSvg.classList.add('fa-regular');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('حدث خطأ. يرجى تسجيل الدخول أو المحاولة مرة أخرى.');
+                        });
+                });
+            });
+        });
+
+    </script>
+
     <div class="container--features">
         <div>
             <img src="{{ asset('storage/' . $place->region->avatar) }}" alt="">
@@ -115,17 +208,13 @@
         </div>
         <div id="tab2" class="tab-content">
             <div class="gallery-images">
-    @php
-    $images = json_decode($place->additional_images, true);
-    @endphp
+                @php
+                $images = json_decode($place->additional_images, true);
+                @endphp
 
-    @foreach ($images as $image)
-    <img src="{{ asset('storage/' . $image) }}" alt="Additional Image" onclick="openImageModal(this.src)">
-    @endforeach
-
-
-
-
+                @foreach ($images as $image)
+                <img src="{{ asset('storage/' . $image) }}" alt="Additional Image" onclick="openImageModal(this.src)">
+                @endforeach
             </div>
         </div>
         <div id="tab1" class="tab-content">
@@ -148,11 +237,49 @@
                         </div>
                     </div>
                 </div>
-                @if (Auth::user()->id != $place->user_id)
-                <div class="tab-details-content-headpone">
-                    <i class="fa-solid fa-user-plus" onclick="follow()"></i>
-                </div>
-                @endif
+       @if (Auth::user()->id != $place->user_id)
+       <div class="tab-details-content-headpone">
+           <i class="follow-icon fa-solid 
+       {{ Auth::user()->isFollowing($place->user) ? 'fa-user-check' : 'fa-user-plus' }}" data-user-id="{{ $place->user_id }}">
+           </i>
+       </div>
+       @endif
+
+                <script>
+document.querySelectorAll('.follow-icon').forEach(icon => {
+icon.addEventListener('click', function() {
+const userId = this.getAttribute('data-user-id');
+const iconElement = this;
+
+fetch('{{ route('users.toggle-follow') }}', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+},
+body: JSON.stringify({
+user_id: userId
+}),
+})
+.then(response => response.json())
+.then(data => {
+if (data.status === 'followed') {
+// إذا تمت المتابعة بنجاح، استبدل الأيقونة
+iconElement.classList.remove('fa-user-plus');
+iconElement.classList.add('fa-user-check');
+} else if (data.status === 'unfollowed') {
+// إذا تم إلغاء المتابعة، استبدل الأيقونة
+iconElement.classList.remove('fa-user-check');
+iconElement.classList.add('fa-user-plus');
+}
+})
+.catch(error => {
+console.error('Error:', error);
+alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
+});
+});
+}); </script>
+
             </div>
             <p class="tab-details-content"><i class="fa-solid fa-id-card" style="color: #3b3129;"></i> {{ $place->details }}</p>
             @if($place->phone)

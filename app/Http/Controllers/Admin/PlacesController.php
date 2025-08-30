@@ -34,8 +34,8 @@ class PlacesController extends Controller
         // Handle search
         if ($request->has('user_search') && $request->user_search) {
             $query->where('name_ar', 'like', '%' . $request->user_search . '%')
-                  ->orWhere('name_en', 'like', '%' . $request->user_search . '%')
-                  ->orWhere('name_ch', 'like', '%' . $request->user_search . '%');
+                ->orWhere('name_en', 'like', '%' . $request->user_search . '%')
+                ->orWhere('name_ch', 'like', '%' . $request->user_search . '%');
         }
 
         // Handle filtering
@@ -62,7 +62,7 @@ class PlacesController extends Controller
         $explorers = Explorers::all(['id', 'name_ar']);
         $branches = Branches::all(['id', 'name_ar', 'main']);
         $regions = Regions::all(['id', 'name_ar']);
-        
+
         return view('admin.omdaHome.places.create', compact('explorers', 'branches', 'regions'))
             ->with('layout', $this->layout);
     }
@@ -73,16 +73,19 @@ class PlacesController extends Controller
             'name_ar' => 'required|string|max:255',
             'name_en' => 'required|string|max:255',
             'name_ch' => 'required|string|max:255',
+            'details_ar' => 'nullable|string',
+            'details_en' => 'nullable|string',
+            'details_ch' => 'nullable|string',
+            'website' => 'nullable|url|max:255',
             'main_category_id' => 'required|exists:explorers,id',
             'sub_category_id' => 'required|exists:branches,id',
             'region_id' => 'required|exists:regions,id',
-            'link' => 'required|url',
-            'map_type' => 'required|in:baidu,google,apple',
+            'link' => 'required|string|max:500',
+            'map_type' => 'required|string|in:baidu,google,apple',
             'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'additional_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
-            'details' => 'nullable|string',
             'status' => 'required|in:نشط,غير نشط,محظور',
         ]);
 
@@ -114,16 +117,19 @@ class PlacesController extends Controller
             'name_ar' => 'required|string|max:255',
             'name_en' => 'required|string|max:255',
             'name_ch' => 'required|string|max:255',
+            'details_ar' => 'nullable|string',
+            'details_en' => 'nullable|string',
+            'details_ch' => 'nullable|string',
+            'website' => 'nullable|url|max:255',
             'main_category_id' => 'required|exists:explorers,id',
             'sub_category_id' => 'required|exists:branches,id',
             'region_id' => 'required|exists:regions,id',
-            'link' => 'required|url',
+            'link' => 'required|string|max:500',
             'map_type' => 'required|in:baidu,google,apple',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'additional_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
-            'details' => 'nullable|string',
             'status' => 'required|in:نشط,غير نشط,محظور',
         ]);
 
@@ -134,8 +140,15 @@ class PlacesController extends Controller
             $validatedData['avatar'] = $request->file('avatar')->store('places', 'public');
         }
 
-        $additionalImages = $place->additional_images ? json_decode($place->additional_images, true) : [];
         if ($request->hasFile('additional_images')) {
+            if ($place->additional_images) {
+                $oldImages = json_decode($place->additional_images, true);
+                foreach ($oldImages as $oldImage) {
+                    Storage::disk('public')->delete($oldImage);
+                }
+            }
+
+            $additionalImages = [];
             foreach ($request->file('additional_images') as $image) {
                 $additionalImages[] = $image->store('place_images', 'public');
             }
@@ -155,7 +168,7 @@ class PlacesController extends Controller
         $explorers = Explorers::all(['id', 'name_ar']);
         $branches = Branches::all(['id', 'name_ar', 'main']);
         $regions = Regions::all(['id', 'name_ar']);
-        
+
         return view('admin.omdaHome.places.edit', compact('place', 'explorers', 'branches', 'regions'))
             ->with('layout', $this->layout);
     }
@@ -185,7 +198,7 @@ class PlacesController extends Controller
             if (isset($additionalImages[$request->image_index])) {
                 Storage::disk('public')->delete($additionalImages[$request->image_index]);
                 unset($additionalImages[$request->image_index]);
-                $additionalImages = array_values($additionalImages); // إعادة ترتيب المصفوفة
+                $additionalImages = array_values($additionalImages);
                 $place->additional_images = $additionalImages ? json_encode($additionalImages) : null;
                 $place->save();
                 return response()->json(['success' => true, 'message' => 'تم حذف الصورة الإضافية بنجاح']);

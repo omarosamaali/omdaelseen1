@@ -1,4 +1,5 @@
 @extends('layouts.mobile')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 @section('title', 'مستكشفي الصين | China Discover')
 <link rel="stylesheet" href="{{ asset('assets/assets/css/china-discover.css') }}">
@@ -48,6 +49,7 @@
             </div>
         </div>
     </div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <a href="{{ route('mobile.china-discovers.create') }}" class="add-place-button">إضافة مكان جديد</a>
     @if (session('success'))
@@ -55,15 +57,22 @@
         {{ session('success') }}
     </div>
     @endif
-
     <div class="slider-container">
         <div class="slider" id="placesSlider">
             @forelse ($places as $place)
             <div class="place-card">
                 <img src="{{ asset('storage/' . $place->avatar) }}" alt="{{ $place->name_ar }}">
-                <div class="heart-icon" onclick="toggleHeart(this)">
-                    <i class="ph ph-heart" style="font-size: 18px;"></i>
+
+                @php
+                $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
+                @endphp
+
+                @if(auth()->check() && auth()->id() != $place->user_id)
+                <div class="heart-icon @if($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
+                    <i class="fa @if($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif" style="font-size: 18px;"></i>
                 </div>
+                @endif
+
                 <div class="category-tag">
                     @if ($place->mainCategory)
                     <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}" alt="{{ $place->mainCategory->name_ar }}">
@@ -84,6 +93,76 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // استمع للنقرات على جميع أيقونات القلب
+            document.querySelectorAll('.heart-icon').forEach(icon => {
+                icon.addEventListener('click', function() {
+                    const placeId = this.getAttribute('data-place-id');
+                    const iconElement = this;
+                    const heartSvg = iconElement.querySelector('i');
+
+                    fetch('{{ route('favorites.toggle') }}', {
+                                method: 'POST'
+                                , headers: {
+                                    'Content-Type': 'application/json'
+                                    , 'X-CSRF-TOKEN': csrfToken
+                                , }
+                                , body: JSON.stringify({
+                                    place_id: placeId
+                                })
+                            , })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.status === 'added') {
+                                iconElement.classList.add('favorited');
+                                // تبديل كلاسات Font Awesome
+                                heartSvg.classList.remove('fa-regular');
+                                heartSvg.classList.add('fa-solid');
+                            } else if (data.status === 'removed') {
+                                iconElement.classList.remove('favorited');
+                                // تبديل كلاسات Font Awesome
+                                heartSvg.classList.remove('fa-solid');
+                                heartSvg.classList.add('fa-regular');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('حدث خطأ. يرجى تسجيل الدخول أو المحاولة مرة أخرى.');
+                        });
+                });
+            });
+        });
+
+    </script>
+
+    <style>
+        .heart-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .heart-icon:hover {
+            transform: scale(1.2);
+        }
+
+        .heart-icon.favorited i {
+            color: #e91e63 !important;
+        }
+
+    </style>
+
     <div class="continaer--title" style="margin-top: 30px;">
         <h6 class="categories">أحدث الأماكن</h6>
         <a class="show--all">عرض الجميع</a>
@@ -91,12 +170,20 @@
 
     <div class="slider-container">
         <div class="slider" id="placesSlider">
-            @foreach ($latestPlaces as $place)
+            @forelse ($latestPlaces as $place)
             <div class="place-card">
                 <img src="{{ asset('storage/' . $place->avatar) }}" alt="{{ $place->name_ar }}">
-                <div class="heart-icon" onclick="toggleHeart(this)">
-                    <i class="ph ph-heart" style="font-size: 18px;"></i>
+
+                @php
+                $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
+                @endphp
+
+                @if(auth()->check() && auth()->id() != $place->user_id)
+                <div class="heart-icon @if($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
+                    <i class="fa @if($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif" style="font-size: 18px;"></i>
                 </div>
+                @endif
+
                 <div class="category-tag">
                     @if ($place->mainCategory)
                     <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}" alt="{{ $place->mainCategory->name_ar }}">
@@ -107,9 +194,15 @@
                     @endif
                 </div>
                 <div class="place-name">{{ $place->name_ar }}</div>
-                <button class="explore-btn" onclick="explorePlace(this)">استكشف</button>
+                <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">استكشف</a>
             </div>
-            @endforeach
+            @empty
+            <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
+                <p style="color: #6c757d; font-size: 18px;">لا يوجد أماكن للعرض حاليًا.</p>
+            </div>
+            @endforelse
+
+
         </div>
     </div>
 
@@ -120,12 +213,20 @@
 
     <div class="slider-container">
         <div class="slider" id="placesSlider">
-            @foreach ($latestPlaces as $place)
+            @forelse ($latestPlaces as $place)
             <div class="place-card">
                 <img src="{{ asset('storage/' . $place->avatar) }}" alt="{{ $place->name_ar }}">
-                <div class="heart-icon" onclick="toggleHeart(this)">
-                    <i class="ph ph-heart" style="font-size: 18px;"></i>
+
+                @php
+                $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
+                @endphp
+
+                @if(auth()->check() && auth()->id() != $place->user_id)
+                <div class="heart-icon @if($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
+                    <i class="fa @if($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif" style="font-size: 18px;"></i>
                 </div>
+                @endif
+
                 <div class="category-tag">
                     @if ($place->mainCategory)
                     <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}" alt="{{ $place->mainCategory->name_ar }}">
@@ -136,9 +237,14 @@
                     @endif
                 </div>
                 <div class="place-name">{{ $place->name_ar }}</div>
-                <button class="explore-btn" onclick="explorePlace(this)">استكشف</button>
+                <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">استكشف</a>
             </div>
-            @endforeach
+            @empty
+            <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
+                <p style="color: #6c757d; font-size: 18px;">لا يوجد أماكن للعرض حاليًا.</p>
+            </div>
+            @endforelse
+
         </div>
     </div>
 
@@ -204,9 +310,9 @@
         element.classList.toggle('liked');
         const icon = element.querySelector('i');
         if (element.classList.contains('liked')) {
-            icon.className = 'ph ph-heart-fill';
+            icon.className = 'fa fa-heart-fill';
         } else {
-            icon.className = 'ph ph-heart';
+            icon.className = 'fa fa-heart';
         }
     }
 
