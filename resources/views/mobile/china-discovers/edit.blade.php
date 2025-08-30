@@ -289,7 +289,7 @@
             });
 
             $.ajax({
-                url: '{{ route('mobile.translate') }}'
+                url: '{{ route('translate') }}'
                 , method: 'POST'
                 , data: {
                     _token: $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}'

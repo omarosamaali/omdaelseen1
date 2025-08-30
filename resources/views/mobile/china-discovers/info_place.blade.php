@@ -3,6 +3,7 @@
 @section('title', 'تفاصيل المكان | Place Info')
 <link rel="stylesheet" href="{{ asset('assets/assets/css/info_place.css') }}">
 <meta name="csrf-token" content="{{ csrf_token() }}">
+
 <style>
     .tab-details-content-headpone {
         cursor: pointer;
@@ -12,20 +13,44 @@
     .tab-details-content-headpone:hover {
         background: #3b3129;
     }
+
+    .heart-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        z-index: 10;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .heart-icon:hover {
+        transform: scale(1.2);
+    }
+
+    .heart-icon.favorited i {
+        color: #e91e63 !important;
+    }
+
 </style>
 
 @section('content')
 <div class="container dark:text-white dark:bg-black">
 
     <div class="container--header">
-        @auth
+        @if(Auth::user()->id == $place->user_id)
         <a class="report-button" href={{ route('mobile.china-discovers.edit', $place->id) }} style="min-width: fit-content; left: 82%;">
             تعديل
         </a>
         @else
+        @if(Auth::user()->id != $place->user_id)
         <button class="report-button" onclick="openModal()" style="min-width: fit-content; left: 82%;">
             إبلاغ
         </button>
+        @else
+        <div class="report-button" style="min-width: fit-content; left: 82%;">
+            تم الإبلاغ
+        </div>
+        @endif
         @endauth
         <div class="">تفاصيل المكان</div>
         <x-back-button href="{{ route('mobile.china-discovers.index') }}" />
@@ -36,81 +61,10 @@
     @endphp
 
     @if(auth()->check() && auth()->id() != $place->user_id)
-    <div style="    top: 58px;
-    left: 38px;
-right: unset;
-" class="heart-icon @if($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
+    <div style="top: 58px; left: 38px; right: unset;" class="heart-icon @if($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
         <i class="fa @if($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif" style="font-size: 18px;"></i>
     </div>
     @endif
-    <style>
-        .heart-icon {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
-            z-index: 10;
-            transition: transform 0.2s ease-in-out;
-        }
-
-        .heart-icon:hover {
-            transform: scale(1.2);
-        }
-
-        .heart-icon.favorited i {
-            color: #e91e63 !important;
-        }
-
-    </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            // استمع للنقرات على جميع أيقونات القلب
-            document.querySelectorAll('.heart-icon').forEach(icon => {
-                icon.addEventListener('click', function() {
-                    const placeId = this.getAttribute('data-place-id');
-                    const iconElement = this;
-                    const heartSvg = iconElement.querySelector('i');
-
-                    fetch('{{ route('favorites.toggle') }}', {
-                                method: 'POST'
-                                , headers: {
-                                    'Content-Type': 'application/json'
-                                    , 'X-CSRF-TOKEN': csrfToken
-                                , }
-                                , body: JSON.stringify({
-                                    place_id: placeId
-                                })
-                            , })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data.status === 'added') {
-                                iconElement.classList.add('favorited');
-                                // تبديل كلاسات Font Awesome
-                                heartSvg.classList.remove('fa-regular');
-                                heartSvg.classList.add('fa-solid');
-                            } else if (data.status === 'removed') {
-                                iconElement.classList.remove('favorited');
-                                // تبديل كلاسات Font Awesome
-                                heartSvg.classList.remove('fa-solid');
-                                heartSvg.classList.add('fa-regular');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('حدث خطأ. يرجى تسجيل الدخول أو المحاولة مرة أخرى.');
-                        });
-                });
-            });
-        });
-
-    </script>
 
     <div class="container--features">
         <div>
@@ -126,6 +80,7 @@ right: unset;
             <p>{{ $place->subCategory->name_ar }}</p>
         </div>
     </div>
+
     <div class="main-image-container">
         <div>
             <img class="main-image" src="{{ asset('storage/' . $place->avatar) }}" alt="">
@@ -148,6 +103,7 @@ right: unset;
                 </svg></p>
         </div>
     </div>
+
     <div class="tabs-container">
         <div class="tab-buttons">
             <button class="tab-button active details" onclick="showTab('tab1')">التفاصيل</button>
@@ -237,49 +193,12 @@ right: unset;
                         </div>
                     </div>
                 </div>
-       @if (Auth::user()->id != $place->user_id)
-       <div class="tab-details-content-headpone">
-           <i class="follow-icon fa-solid 
-       {{ Auth::user()->isFollowing($place->user) ? 'fa-user-check' : 'fa-user-plus' }}" data-user-id="{{ $place->user_id }}">
-           </i>
-       </div>
-       @endif
-
-                <script>
-document.querySelectorAll('.follow-icon').forEach(icon => {
-icon.addEventListener('click', function() {
-const userId = this.getAttribute('data-user-id');
-const iconElement = this;
-
-fetch('{{ route('users.toggle-follow') }}', {
-method: 'POST',
-headers: {
-'Content-Type': 'application/json',
-'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-},
-body: JSON.stringify({
-user_id: userId
-}),
-})
-.then(response => response.json())
-.then(data => {
-if (data.status === 'followed') {
-// إذا تمت المتابعة بنجاح، استبدل الأيقونة
-iconElement.classList.remove('fa-user-plus');
-iconElement.classList.add('fa-user-check');
-} else if (data.status === 'unfollowed') {
-// إذا تم إلغاء المتابعة، استبدل الأيقونة
-iconElement.classList.remove('fa-user-check');
-iconElement.classList.add('fa-user-plus');
-}
-})
-.catch(error => {
-console.error('Error:', error);
-alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
-});
-});
-}); </script>
-
+                @if (Auth::user()->id != $place->user_id)
+                <div class="tab-details-content-headpone">
+                    <i class="follow-icon fa-solid {{ Auth::user()->isFollowing($place->user) ? 'fa-user-check' : 'fa-user-plus' }}" data-user-id="{{ $place->user_id }}">
+                    </i>
+                </div>
+                @endif
             </div>
             <p class="tab-details-content"><i class="fa-solid fa-id-card" style="color: #3b3129;"></i> {{ $place->details }}</p>
             @if($place->phone)
@@ -323,8 +242,86 @@ alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
         </div>
     </div>
 </div>
+<input type="hidden" id="user-id" value="{{ Auth::user()->id }}"> <!-- استبدل 1 بمعرف المستخدم الفعلي -->
+<input type="hidden" id="place-id" value="{{ $place->id }}"> <!-- استبدل 1 بمعرف المكان الفعلي -->
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        document.querySelectorAll('.heart-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const placeId = this.getAttribute('data-place-id');
+                const iconElement = this;
+                const heartSvg = iconElement.querySelector('i');
+
+                fetch('{{ route('favorites.toggle') }}', {
+                            method: 'POST'
+                            , headers: {
+                                'Content-Type': 'application/json'
+                                , 'X-CSRF-TOKEN': csrfToken
+                            , }
+                            , body: JSON.stringify({
+                                place_id: placeId
+                            })
+                        , })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.status === 'added') {
+                            iconElement.classList.add('favorited');
+                            heartSvg.classList.remove('fa-regular');
+                            heartSvg.classList.add('fa-solid');
+                        } else if (data.status === 'removed') {
+                            iconElement.classList.remove('favorited');
+                            heartSvg.classList.remove('fa-solid');
+                            heartSvg.classList.add('fa-regular');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('حدث خطأ. يرجى تسجيل الدخول أو المحاولة مرة أخرى.');
+                    });
+            });
+        });
+    });
+
+    document.querySelectorAll('.follow-icon').forEach(icon => {
+        icon.addEventListener('click', function() {
+            const userId = this.getAttribute('data-user-id');
+            const iconElement = this;
+
+            fetch('{{ route('users.toggle-follow') }}', {
+                        method: 'POST'
+                        , headers: {
+                            'Content-Type': 'application/json'
+                            , 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        , }
+                        , body: JSON.stringify({
+                            user_id: userId
+                        })
+                    , })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'followed') {
+                        iconElement.classList.remove('fa-user-plus');
+                        iconElement.classList.add('fa-user-check');
+                    } else if (data.status === 'unfollowed') {
+                        iconElement.classList.remove('fa-user-check');
+                        iconElement.classList.add('fa-user-plus');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
+                });
+        });
+    });
+
+
     function follow() {
         Swal.fire({
             title: "رائع"
@@ -339,6 +336,10 @@ alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
     }
 
     function openModal() {
+        // استرجاع place_id و user_id من عناصر HTML (عدل حسب طريقتك)
+        const placeId = document.querySelector('#place-id') ? .value || 'PLACE_ID_HERE'; // استبدل بمعرف المكان
+        const userId = document.querySelector('#user-id') ? .value || 'USER_ID_HERE'; // استبدل بمعرف المستخدم
+
         Swal.fire({
             title: "بلاغ؟"
             , text: 'هل هذا المكان مخالف'
@@ -354,7 +355,7 @@ alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
             }
 
             if (reportType) {
-                fetch(`/chef-profile/report-by-user/${userId}`, {
+                fetch(`/chef-profile/report-by-user`, { // عدل المسار لو مختلف
                         method: 'POST'
                         , headers: {
                             'Content-Type': 'application/json'
@@ -363,13 +364,15 @@ alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
                         }
                         , body: JSON.stringify({
                             report_type: reportType
+                            , user_id: userId
+                            , place_id: placeId
                         })
                     })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
                             Swal.fire("تم الإبلاغ!", "شكراً لك. سيتم مراجعة بلاغك.", "success");
-                            const reportBtn = document.querySelector('.report-btn');
+                            const reportBtn = document.querySelector('.report-button');
                             if (reportBtn) {
                                 reportBtn.innerHTML = 'تم الإبلاغ';
                                 reportBtn.style.background = 'gray';

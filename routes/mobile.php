@@ -9,6 +9,9 @@ use App\Models\Followers;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\ReportController;
+
+Route::post('/chef-profile/report-by-user', [ReportController::class, 'store'])->middleware('auth');
 
 Route::middleware('mobile_auth')->group(function () {
 
@@ -36,7 +39,7 @@ Route::post('/users/toggle-follow', [FollowController::class, 'toggleFollow'])
     Route::get('mobile/china-discovers/edit/{id}', [ChinaDiscoverController::class, 'edit'])->name('mobile.china-discovers.edit');
     Route::put('mobile/china-discovers/{id}', [ChinaDiscoverController::class, 'update'])->name('mobile.china-discovers.update');
     Route::get('get-subcategories/{id}', [ChinaDiscoverController::class, 'getSubcategories'])->name('mobile.china-discovers.get-subcategories');
-    Route::post('/translate', [ChinaDiscoverController::class, 'translate'])->name('mobile.translate');
+    Route::post('/translate', [ChinaDiscoverController::class, 'translate'])->name('translate');
     Route::get('mobile/china-discovers/all-places', [ChinaDiscoverController::class, 'allPlaces'])->name('mobile.china-discovers.all-places');
     Route::get('mobile/china-discovers/{id?}', [ChinaDiscoverController::class, 'index'])->name('mobile.china-discovers.index');
     Route::get('mobile/info_place/{place}', function (Places $place) {

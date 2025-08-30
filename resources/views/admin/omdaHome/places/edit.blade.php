@@ -268,7 +268,7 @@
             showTranslationStatus(true);
 
             $.ajax({
-                url: '{{ route('mobile.translate') }}'
+                url: '{{ route('translate') }}'
                 , method: 'POST'
                 , headers: {
                     'X-CSRF-TOKEN': csrfToken
