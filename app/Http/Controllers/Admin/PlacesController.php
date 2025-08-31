@@ -7,6 +7,8 @@ use App\Models\Places;
 use App\Models\Explorers;
 use App\Models\Branches;
 use App\Models\Regions;
+use App\Models\Favorites;
+use App\Models\Rating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -21,7 +23,6 @@ class PlacesController extends Controller
             ? 'layouts.appProfileAdmin'
             : 'layouts.appProfile';
     }
-
     public function index(Request $request)
     {
         $query = Places::query();
@@ -50,13 +51,38 @@ class PlacesController extends Controller
             }
         }
 
+        // Load places with related data
         $places = $query->with(['mainCategory', 'subCategory', 'region'])->paginate(10);
+
+        // Get favorites count per place
+        $favoritesCount = Favorites::select('place_id')
+            ->selectRaw('COUNT(user_id) as users_count')
+            ->groupBy('place_id')
+            ->get()
+            ->pluck('users_count', 'place_id')
+            ->toArray();
+
+        // Get ratings count and average rating per place
+        $ratingsData = Rating::select('place_id')
+            ->selectRaw('COUNT(id) as ratings_count')
+            ->selectRaw('AVG(rating) as average_rating')
+            ->groupBy('place_id')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [
+                    $item->place_id => [
+                        'ratings_count' => $item->ratings_count,
+                        'average_rating' => number_format($item->average_rating, 1)
+                    ]
+                ];
+            })
+            ->toArray();
+
         $currentFilter = $request->filter;
 
-        return view('admin.omdaHome.places.index', compact('places', 'currentFilter'))
+        return view('admin.omdaHome.places.index', compact('places', 'currentFilter', 'favoritesCount', 'ratingsData'))
             ->with('layout', $this->layout);
     }
-
     public function create()
     {
         $explorers = Explorers::all(['id', 'name_ar']);

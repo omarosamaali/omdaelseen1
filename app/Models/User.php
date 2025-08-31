@@ -25,6 +25,11 @@ class User extends Authenticatable
         'otp',
     ];
 
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+    
     protected $hidden = [
         'password',
         'remember_token',

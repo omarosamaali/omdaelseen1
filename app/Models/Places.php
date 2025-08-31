@@ -27,6 +27,17 @@ class Places extends Model
         'status',
     ];
 
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+
+    // Optional: you can add a relationship to get the average rating
+    public function averageRating()
+    {
+        return $this->ratings()->avg('rating');
+    }
+    
     public function favortiedByUsers(){
         return $this->belongsToMany(User::class, 'favorites', 'place_id', 'user_id');
     }

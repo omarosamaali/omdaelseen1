@@ -10,9 +10,24 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RatingController;
+
+Route::middleware('auth')->group(function () {
+    Route::put('places/{place}/ratings/{rating}', [RatingController::class, 'updateRating'])->name('places.ratings.update');
+    Route::delete('places/{place}/ratings/{rating}', action: [RatingController::class, 'deleteRating'])->name('places.ratings.delete');
+    Route::post('places/{place}/report-review', [RatingController::class, 'reportReview'])->name('places.report-review');
+});
+
+Route::get('places/{place}/reviews', [RatingController::class, 'getReviews'])->name('places.reviews');
+Route::middleware(['auth'])->group(function () {
+    Route::put('/places/{place}/ratings/{rating}', [RatingController::class, 'updateRating']);
+    Route::delete('/places/{place}/ratings/{rating}', [RatingController::class, 'deleteRating']);
+});
+Route::post('/places/{place}/rate', [RatingController::class, 'rate']);
 
 Route::post('/chef-profile/report-by-user', [ReportController::class, 'store'])->middleware('auth');
-
+// في web.php
+Route::get('/places/{place}/reviews', [RatingController::class, 'getReviews']);
 Route::middleware('mobile_auth')->group(function () {
 
 Route::post('/users/toggle-follow', [FollowController::class, 'toggleFollow'])
@@ -33,6 +48,11 @@ Route::post('/users/toggle-follow', [FollowController::class, 'toggleFollow'])
 
     Route::post('/favorites/toggle', [FavoriteController::class, 'toggleFavorite'])->middleware('auth')->name('favorites.toggle');
 
+    // If you are using web routes and csrf token
+    Route::post('places/{place}/rate', [RatingController::class, 'store'])->name('places.rate');
+
+    // If you are using API routes
+    Route::post('api/places/{place}/rate', [RatingController::class, 'store']);
 
     Route::get('mobile/china-discovers/create', [ChinaDiscoverController::class, 'create'])->name('mobile.china-discovers.create');
     Route::post('mobile/china-discovers', [ChinaDiscoverController::class, 'store'])->name('mobile.china-discovers.store');
