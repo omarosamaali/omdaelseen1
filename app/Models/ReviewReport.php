@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReviewReport extends Model
 {
-    protected $fillable = ['user_id', 'place_id', 'review_id', 'report_type'];
-
+    protected $fillable = ['user_id', 'place_id', 'review_id', 'report_type', 'status'];
+    
     public function user()
     {
         return $this->belongsTo(User::class);

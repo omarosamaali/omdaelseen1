@@ -37,14 +37,43 @@ class HelpWordsController extends Controller
             'word_zh' => 'nullable|max:255',
             'status' => 'required|in:نشط,غير نشط',
             'order' => 'required|integer|min:0',
+            'word_type' => 'required|string|in:تحية وتعريف,أسئلة,طلب أو تقديم مساعدة,السفر,التسوق',
         ]);
 
         HelpWord::create($request->only([
-            'word_ar', 'word_en', 'word_zh',
-            'status', 'order'
+            'word_ar',
+            'word_en',
+            'word_zh',
+            'status',
+            'order',
+            'word_type'
         ]));
 
         return redirect()->route('admin.help_words.index')->with('success', 'تم إضافة الكلمة بنجاح');
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $request->validate([
+            'word_ar' => 'required|max:255',
+            'word_en' => 'nullable|max:255',
+            'word_zh' => 'nullable|max:255',
+            'status' => 'required|in:نشط,غير نشط',
+            'order' => 'required|integer|min:0',
+            'word_type' => 'required|string|in:تحية وتعريف,أسئلة,طلب أو تقديم مساعدة,السفر,التسوق',
+        ]);
+
+        $helpWord = HelpWord::findOrFail($id);
+        $helpWord->update($request->only([
+            'word_ar',
+            'word_en',
+            'word_zh',
+            'status',
+            'order',
+            'word_type'
+        ]));
+
+        return redirect()->route('admin.help_words.index')->with('success', 'تم تحديث الكلمة بنجاح');
     }
 
     public function show(string $id)
@@ -57,25 +86,6 @@ class HelpWordsController extends Controller
     {
         $helpWord = HelpWord::findOrFail($id);
         return view('admin.omdaHome.help_words.edit', compact('helpWord'))->with('layout', $this->layout);
-    }
-
-    public function update(Request $request, string $id)
-    {
-        $request->validate([
-            'word_ar' => 'required|max:255',
-            'word_en' => 'nullable|max:255',
-            'word_zh' => 'nullable|max:255',
-            'status' => 'required|in:نشط,غير نشط',
-            'order' => 'required|integer|min:0',
-        ]);
-
-        $helpWord = HelpWord::findOrFail($id);
-        $helpWord->update($request->only([
-            'word_ar', 'word_en', 'word_zh',
-            'status', 'order'
-        ]));
-
-        return redirect()->route('admin.help_words.index')->with('success', 'تم تحديث الكلمة بنجاح');
     }
 
     public function destroy(string $id)

@@ -25,19 +25,18 @@
                 <div class="waves wave-2"></div>
                 <div class="waves wave-3"></div>
             </div>
-            <div class="flex justify-center items-center flex-col py-20" style="z-index: 9;">
-                <h1 class="text-2xl font-semibold text-p2 dark:text-p1">
-                    مبروك
-                </h1>
-                <p class="text-md pt-3 px-4 text-center">
-                    تم توثيق الحساب
-                </p>
-            </div>
-            <div class="w-full" style="z-index: 9;">
-                <a href="{{ route('mobile.profile.profile') }}" class="bg-p2 rounded-full py-3 text-white text-sm font-semibold text-center block mt-12 dark:bg-p1">
-                    الرجوع</a>
-            </div>
-            
+<div class="flex justify-center items-center flex-col py-20" style="z-index: 9;">
+    <h1 class="text-2xl font-semibold text-p2 dark:text-p1">
+        {{ __('messages.congratulations') }}
+    </h1>
+    <p class="text-md pt-3 px-4 text-center">
+        {{ __('messages.account_verified') }}
+    </p>
+</div>
+<div class="w-full" style="z-index: 9;">
+    <a href="{{ route('mobile.profile.profile') }}" class="bg-p2 rounded-full py-3 text-white text-sm font-semibold text-center block mt-12 dark:bg-p1">
+        {{ __('messages.back_button') }}</a>
+</div>            
         </div>
     </main>
 </body>

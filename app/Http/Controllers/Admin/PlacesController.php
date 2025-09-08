@@ -78,9 +78,20 @@ class PlacesController extends Controller
             })
             ->toArray();
 
+        // 💡 التعديل: جلب عدد التقييمات التي تحتوي على تعليق فقط
+        $commentsCount = Rating::whereNotNull('comment')
+            ->orWhere('comment', '!=', '')
+            ->select('place_id')
+            ->selectRaw('COUNT(id) as comments_count')
+            ->groupBy('place_id')
+            ->get()
+            ->pluck('comments_count', 'place_id')
+            ->toArray();
+
         $currentFilter = $request->filter;
 
-        return view('admin.omdaHome.places.index', compact('places', 'currentFilter', 'favoritesCount', 'ratingsData'))
+        // 💡 التعديل: إضافة commentsCount إلى البيانات الممررة إلى الواجهة
+        return view('admin.omdaHome.places.index', compact('places', 'currentFilter', 'favoritesCount', 'ratingsData', 'commentsCount'))
             ->with('layout', $this->layout);
     }
     public function create()

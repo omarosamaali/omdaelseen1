@@ -50,6 +50,7 @@
                     <thead class="text-xs text-gray-700 uppercase">
                         <tr>
                             <th scope="col" class="th">الرقم</th>
+                            <th scope="col" class="th">نوع الكلمة</th>
                             <th scope="col" class="th">الكلمة (عربي)</th>
                             <th scope="col" class="th">الكلمة (إنجليزي)</th>
                             <th scope="col" class="th">الكلمة (صيني)</th>
@@ -68,6 +69,8 @@
                                     }
                                 @endphp
                                 <td class="th">{{ $counter }}</td>
+                                <td class="th">{{ $word->word_type }}</td>
+                                <td class="th">{{ $word->order }}</td>
                                 @php $counter++; @endphp
                                 <td class="th">{{ Str::limit($word->word_ar, 30) }}</td>
                                 <td class="th">{{ Str::limit($word->word_en, 30) }}</td>
@@ -114,8 +117,8 @@
                                             <svg class="w-6 h-6 text-red-600" aria-hidden="true"
                                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                 fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                    stroke-width="2"
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2"
                                                     d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
                                             </svg>
                                         </button>
@@ -178,7 +181,7 @@
                             } else {
                                 console.warn(
                                     'لا يوجد صوت صيني متاح. تأكد من تثبيت أصوات اللغة الصينية على جهازك.'
-                                    );
+                                );
                             }
 
                             utterance.volume = 1;

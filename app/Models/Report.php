@@ -9,18 +9,23 @@ class Report extends Model
     protected $fillable = [
         'user_id',
         'place_id',
-        'report_type',
+        'status',
+        'resolved_at',
+        'resolved_by',
     ];
 
-    // علاقة مع المستخدم
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // علاقة مع المكان
     public function place()
     {
         return $this->belongsTo(Places::class);
+    }
+
+    public function resolvedBy()
+    {
+        return $this->belongsTo(User::class, 'resolved_by');
     }
 }

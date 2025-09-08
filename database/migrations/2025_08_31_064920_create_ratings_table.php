@@ -12,7 +12,7 @@ class CreateRatingsTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('place_id')->constrained('places')->onDelete('cascade');
-            $table->tinyInteger('rating'); // 1 to 5
+            $table->tinyInteger('rating');
             $table->text('comment')->nullable();
             $table->timestamps();
         });

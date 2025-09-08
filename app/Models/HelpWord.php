@@ -10,7 +10,11 @@ class HelpWord extends Model
     use HasFactory;
 
     protected $fillable = [
-        'word_ar', 'word_en', 'word_zh',
-        'status', 'order'
+        'word_ar',
+        'word_en',
+        'word_zh',
+        'status',
+        'order',
+        'word_type'
     ];
 }

@@ -56,8 +56,6 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        // 1. Validation
-        // أضف 'password_confirmation' للتحقق من تطابق حقول كلمة المرور
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => [
@@ -69,30 +67,24 @@ class ProfileController extends Controller
             ],
             'phone' => ['nullable', 'string', 'max:255'],
             'country' => ['nullable', 'string', 'max:255'],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'], // تأكد من وجود 'confirmed' للتحقق من التطابق
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
+            'explorer_name' => ['nullable', 'string', 'max:255', 'unique:users,explorer_name,' . $user->id],
         ]);
 
-        // 2. Prepare the update data (improved logic)
-        // استبعد حقول كلمة المرور في البداية
         $data = $request->except(['password', 'password_confirmation', '_token']);
 
-        // أضف حقل كلمة المرور إلى $data فقط إذا كان موجودًا في الطلب
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
 
-        // Handle avatar upload
         if ($request->hasFile('avatar')) {
-            // Delete old avatar if it exists
             if ($user->avatar && Storage::exists('public/' . $user->avatar)) {
                 Storage::delete('public/' . $user->avatar);
             }
-            // Store new avatar and get the path
             $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
         }
 
-        // 3. Update the user
         $user->update($data);
 
         // 4. Redirect with a success message
@@ -103,14 +95,7 @@ class ProfileController extends Controller
 
     public function deleteAccount(Request $request)
     {
-        // Get the authenticated user
         $user = Auth::user();
-
-        // Optional: you can add a confirmation step, for example,
-        // by requiring the user to re-enter their password
-        // if (!Hash::check($request->password, $user->password)) {
-        //     return back()->withErrors(['password' => 'كلمة المرور غير صحيحة.']);
-        // }
 
         try {
             // Log the user out to prevent issues after deletion

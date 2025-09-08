@@ -3352,12 +3352,6 @@ path {
   transform: rotate(-45deg);
 }
 
-@media (max-width: 400px) {
-  .custom-img {
-    margin-top: -5rem !important;
-  }
-}
-
 @media (max-width: 370px) {
   .custom-img {
     margin-top: -4rem !important;

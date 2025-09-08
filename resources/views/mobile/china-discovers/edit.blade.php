@@ -5,7 +5,6 @@
 
 @section('content')
 <div class="container dark:text-white dark:bg-color1">
-    <!-- Background elements -->
     <img src="{{ asset('assets/images/header-bg-2.png') }}" class="absolute header-bg" alt="" />
     <div class="absolute top-0 left-0 bg-p3 bg-blur-145"></div>
     <div class="absolute top-40 right-0 bg-[#0ABAC9] bg-blur-150"></div>
@@ -13,95 +12,84 @@
     <div class="absolute bottom-0 right-0 bg-p3 bg-blur-220"></div>
 
     <div class="relative z-30 px-6">
-        <!-- Header -->
         <div class="flex justify-center items-center gap-4 relative">
-            <a href="{{ url('/') }}" class="absolute-left-0 bg-white size-8 rounded-full flex justify-center items-center text-xl dark:bg-color10">
+            <a href="{{ url('/mobile/china-discovers') }}" class="absolute-left-0 bg-white size-8 rounded-full flex justify-center items-center text-xl dark:bg-color10">
                 <i class="ph ph-caret-left"></i>
             </a>
-            <h2 class="text-2xl font-semibold text-white text-center">تعديل المكان</h2>
+            <h2 class="text-2xl font-semibold text-black text-center">{{ __('messages.edit_place') }}</h2>
         </div>
 
-        <!-- Form Container -->
         <div class="p-6 rounded-xl bg-white dark:bg-color9 mt-12 border border-color21">
             <form action="{{ route('mobile.china-discovers.update', $place->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
-                <!-- Main Image Upload -->
                 <div class="mt-8 flex flex-col gap-4 justify-center items-center py-10 bg-color16 w-full rounded-xl border border-p2 dark:border-p1 dark:bg-bgColor14">
                     <label for="avatar" class="cursor-pointer">
                         <div class="bg-p2 dark:bg-p1 rounded-full p-5 flex justify-center items-center">
                             <i class="ph ph-image text-white text-2xl !leading-none"></i>
                         </div>
-                        <p class="text-sm font-semibold text-p2 dark:text-p1 mt-2">إضافة الصورة الرئيسية (اختياري)</p>
+                        <p class="text-sm font-semibold text-p2 dark:text-p1 mt-2">{{ __('messages.add_main_image') }}</p>
                     </label>
                     <input type="file" name="avatar" id="avatar" accept="image/*" class="hidden" onchange="previewImage(event)" />
-                    <img id="imagePreview" class="image-preview {{ $place->avatar ? '' : 'hidden' }}" src="{{ $place->avatar ? Storage::url($place->avatar) : '#' }}" alt="معاينة الصورة" />
+                    <img id="imagePreview" class="image-preview {{ $place->avatar ? '' : 'hidden' }}" src="{{ $place->avatar ? Storage::url($place->avatar) : '#' }}" alt="{{ __('messages.image_preview') }}" />
                     @error('avatar')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
                 </div>
 
-                <!-- Form Fields -->
                 <div class="pt-8 flex flex-col gap-4">
-                    <!-- Arabic Name -->
                     <div>
-                        <p class="text-sm font-semibold pb-2"><span>*</span> اسم المكان (بالعربي)</p>
+                        <p class="text-sm font-semibold pb-2"><span>*</span> {{ __('messages.place_name_ar') }}</p>
                         <div class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
-                            <input type="text" name="name_ar" id="name_ar" placeholder="أدخل اسم المكان" class="modal-input" value="{{ old('name_ar', $place->name_ar) }}" required />
+                            <input type="text" name="name_ar" id="name_ar" placeholder="{{ __('messages.enter_place_name') }}" class="modal-input" value="{{ old('name_ar', $place->name_ar) }}" required />
                         </div>
                         @error('name_ar')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
                     </div>
 
-                    <!-- English Name -->
                     <div>
-                        <p class="text-sm font-semibold pb-2"><span>*</span> اسم المكان (بالإنجليزي)</p>
+                        <p class="text-sm font-semibold pb-2"><span>*</span> {{ __('messages.place_name_en') }}</p>
                         <div class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
-                            <input type="text" name="name_en" id="name_en" placeholder="أدخل اسم المكان" class="modal-input" value="{{ old('name_en', $place->name_en) }}" required />
+                            <input type="text" name="name_en" id="name_en" placeholder="{{ __('messages.enter_place_name') }}" class="modal-input" value="{{ old('name_en', $place->name_en) }}" required />
                         </div>
                         @error('name_en')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
                     </div>
 
-                    <!-- Chinese Name -->
                     <div>
-                        <p class="text-sm font-semibold pb-2"><span>*</span> اسم المكان (بالصيني)</p>
+                        <p class="text-sm font-semibold pb-2"><span>*</span> {{ __('messages.place_name_ch') }}</p>
                         <div class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
-                            <input type="text" name="name_ch" id="name_ch" placeholder="أدخل اسم المكان" class="modal-input" value="{{ old('name_ch', $place->name_ch) }}" required />
+                            <input type="text" name="name_ch" id="name_ch" placeholder="{{ __('messages.enter_place_name_ch') }}" class="modal-input" value="{{ old('name_ch', $place->name_ch) }}" required />
                         </div>
                         @error('name_ch')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
                     </div>
 
-                    <!-- Arabic Details -->
                     <div>
-                        <p class="text-sm font-semibold pb-2">تفاصيل المكان (بالعربي)</p>
+                        <p class="text-sm font-semibold pb-2">{{ __('messages.place_details_ar') }}</p>
                         <div class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
-                            <textarea name="details_ar" id="details_ar" placeholder="أدخل تفاصيل المكان" class="modal-input" rows="4">{{ old('details_ar', $place->details_ar) }}</textarea>
+                            <textarea name="details_ar" id="details_ar" placeholder="{{ __('messages.enter_place_details') }}" class="modal-input" rows="4">{{ old('details_ar', $place->details_ar) }}</textarea>
                         </div>
                         @error('details_ar')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
                     </div>
 
-                    <!-- English Details -->
                     <div>
-                        <p class="text-sm font-semibold pb-2">تفاصيل المكان (بالإنجليزي)</p>
+                        <p class="text-sm font-semibold pb-2">{{ __('messages.place_details_en') }}</p>
                         <div class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
-                            <textarea name="details_en" id="details_en" placeholder="Enter place details" class="modal-input" rows="4">{{ old('details_en', $place->details_en) }}</textarea>
+                            <textarea name="details_en" id="details_en" placeholder="{{ __('messages.enter_place_details_en') }}" class="modal-input" rows="4">{{ old('details_en', $place->details_en) }}</textarea>
                         </div>
                         @error('details_en')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
                     </div>
 
-                    <!-- Chinese Details -->
                     <div>
-                        <p class="text-sm font-semibold pb-2">تفاصيل المكان (بالصيني)</p>
+                        <p class="text-sm font-semibold pb-2">{{ __('messages.place_details_ch') }}</p>
                         <div class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
-                            <textarea name="details_ch" id="details_ch" placeholder="输入地点详情" class="modal-input" rows="4">{{ old('details_ch', $place->details_ch) }}</textarea>
+                            <textarea name="details_ch" id="details_ch" placeholder="{{ __('messages.enter_place_details_ch') }}" class="modal-input" rows="4">{{ old('details_ch', $place->details_ch) }}</textarea>
                         </div>
                         @error('details_ch')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
                     </div>
 
-                    <!-- Main Category -->
                     <div>
-                        <p class="text-sm font-semibold pb-2">التصنيف الرئيسي</p>
+                        <p class="text-sm font-semibold pb-2">{{ __('messages.main_category') }}</p>
                         <div class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
                             <select name="main_category_id" id="main_category_id" class="modal-input" required>
-                                <option value="" disabled {{ old('main_category_id', $place->main_category_id) ? '' : 'selected' }}>اختر</option>
+                                <option value="" disabled {{ old('main_category_id', $place->main_category_id) ? '' : 'selected' }}>{{ __('messages.choose') }}</option>
                                 @foreach($explorers as $explorer)
                                 <option value="{{ $explorer->id }}" {{ old('main_category_id', $place->main_category_id) == $explorer->id ? 'selected' : '' }}>{{ $explorer->name_ar }}</option>
                                 @endforeach
@@ -110,12 +98,11 @@
                         @error('main_category_id')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
                     </div>
 
-                    <!-- Sub Category -->
                     <div>
-                        <p class="text-sm font-semibold pb-2">التصنيف الفرعي</p>
+                        <p class="text-sm font-semibold pb-2">{{ __('messages.sub_category') }}</p>
                         <div class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
                             <select name="sub_category_id" id="sub_category_id" class="modal-input">
-                                <option value="" disabled {{ old('sub_category_id', $place->sub_category_id) ? '' : 'selected' }}>اختر</option>
+                                <option value="" disabled {{ old('sub_category_id', $place->sub_category_id) ? '' : 'selected' }}>{{ __('messages.choose') }}</option>
                                 @foreach($place->mainCategory->subcategories ?? [] as $subcategory)
                                 <option value="{{ $subcategory->id }}" {{ old('sub_category_id', $place->sub_category_id) == $subcategory->id ? 'selected' : '' }}>{{ $subcategory->name_ar }}</option>
                                 @endforeach
@@ -124,12 +111,11 @@
                         @error('sub_category_id')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
                     </div>
 
-                    <!-- Region -->
                     <div>
-                        <p class="text-sm font-semibold pb-2">المنطقة</p>
+                        <p class="text-sm font-semibold pb-2">{{ __('messages.region') }}</p>
                         <div class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
                             <select name="region_id" id="region_id" class="modal-input" required>
-                                <option value="" disabled {{ old('region_id', $place->region_id) ? '' : 'selected' }}>اختر</option>
+                                <option value="" disabled {{ old('region_id', $place->region_id) ? '' : 'selected' }}>{{ __('messages.choose') }}</option>
                                 @foreach($regions as $region)
                                 <option value="{{ $region->id }}" {{ old('region_id', $place->region_id) == $region->id ? 'selected' : '' }}>{{ $region->name_ar }}</option>
                                 @endforeach
@@ -138,49 +124,45 @@
                         @error('region_id')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
                     </div>
 
-                    <!-- Location Link -->
                     <div>
-                        <p class="text-sm font-semibold pb-2">رابط خريطة المكان</p>
+                        <p class="text-sm font-semibold pb-2">{{ __('messages.place_map_link') }}</p>
                         <div class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
-                            <input type="url" name="link" placeholder="رابط المكان" class="modal-input" value="{{ old('link', $place->link) }}" required />
+                            <input type="url" name="link" placeholder="{{ __('messages.place_link') }}" class="modal-input" value="{{ old('link', $place->link) }}" required />
                         </div>
                         @error('link')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
                     </div>
 
-                    <!-- Phone -->
                     <div>
-                        <p class="text-sm font-semibold pb-2">رقم الهاتف</p>
+                        <p class="text-sm font-semibold pb-2">{{ __('messages.phone_number') }}</p>
                         <div class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
                             <input type="text" name="phone" placeholder="009710000000000" class="modal-input" value="{{ old('phone', $place->phone) }}" />
                         </div>
                         @error('phone')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
                     </div>
 
-                    <!-- Email -->
                     <div>
-                        <p class="text-sm font-semibold pb-2">البريد الإلكتروني</p>
+                        <p class="text-sm font-semibold pb-2">{{ __('messages.email') }}</p>
                         <div class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
                             <input type="email" name="email" placeholder="name@domain.com" class="modal-input" value="{{ old('email', $place->email) }}" />
                         </div>
                         @error('email')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
                     </div>
 
-                    <!-- Additional Images -->
                     <div>
-                        <p class="text-sm font-semibold pb-2">الصور الفرعية</p>
+                        <p class="text-sm font-semibold pb-2">{{ __('messages.additional_images') }}</p>
                         <div class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
                             <label for="additional_images" class="cursor-pointer w-full text-center">
                                 <div class="bg-p2 dark:bg-p1 rounded-full p-3 inline-flex justify-center items-center">
                                     <i class="ph ph-images text-white text-xl !leading-none"></i>
                                 </div>
-                                <p class="text-sm font-semibold text-p2 dark:text-p1 mt-2">إضافة صور فرعية</p>
+                                <p class="text-sm font-semibold text-p2 dark:text-p1 mt-2">{{ __('messages.add_additional_images') }}</p>
                             </label>
                             <input type="file" name="additional_images[]" id="additional_images" accept="image/*" multiple class="hidden" onchange="previewSubImages(event)" />
                         </div>
                         <div id="subImagesPreview" class="sub-images-preview flex flex-wrap gap-4 mt-4">
                             @if($place->additional_images)
                             @foreach(json_decode($place->additional_images, true) as $index => $image)
-                            <img src="{{ Storage::url($image) }}" class="sub-image w-24 h-24 object-cover rounded-lg" alt="صورة فرعية {{ $index + 1 }}" />
+                            <img src="{{ Storage::url($image) }}" class="sub-image w-24 h-24 object-cover rounded-lg" alt="{{ __('messages.sub_image') }} {{ $index + 1 }}" />
                             @endforeach
                             @endif
                         </div>
@@ -188,18 +170,15 @@
                     </div>
                 </div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="confirm-button">تعديل المكان</button>
+                <button type="submit" class="confirm-button">{{ __('messages.edit_place') }}</button>
             </form>
 
-            <!-- Success Message -->
             <div id="successMessage" class="success-message" style="display: none;">
-                تم تعديل المكان بنجاح!
+                {{ __('messages.place_updated_success') }}
             </div>
 
-            <!-- Translation Status -->
             <div id="translationStatus" class="translation-status" style="display: none;">
-                <p class="text-sm text-blue-600">جاري الترجمة...</p>
+                <p class="text-sm text-blue-600">{{ __('messages.translating') }}</p>
             </div>
         </div>
     </div>

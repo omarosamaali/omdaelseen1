@@ -22,6 +22,7 @@ class User extends Authenticatable
         'status',
         'password',
         'avatar',
+        'explorer_name',
         'otp',
     ];
 
@@ -29,7 +30,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Rating::class);
     }
-    
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorites::class);
+    }
+
     protected $hidden = [
         'password',
         'remember_token',
@@ -43,7 +49,12 @@ class User extends Authenticatable
         // المستخدم الذي يتابع
         return $this->belongsToMany(User::class, 'followers', 'follower_id', 'following_id');
     }
+    // في User.php model
 
+    public function followings()
+    {
+        return $this->hasMany(Followers::class, 'following_id');
+    }
     public function followers()
     {
         // المستخدم الذي يتم متابعته

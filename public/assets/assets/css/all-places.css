@@ -184,9 +184,11 @@
 
 /* Latest Places Styling */
 .latest-card {
-    background: linear-gradient(135deg,
-            rgba(255, 255, 255, 0.1),
-            rgba(255, 181, 49, 0.05));
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 181, 49, 0.05)
+    );
     backdrop-filter: blur(10px);
 }
 
@@ -437,8 +439,13 @@
 
 .category-card-image {
     width: 100%;
+    max-width: 133px;
     border-radius: 15px;
-    border: 2px solid #ffb531;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    margin: auto;
 }
 
 .category-card-text {
@@ -447,4 +454,25 @@
     text-align: center;
     padding-top: 9px;
     font-size: 15px;
+}
+
+.all-link {
+    text-decoration: none;
+    background: #861530;
+    border-radius: 50%;
+    width: 68px;
+    height: 68px;
+    color: #f99e4d;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    position: relative;
+    top: -13px;
+    font-weight: bold;
+}
+
+.box-info {
+    display: flex;
+    flex-direction: column;
 }

@@ -1,5 +1,5 @@
 <?php
-
+// 1. في bootstrap/app.php
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,7 +12,13 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'mobile_auth' => \App\Http\Middleware\mobile_auth::class
+            'mobile_auth' => \App\Http\Middleware\mobile_auth::class,
+            'locale' => \App\Http\Middleware\SetLocale::class  // غير الاسم ده
+        ]);
+
+        // أضف الـ middleware ده على كل الروتس
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

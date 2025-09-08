@@ -33,7 +33,8 @@
                             </svg>
                         @endif
                     </h3>
-                    <button style="font-weight: bold; background-color: rgb(54, 148, 0); padding: 3px; width: 33px;
+                    <button
+                        style="font-weight: bold; background-color: rgb(54, 148, 0); padding: 3px; width: 33px;
                         border-radius: 10px; color:white; margin: auto; text-align: center; display: flex; align-items: center; justify-content: center;">+</button>
                 </div>
             @endforeach

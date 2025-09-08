@@ -11,7 +11,7 @@ class TranslationController extends Controller
     {
         $text = $request->input('text');
         $sourceLang = $request->input('source_lang');
-        $targetLangs = $request->input('target_langs'); // ['en', 'zh-CN']
+        $targetLangs = $request->input('target_langs');
 
         $tr = new GoogleTranslate();
         $tr->setSource($sourceLang);

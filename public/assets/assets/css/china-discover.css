@@ -235,7 +235,11 @@
 }
 
 .latest-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 181, 49, 0.05));
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 181, 49, 0.05)
+    );
     backdrop-filter: blur(10px);
 }
 
@@ -419,7 +423,11 @@
 
 .review-item.new-review {
     border-color: #ffb531;
-    background: linear-gradient(135deg, rgba(255, 181, 49, 0.05) 0%, rgba(255, 165, 0, 0.05) 100%);
+    background: linear-gradient(
+        135deg,
+        rgba(255, 181, 49, 0.05) 0%,
+        rgba(255, 165, 0, 0.05) 100%
+    );
     animation: newReviewAnimation 1s ease;
 }
 
@@ -546,13 +554,17 @@
 }
 
 .rating-box::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba(255, 181, 49, 0.05) 100%);
+    background: linear-gradient(
+        135deg,
+        transparent 0%,
+        rgba(255, 181, 49, 0.05) 100%
+    );
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -986,7 +998,6 @@ body {
 }
 
 @keyframes shake {
-
     0%,
     100% {
         transform: translateX(0);
@@ -1237,7 +1248,11 @@ body {
 
 /* Latest Places Styling */
 .latest-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 181, 49, 0.05));
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 181, 49, 0.05)
+    );
     backdrop-filter: blur(10px);
 }
 
@@ -1358,4 +1373,125 @@ body {
 
 .slider-container::-webkit-scrollbar {
     display: none;
+}
+
+.all-link {
+    text-decoration: none;
+    background: #861530;
+    border-radius: 50%;
+    width: 68px;
+    height: 68px;
+    color: #f99e4d;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    position: relative;
+    top: -13px;
+    font-weight: bold;
+}
+
+.all-link .explorer-name {
+    color: #f99e4d !important; /* ضمان بقاء اللون */
+    font-size: 15px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.all-link:hover .explorer-name:not(.active) {
+    color: #f99e4d !important; /* الحفاظ على اللون عند الـ hover */
+    border-bottom: 2px solid #f99e4d;
+    padding-bottom: 5px;
+}
+
+.all-link .explorer-name.active {
+    color: #f99e4d !important; /* لون النص عند الـ active */
+    font-weight: bold;
+    border-bottom: unset !important;
+    padding-bottom: 5px;
+    transition: all 0.3s ease;
+}
+
+.explorer-link:hover .explorer-name:not(.active) {
+    font-weight: bold;
+    color: #861530;
+    border-bottom: 2px solid #861530;
+    padding-bottom: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    width: 30px;
+}
+
+.explorer-name.active {
+    font-weight: bold !important;
+    color: #861530 !important;
+    border-bottom: 2px solid #861530 !important;
+    padding-bottom: 5px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    /* width: 30px; */
+    transition: all 0.3s ease;
+}
+
+.heart-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    z-index: 10;
+    transition: transform 0.2s ease-in-out;
+}
+
+.heart-icon:hover {
+    transform: scale(1.2);
+}
+
+.heart-icon.favorited i {
+    color: #e91e63 !important;
+}
+
+.image-container {
+    display: none !important;
+}
+
+.image-header {
+    position: fixed;
+    height: 61px;
+    z-index: 9;
+    object-fit: cover;
+    top: 0px;
+}
+
+/* .explorer-name.active {
+    font-weight: bold !important;
+    color: #861530;
+    border-bottom: 2px solid #861530 !important;
+    padding-bottom: 5px !important;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    transition: all 0.3s ease;
+} */
+
+.explorer-name {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.explorer-link:hover .explorer-name:not(.active) {
+    font-weight: bold;
+    color: #861530;
+    border-bottom: 2px solid #861530;
+    padding-bottom: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    width: 30px;
 }

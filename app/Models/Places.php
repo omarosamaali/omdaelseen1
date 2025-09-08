@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Places extends Model
 {
+    protected $table = 'places';
+    protected $primaryKey = 'id';
+
     protected $fillable = [
         'user_id',
         'name_ar',
@@ -29,10 +32,9 @@ class Places extends Model
 
     public function ratings()
     {
-        return $this->hasMany(Rating::class);
+        return $this->hasMany(Rating::class, 'place_id');
     }
 
-    // Optional: you can add a relationship to get the average rating
     public function averageRating()
     {
         return $this->ratings()->avg('rating');

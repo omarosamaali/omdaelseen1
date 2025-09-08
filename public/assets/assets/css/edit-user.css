@@ -1,0 +1,42 @@
+
+
+@media (max-width: 370px) {
+    .custom-img {
+        margin-top: -4rem !important;
+    }
+}
+
+@media (max-width: 370px) {
+    .custom-img {
+        margin-top: -3rem !important;
+    }
+}
+
+#badgeModal {
+    display: block;
+    position: absolute;
+    z-index: 9;
+    background: white;
+    padding: 3px;
+    border-radius: 5px;
+    font-size: 12px;
+    top: 44px;
+    width: max-content;
+}
+
+.logo--image {
+    top: 20px;
+    width: 134px;
+    text-align: center;
+    align-items: anchor-center;
+    margin: auto;
+}
+
+#country {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    margin: auto;
+    width: 100%;
+}

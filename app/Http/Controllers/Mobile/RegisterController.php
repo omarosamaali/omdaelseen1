@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Mobile;
 
 use App\Http\Controllers\Controller;
-use App\Models\User; // Don't forget to import the User model
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -28,7 +29,7 @@ class RegisterController extends Controller
                 'phone' => ['required', 'string', 'max:255', 'unique:users'],
                 'country' => ['required', 'string', 'max:255'],
                 'password' => ['required', 'string', 'min:8', 'confirmed'],
-                'terms' => ['required', 'accepted'], // Assuming the checkbox has the name 'terms'
+                'terms' => ['required', 'accepted'],
             ],
             // You can add custom validation messages here
             [
@@ -37,20 +38,26 @@ class RegisterController extends Controller
             ]
         );
 
-        // 2. Create the new user in the database
+        // 2. Generate a unique explorer name before creating the user
+        do {
+            $randomNumber = random_int(1000, 9999); // Generate a random 4-digit number
+            $explorerName = $randomNumber;
+        } while (User::where('explorer_name', $explorerName)->exists()); // Check if the name already exists
+
+        // 3. Create the new user in the database with the generated name
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'country' => $request->country,
             'password' => Hash::make($request->password),
+            'explorer_name' => $explorerName, // This is the new line
         ]);
 
-        // 3. Log the new user in
+        // 4. Log the new user in
         Auth::login($user);
 
-        // 4. Redirect the user to the welcome page
+        // 5. Redirect the user to the welcome page
         return redirect()->route('mobile.welcome');
     }
-
 }

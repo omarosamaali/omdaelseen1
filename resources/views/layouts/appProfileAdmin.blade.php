@@ -395,7 +395,7 @@
                     </svg>
                 </a>
                 <a href="">
-                    <svg style="color:black;" class="w-6 h-6" aria-hidden=" molar mass="0.025g/mol"
+                    <svg style="color:black;" class="w-6 h-6" aria-hidden=" molar mass=" 0.025g/mol"
                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                         viewBox="0 0 24 24">
                         <path
@@ -424,18 +424,23 @@
             </div>
             <div>
                 <!-- Sidebar here -->
-                  <div class="user-profile">
-                      <div type="button" class="flex mx-3 text-sm rounded-full md:mr-0" id="user-menu-button" aria-expanded="false">
-                          <img src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : 'assets/img/avatar.gif' }}" alt="Avatar" class="h-20 w-20 rounded-full object-cover border">
-                      </div>
-                      @if (Auth::user()->country)
-                      <img style="position: absolute; right: 6px; width: 30px; height: 20px; border-radius: 0px; border: 0px;" src="https://flagcdn.com/32x24/{{ strtolower(Auth::user()->country) }}.png" alt="{{ Auth::user()->country }} Flag">
-                      @else
-                      <img style="position: absolute; right: 6px; width: 30px; height: 20px; border-radius: 0px; border: 0px;" src="https://flagcdn.com/32x24/xx.png" alt="Default Flag">
-                      @endif
-                      <p style="margin-left: 29px;"><span style="display: block;">مرحبا </span>
-                          {{ Auth::user()->name }}</p>
-                  </div>
+                <div class="user-profile">
+                    <div type="button" class="flex mx-3 text-sm rounded-full md:mr-0" id="user-menu-button"
+                        aria-expanded="false">
+                        <img src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : 'assets/img/avatar.gif' }}"
+                            alt="Avatar" class="h-20 w-20 rounded-full object-cover border">
+                    </div>
+                    @if (Auth::user()->country)
+                        <img style="position: absolute; right: 6px; width: 30px; height: 20px; border-radius: 0px; border: 0px;"
+                            src="https://flagcdn.com/32x24/{{ strtolower(Auth::user()->country) }}.png"
+                            alt="{{ Auth::user()->country }} Flag">
+                    @else
+                        <img style="position: absolute; right: 6px; width: 30px; height: 20px; border-radius: 0px; border: 0px;"
+                            src="https://flagcdn.com/32x24/xx.png" alt="Default Flag">
+                    @endif
+                    <p style="margin-left: 29px;"><span style="display: block;">مرحبا </span>
+                        {{ Auth::user()->name }}</p>
+                </div>
 
                 <div class="sidebar">
                     <ul>
@@ -464,15 +469,18 @@
                             <ul id="home-submenu" class="submenu">
                                 <li><a href="{{ route('admin.dashboard.index') }}" class="#">
                                         <x-iconSub />
-                                        لوحة التحكم</a></li>
+                                        لوحة التحكم
+                                    </a></li>
                                 <li><a href="{{ route('admin.users.index') }}"
                                         class="{{ Route::is('admin.users.index') ? 'active' : '' }}">
                                         <x-iconSub />
-                                        المستخدمين</a></li>
+                                        المستخدمين
+                                    </a></li>
                                 <li><a href="{{ route('admin.works.index') }}"
                                         class="{{ Route::is('work') ? 'active' : '' }}">
                                         <x-iconSub />
-                                        كيف نعمل</a></li>
+                                        كيف نعمل
+                                    </a></li>
                                 <li><a href="{{ route('admin.contact-messages.index') }}"
                                         class="{{ Route::is('admin.contact-messages.*') ? 'active' : '' }}">
                                         <x-iconSub />
@@ -480,27 +488,36 @@
                                     </a></li>
                                 <li><a href="#" class="{{ Route::is('interests') ? 'active' : '' }}">
                                         <x-iconSub />
-                                        الاهتمامات</a></li>
-                                <li><a href="{{ route('admin.events.index') }}" class="{{ Route::is('events') ? 'active' : '' }}">
-                                        <x-iconSub />معرض والمناسبات</a></li>
+                                        الاهتمامات
+                                    </a></li>
+                                <li><a href="{{ route('admin.events.index') }}"
+                                        class="{{ Route::is('events') ? 'active' : '' }}">
+                                        <x-iconSub />معرض والمناسبات
+                                    </a></li>
                                 <li><a href="{{ route('admin.terms.index') }}"
                                         class="{{ Route::is('terms') ? 'active' : '' }}">
-                                        <x-iconSub />الشروط والأحكام</a></li>
+                                        <x-iconSub />الشروط والأحكام
+                                    </a></li>
                                 <li><a href="{{ route('admin.privacy.index') }}"
                                         class="{{ Route::is('privacy') ? 'active' : '' }}">
-                                        <x-iconSub />سياسة الخصوصية</a></li>
+                                        <x-iconSub />سياسة الخصوصية
+                                    </a></li>
                                 <li><a href="{{ route('admin.faq.index') }}"
                                         class="{{ Route::is('faq') ? 'active' : '' }}">
-                                        <x-iconSub />الأسئلة الشائعة</a></li>
+                                        <x-iconSub />الأسئلة الشائعة
+                                    </a></li>
                                 <li><a href="{{ route('admin.about.index') }}"
                                         class="{{ Route::is('about') ? 'active' : '' }}">
-                                        <x-iconSub />من نحن</a></li>
+                                        <x-iconSub />من نحن
+                                    </a></li>
                                 <li><a href="{{ route('admin.help_words.index') }}"
                                         class="{{ Route::is('help_words') ? 'active' : '' }}">
-                                        <x-iconSub />كلمات مساعدة</a></li>
+                                        <x-iconSub />كلمات مساعدة
+                                    </a></li>
                                 <li><a href="{{ route('admin.banners.index') }}"
                                         class="{{ Route::is('banners') ? 'active' : '' }}">
-                                        <x-iconSub />البنرات</a></li>
+                                        <x-iconSub />البنرات
+                                    </a></li>
 
 
                             </ul>
@@ -520,29 +537,37 @@
                             <ul id="explorers-submenu" class="submenu">
                                 <li><a href="{{ route('admin.dashboard.index') }}" class="#">
                                         <x-iconSub />
-                                        لوحة التحكم</a></li>
+                                        لوحة التحكم
+                                    </a></li>
                                 <li><a href="{{ route('admin.explorers.index') }}"
                                         class="{{ Route::is('admin.explorers.index') ? 'active' : '' }}">
                                         <x-iconSub />
 
                                         التصنيف
-                                        الرئيسي</a></li>
+                                        الرئيسي
+                                    </a></li>
                                 <li><a href="{{ route('admin.branches.index') }}"
                                         class="{{ Route::is('admin.branches.index') ? 'active' : '' }}">
                                         <x-iconSub />
                                         التصنيف
-                                        الفرعي</a></li>
+                                        الفرعي
+                                    </a></li>
                                 <li><a href="{{ route('admin.regions.index') }}"
                                         class="{{ Route::is('admin.regions.index') ? 'active' : '' }}">
                                         <x-iconSub />
-                                        المناطق</a></li>
+                                        المناطق
+                                    </a></li>
                                 <li><a href="{{ route('admin.places.index') }}"
-                                        class="{{ Route::is('admin.places.index') ? 'active' : '' }}"> <x-iconSub />
-                                        قائمة
-                                        الاماكن</a></li>
-                                <li><a href="#" class="{{ Route::is('reports') ? 'active' : '' }}">
+                                        class="{{ Route::is('admin.places.index') ? 'active' : '' }}">
                                         <x-iconSub />
-                                        البلاغات</a></li>
+                                        قائمة
+                                        الاماكن
+                                    </a></li>
+                                <li><a href="{{ route('admin.reports.index') }}"
+                                        class="{{ Route::is('reports') ? 'active' : '' }}">
+                                        <x-iconSub />
+                                        البلاغات
+                                    </a></li>
                             </ul>
                         </li>
 
@@ -553,35 +578,52 @@
                                 onclick="toggleSubmenu(this, 'travel-submenu')">
                                 <div style="display: flex; align-items: center;">
                                     <x-icon />
-                                    السفريات
+                                    الرحلات
                                 </div>
                                 <span class="arrow">▼</span>
                             </div>
                             <ul id="travel-submenu" class="submenu">
-                                <li><a href="#" class="{{ Route::is('travel.dashboard') ? 'active' : '' }}">
+                                <li><a href="{{ route('admin.dashboard.index') }}" class="{{ Route::is('admin.dashboard.index') ? 'active' : '' }}">
                                         <x-iconSub />
                                         لوحة
-                                        التحكم</a></li>
-                                <li><a href="#" class="{{ Route::is('travel.main') ? 'active' : '' }}">
+                                        التحكم
+                                    </a></li>
+                                <li><a href="{{ route('admin.omdaHome.trip.create') }}"
+                                        class="{{ Route::is('admin.omdaHome.trip.create') ? 'active' : '' }}">
                                         <x-iconSub />
-                                        التصنيف
-                                        الرئيسي</a></li>
-                                <li><a href="#" class="{{ Route::is('travel.sub') ? 'active' : '' }}">
-                                        <x-iconSub />
-                                        التصنيف
-                                        الفرعي</a></li>
-                                <li><a href="#" class="{{ Route::is('travel.add') ? 'active' : '' }}">
-                                        <x-iconSub />
-                                        اضافة رحلة</a></li>
-                                <li><a href="#" class="{{ Route::is('travel.list') ? 'active' : '' }}">
+                                        اضافة رحلة
+                                    </a></li>
+                                <li><a href="{{ route('admin.omdaHome.trip.index') }}"
+                                        class="{{ Route::is('admin.omdaHome.trip.index') ? 'active' : '' }}">
                                         <x-iconSub />
                                         قائمة
-                                        الرحلات</a></li>
+                                        الرحلات
+                                    </a></li>
+                                <li><a href="{{ route('admin.omdaHome.trip-features.index') }}"
+                                        class="{{ Route::is('admin.omdaHome.trip-features.index') ? 'active' : '' }}">
+                                        <x-iconSub />
+                                        مميزات
+                                        الرحلات
+                                    </a></li>
+                                <li>
+                                    <a href="{{ route('admin.omdaHome.trip.trip-info') }}"
+                                        class="{{ Route::is('admin.omdaHome.trip.trip-info') ? 'active' : '' }}">
+                                        <x-iconSub />
+                                        إرشادات الرحلات
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.omdaHome.trip.adds') }}"
+                                        class="{{ Route::is('admin.omdaHome.trip.adds') ? 'active' : '' }}">
+                                        <x-iconSub />
+                                        الإضافات
+                                    </a>
+                                </li>
                             </ul>
                         </li>
 
                         <!-- المتجر -->
-                        <li>
+                        {{-- <li>
                             <div class="menu-item"
                                 style="display: flex; align-items: center; justify-content: space-between;"
                                 onclick="toggleSubmenu(this, 'store-submenu')">
@@ -595,28 +637,34 @@
                                 <li><a href="#" class="{{ Route::is('store.dashboard') ? 'active' : '' }}">
                                         <x-iconSub />
                                         لوحة
-                                        التحكم</a></li>
+                                        التحكم
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('store.main') ? 'active' : '' }}">
                                         <x-iconSub />
                                         التصنيف
-                                        الرئيسي</a></li>
+                                        الرئيسي
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('store.sub') ? 'active' : '' }}">
                                         <x-iconSub />
                                         التصنيف
-                                        الفرعي</a></li>
+                                        الفرعي
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('store.products') ? 'active' : '' }}">
                                         <x-iconSub />
                                         قائمة
-                                        المنتجات</a></li>
+                                        المنتجات
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('store.add') ? 'active' : '' }}">
                                         <x-iconSub />
                                         اضافة
-                                        منتجات</a></li>
+                                        منتجات
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('store.reports') ? 'active' : '' }}">
                                         <x-iconSub />
-                                        البلاغات</a></li>
+                                        البلاغات
+                                    </a></li>
                             </ul>
-                        </li>
+                        </li> --}}
 
                         <!-- الطلبات -->
                         <li>
@@ -633,46 +681,55 @@
                                 <li><a href="#" class="{{ Route::is('orders.new') ? 'active' : '' }}">
                                         <x-iconSub />
                                         طلبات
-                                        جديدة</a></li>
+                                        جديدة
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('orders.progress') ? 'active' : '' }}">
                                         <x-iconSub />
                                         طلبات قيد
-                                        الاجراء</a></li>
+                                        الاجراء
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('orders.paid') ? 'active' : '' }}">
                                         <x-iconSub />
                                         تم
-                                        الدفع</a></li>
+                                        الدفع
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('orders.preparing') ? 'active' : '' }}">
                                         <x-iconSub />
                                         جاري التجهيز
-                                        للشحن</a></li>
+                                        للشحن
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('orders.shipped') ? 'active' : '' }}">
                                         <x-iconSub />
                                         طلبات
                                         تم
-                                        شحنها</a></li>
+                                        شحنها
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('orders.completed') ? 'active' : '' }}">
                                         <x-iconSub />
                                         طلبات
-                                        منتهية</a></li>
+                                        منتهية
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('orders.review') ? 'active' : '' }}">
                                         <x-iconSub />
                                         طلبات
                                         يتم
-                                        دراستها</a></li>
+                                        دراستها
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('orders.payment') ? 'active' : '' }}">
                                         <x-iconSub />
                                         طلبات
-                                        للدفع</a></li>
+                                        للدفع
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('orders.cancelled') ? 'active' : '' }}">
                                         <x-iconSub />
                                         طلبات
-                                        ملغية</a></li>
+                                        ملغية
+                                    </a></li>
                             </ul>
                         </li>
 
                         <!-- السمسار -->
-                        <li>
+                        {{-- <li>
                             <div class="menu-item"
                                 style="display: flex; align-items: center; justify-content: space-between;"
                                 onclick="toggleSubmenu(this, 'broker-submenu')">
@@ -686,28 +743,34 @@
                                 <li><a href="#" class="{{ Route::is('broker.dashboard') ? 'active' : '' }}">
                                         <x-iconSub />
                                         لوحة
-                                        التحكم</a></li>
+                                        التحكم
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('broker.main') ? 'active' : '' }}">
                                         <x-iconSub />
                                         التصنيف
-                                        الرئيسي</a></li>
+                                        الرئيسي
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('broker.sub') ? 'active' : '' }}">
                                         <x-iconSub />
                                         التصنيف
-                                        الفرعي</a></li>
+                                        الفرعي
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('broker.projects') ? 'active' : '' }}">
                                         <x-iconSub />
                                         قائمة
-                                        المشاريع</a></li>
+                                        المشاريع
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('broker.add') ? 'active' : '' }}">
                                         <x-iconSub />
                                         اضافة
-                                        مشروع</a></li>
+                                        مشروع
+                                    </a></li>
                                 <li><a href="#" class="{{ Route::is('broker.reports') ? 'active' : '' }}">
                                         <x-iconSub />
-                                        البلاغات</a></li>
+                                        البلاغات
+                                    </a></li>
                             </ul>
-                        </li>
+                        </li> --}}
 
                         <!-- تسجيل الخروج -->
                         <li>
