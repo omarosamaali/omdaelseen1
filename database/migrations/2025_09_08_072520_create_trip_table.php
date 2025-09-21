@@ -36,8 +36,6 @@ return new class extends Migration
             $table->boolean('tickets_included')->default(false);
             $table->decimal('price', 8, 2);
             $table->string('status')->default('active');
-            // $table->foreignId('trip_id')->constrained()->onDelete('cascade');
-            // $table->foreignId('feature_id')->constrained('trip_features')->onDelete('cascade');
             $table->timestamps();
         });
     }

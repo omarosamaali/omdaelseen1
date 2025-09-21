@@ -4,24 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\TripFeature;
 
 class Trip extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
     protected $table = 'trips';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'title_ar',
         'title_en',
@@ -50,13 +39,10 @@ class Trip extends Model
         'trip_guidelines',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'meals' => 'array',
+        'trip_features' => 'array',
+        'trip_guidelines' => 'array',
         'departure_date' => 'date',
         'return_date' => 'date',
         'airport_pickup' => 'boolean',
@@ -67,13 +53,17 @@ class Trip extends Model
         'tickets_included' => 'boolean',
     ];
 
-    public function features()
+    public function activities()
     {
-        return $this->belongsToMany(TripFeature::class, 'trip_feature', 'trip_id', 'feature_id');
+        return $this->hasMany(TripActivity::class);
     }
 
-    public function guidelines()
+    public function subCategory(){
+        return $this->belongsTo(Branches::class);
+    }
+
+    public function getTranslatedTripTypeAttribute()
     {
-        return $this->belongsToMany(TripGuideline::class, 'trip_guideline', 'trip_id', 'guideline_id');
+        return __('messages.' . $this->trip_type);
     }
 }

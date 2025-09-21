@@ -5,263 +5,253 @@
 @section('title', 'مستكشفي الصين | China Discover')
 
 @section('content')
-    <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
 
-        <div class="header-container">
-            <img src="{{ asset('assets/assets/images/header-bg.png') }}" alt="">
-            <a href="{{ route('mobile.welcome') }}" class="profile-link dark:bg-color10">
-                <i class="fa-solid fa-chevron-left"></i>
+<x-china-header :title="__('messages.china_explorers')" :route="route('mobile.welcome')" />
+
+<div style="width: 100%; display: block;">
+    @if ($banners->isNotEmpty())
+    @foreach ($banners as $banner)
+    <img class="fav-image" src="{{ asset('storage/' . $banner->avatar) }}" style="width: 100%;" alt="">
+    @endforeach
+    @endif
+</div>
+<div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
+
+    <div>
+        <div class="continaer--title">
+            <h6 class="categories">{{ __('messages.categories') }}</h6>
+            <a href={{ route('mobile.china-discovers.all-places') }} class="show--all">{{
+                __('messages.search_for_place') }}</a>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: flex-start; gap: 10px; margin: 10px;">
+            <a href="#" class="all-link" data-explorer-id="">
+                <div style="width: 99px; flex-shrink: 0;">
+                    <div class="explorer-name" id="all-link" style="font-size: 15px; color: #f99e4d !important;">
+                        {{ __('messages.all') }}
+                    </div>
+                </div>
             </a>
-            <div class="logo-register">{{ __('messages.china_explorers') }}</div>
-        </div>
 
-        <div style="width: 100%; display: block; margin-top: 100px;">
-            @if ($banners->isNotEmpty())
-                @foreach ($banners as $banner)
-                    <img class="fav-image" src="{{ asset('storage/' . $banner->avatar) }}" alt="">
-                @endforeach
-            @endif
-        </div>
-
-        <div>
-            <div class="continaer--title">
-                <h6 class="categories">{{ __('messages.categories') }}</h6>
-                <a href={{ route('mobile.china-discovers.all-places') }} class="show--all">{{ __('messages.search_for_place') }}</a>
-            </div>
-
-            <div style="display: flex; align-items: center; justify-content: flex-start; gap: 10px; margin: 10px;">
-                <a href="#" class="all-link" data-explorer-id="">
-                    <div style="width: 99px; flex-shrink: 0;">
-                        <div class="explorer-name" id="all-link" style="font-size: 15px; color: #f99e4d !important;">
-                            {{ __('messages.all') }}
-                        </div>
+            <div class="slider-container"
+                style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding: 10px; scrollbar-width: none; -ms-overflow-style: none;">
+                @foreach ($explorers as $explorer)
+                <a href="#"
+                    style="flex-shrink: 0; text-decoration: none; color: inherit; text-align: center; scroll-snap-align: start;"
+                    class="explorer-link" data-explorer-id="{{ $explorer->id }}">
+                    <div style="flex-shrink: 0;">
+                        <img style="max-width: 68px; border-radius: 15px; margin: auto;"
+                            src="{{ asset('storage/' . $explorer->avatar) }}"
+                            alt="{{ $explorer->{'name_' . app()->getLocale()} ?? $explorer->name_ar }}">
+                        <p class="explorer-name {{ request()->segment(3) == $explorer->id ? 'active' : '' }}"
+                            style="padding-top: 9px; font-size: 15px;">
+                            {{ $explorer->{'name_' . app()->getLocale()} ?? $explorer->name_ar }}
+                        </p>
                     </div>
                 </a>
-
-                <div class="slider-container"
-                    style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding: 10px; scrollbar-width: none; -ms-overflow-style: none;">
-                    @foreach ($explorers as $explorer)
-                        <a href="#"
-                            style="flex-shrink: 0; text-decoration: none; color: inherit; text-align: center; scroll-snap-align: start;"
-                            class="explorer-link" data-explorer-id="{{ $explorer->id }}">
-                            <div style="flex-shrink: 0;">
-                                <img style="max-width: 68px; border-radius: 15px; margin: auto;"
-                                    src="{{ asset('storage/' . $explorer->avatar) }}"
-                                    alt="{{ $explorer->{'name_' . app()->getLocale()} ?? $explorer->name_ar }}">
-                                <p class="explorer-name {{ request()->segment(3) == $explorer->id ? 'active' : '' }}"
-                                    style="padding-top: 9px; font-size: 15px;">
-                                    {{ $explorer->{'name_' . app()->getLocale()} ?? $explorer->name_ar }}
-                                </p>
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
+                @endforeach
             </div>
         </div>
-
-        <a href="{{ route('mobile.china-discovers.create') }}" class="add-place-button">{{ __('messages.add_new_place') }}
-            </h2>
-        </a>
-
-        @if (session('success'))
-            <div id="success-alert" style="background: #85d185; color: green; margin: 20px 20px 4px;"
-                class="bg-green-500 text-white p-4 rounded-xl my-4 text-center">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        {{-- الأماكن --}}
-        <div class="slider-container">
-            <div class="slider" id="placesSlider">
-                @forelse ($places as $place)
-                    <div class="place-card">
-                        <img src="{{ asset('storage/' . $place->avatar) }}"
-                            alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
-
-                        @php
-                            $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
-                        @endphp
-
-                        @if (auth()->check() && auth()->id() != $place->user_id)
-                            <div class="heart-icon @if ($isFavorited) favorited @endif"
-                                data-place-id="{{ $place->id }}">
-                                <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
-                                    style="font-size: 18px;"></i>
-                            </div>
-                        @endif
-
-                        <div class="rating-icon"
-                            style="position: absolute; top: 10px; right: 53px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
-                            <i class="fa-solid fa-star" style="font-size: 18px;"></i>
-                            <span style="font-size: 14px; font-weight: bold; color: #fff;">
-                                {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
-                            </span>
-                        </div>
-
-                        <div class="category-tag">
-                            @if ($place->mainCategory)
-                                <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
-                                    alt="{{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}">
-                                <span>
-                                    {{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}
-                                </span>
-                            @else
-                                <img src="{{ asset('storage/placeholders/no-category.png') }}"
-                                    alt="{{ __('بدون تصنيف') }}">
-                                <span>{{ __('بدون تصنيف') }}</span>
-                            @endif
-                        </div>
-
-                        <div class="place-name">
-                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
-                        </div>
-
-                        <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
-                            {{ __('messages.explore') }}
-                        </a>
-                    </div>
-                @empty
-                    <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
-                        <p style="color: #6c757d; font-size: 18px;">{{ __('لا يوجد أماكن للعرض حاليًا.') }}</p>
-                    </div>
-                @endforelse
-            </div>
-        </div>
-
-        {{-- أحدث الأماكن --}}
-        <div class="continaer--title" style="margin-top: 30px;">
-            <h6 class="categories">{{ __('messages.latest_places') }}</h6>
-            <a href="{{ route('mobile.china-discovers.all-places') }}" class="show--all">{{ __('messages.search_for_place') }}</a>
-        </div>
-
-        <div class="slider-container">
-            <div class="slider" id="latestPlacesSlider">
-                @forelse ($latestPlaces as $place)
-                    <div class="place-card">
-                        <img src="{{ asset('storage/' . $place->avatar) }}"
-                            alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
-
-                        @php
-                            $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
-                        @endphp
-
-                        @if (auth()->check() && auth()->id() != $place->user_id)
-                            <div class="heart-icon @if ($isFavorited) favorited @endif"
-                                data-place-id="{{ $place->id }}">
-                                <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
-                                    style="font-size: 18px;"></i>
-                            </div>
-                        @endif
-
-                        <div class="rating-icon"
-                            style="position: absolute; top: 10px; right: 53px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
-                            <i class="fa-solid fa-star" style="font-size: 18px;"></i>
-                            <span style="font-size: 14px; font-weight: bold; color: #fff;">
-                                {{ number_format($place->ratings_avg_rating ?? 0, 1) }}
-                                ({{ $place->ratings_count ?? 0 }})
-                            </span>
-                        </div>
-
-                        <div class="category-tag">
-                            @if ($place->mainCategory)
-                                <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
-                                    alt="{{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}">
-                                <span>
-                                    {{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}
-                                </span>
-                            @else
-                                <img src="{{ asset('storage/placeholders/no-category.png') }}"
-                                    alt="{{ __('بدون تصنيف') }}">
-                                <span>{{ __('بدون تصنيف') }}</span>
-                            @endif
-                        </div>
-
-                        <div class="place-name">
-                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
-                        </div>
-
-                        <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
-                            {{ __('messages.explore') }}
-
-                        </a>
-                    </div>
-                @empty
-                    <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
-                        <p style="color: #6c757d; font-size: 18px;">{{ __('لا يوجد أماكن للعرض حاليًا.') }}</p>
-                    </div>
-                @endforelse
-            </div>
-        </div>
-
-        {{-- الأكثر تقييماً --}}
-        <div class="continaer--title" style="margin-top: 30px;">
-            <h6 class="categories">{{ __('messages.most_rated') }}</h6>
-            <a class="show--all">{{ __('messages.search_for_place') }}</a>
-        </div>
-
-        <div class="slider-container">
-            <div class="slider" id="placesSlider">
-                @forelse ($latestPlaces as $place)
-                    <div class="place-card">
-                        <img src="{{ asset('storage/' . $place->avatar) }}"
-                            alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
-
-                        @php
-                            $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
-                        @endphp
-
-                        @if (auth()->check() && auth()->id() != $place->user_id)
-                            <div class="heart-icon @if ($isFavorited) favorited @endif"
-                                data-place-id="{{ $place->id }}">
-                                <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
-                                    style="font-size: 18px;"></i>
-                            </div>
-                        @endif
-
-                        <div class="rating-icon"
-                            style="position: absolute; top: 10px; right: 53px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
-                            <i class="fa-solid fa-star" style="font-size: 18px;"></i>
-                            <span style="font-size: 14px; font-weight: bold; color: #fff;">
-                                {{ number_format($place->ratings_avg_rating ?? 0, 1) }}
-                                ({{ $place->ratings_count ?? 0 }})
-                            </span>
-                        </div>
-
-                        <div class="category-tag">
-                            @if ($place->mainCategory)
-                                <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
-                                    alt="{{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}">
-                                <span>
-                                    {{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}
-                                </span>
-                            @else
-                                <img src="{{ asset('storage/placeholders/no-category.png') }}"
-                                    alt="{{ __('بدون تصنيف') }}">
-                                <span>{{ __('بدون تصنيف') }}</span>
-                            @endif
-                        </div>
-
-                        <div class="place-name">
-                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
-                        </div>
-
-                        <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
-                            {{ __('messages.explore') }}
-
-                        </a>
-                    </div>
-                @empty
-                    <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
-                        <p style="color: #6c757d; font-size: 18px;">{{ __('لا يوجد أماكن للعرض حاليًا.') }}</p>
-                    </div>
-                @endforelse
-            </div>
-        </div>
-
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+    <a href="{{ route('mobile.china-discovers.create') }}" class="add-place-button">{{ __('messages.add_new_place') }}
+        </h2>
+    </a>
+
+    @if (session('success'))
+    <div id="success-alert" style="background: #85d185; color: green; margin: 20px 20px 4px;"
+        class="bg-green-500 text-white p-4 rounded-xl my-4 text-center">
+        {{ session('success') }}
+    </div>
+    @endif
+
+    {{-- الأماكن --}}
+    <div class="slider-container">
+        <div class="slider" id="placesSlider">
+            @forelse ($places as $place)
+            <div class="place-card">
+                <img src="{{ asset('storage/' . $place->avatar) }}"
+                    alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
+
+                @php
+                $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
+                @endphp
+
+                @if (auth()->check() && auth()->id() != $place->user_id)
+                <div class="heart-icon @if ($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
+                    <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
+                        style="font-size: 18px;"></i>
+                </div>
+                @endif
+
+                <div class="rating-icon"
+                    style="position: absolute; top: 10px; right: 53px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                    <i class="fa-solid fa-star" style="font-size: 18px;"></i>
+                    <span style="font-size: 14px; font-weight: bold; color: #fff;">
+                        {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
+                    </span>
+                </div>
+
+                <div class="category-tag">
+                    @if ($place->mainCategory)
+                    <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
+                        alt="{{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}">
+                    <span>
+                        {{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}
+                    </span>
+                    @else
+                    <img src="{{ asset('storage/placeholders/no-category.png') }}" alt="{{ __('بدون تصنيف') }}">
+                    <span>{{ __('بدون تصنيف') }}</span>
+                    @endif
+                </div>
+
+                <div class="place-name">
+                    {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
+                </div>
+
+                <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
+                    {{ __('messages.explore') }}
+                </a>
+            </div>
+            @empty
+            <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
+                <p style="color: #6c757d; font-size: 18px;">{{ __('لا يوجد أماكن للعرض حاليًا.') }}</p>
+            </div>
+            @endforelse
+        </div>
+    </div>
+
+    {{-- أحدث الأماكن --}}
+    <div class="continaer--title" style="margin-top: 30px;">
+        <h6 class="categories">{{ __('messages.latest_places') }}</h6>
+        <a href="{{ route('mobile.china-discovers.all-places') }}" class="show--all">{{ __('messages.search_for_place')
+            }}</a>
+    </div>
+
+    <div class="slider-container">
+        <div class="slider" id="latestPlacesSlider">
+            @forelse ($latestPlaces as $place)
+            <div class="place-card">
+                <img src="{{ asset('storage/' . $place->avatar) }}"
+                    alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
+
+                @php
+                $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
+                @endphp
+
+                @if (auth()->check() && auth()->id() != $place->user_id)
+                <div class="heart-icon @if ($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
+                    <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
+                        style="font-size: 18px;"></i>
+                </div>
+                @endif
+
+                <div class="rating-icon"
+                    style="position: absolute; top: 10px; right: 53px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                    <i class="fa-solid fa-star" style="font-size: 18px;"></i>
+                    <span style="font-size: 14px; font-weight: bold; color: #fff;">
+                        {{ number_format($place->ratings_avg_rating ?? 0, 1) }}
+                        ({{ $place->ratings_count ?? 0 }})
+                    </span>
+                </div>
+
+                <div class="category-tag">
+                    @if ($place->mainCategory)
+                    <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
+                        alt="{{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}">
+                    <span>
+                        {{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}
+                    </span>
+                    @else
+                    <img src="{{ asset('storage/placeholders/no-category.png') }}" alt="{{ __('بدون تصنيف') }}">
+                    <span>{{ __('بدون تصنيف') }}</span>
+                    @endif
+                </div>
+
+                <div class="place-name">
+                    {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
+                </div>
+
+                <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
+                    {{ __('messages.explore') }}
+
+                </a>
+            </div>
+            @empty
+            <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
+                <p style="color: #6c757d; font-size: 18px;">{{ __('لا يوجد أماكن للعرض حاليًا.') }}</p>
+            </div>
+            @endforelse
+        </div>
+    </div>
+
+    {{-- الأكثر تقييماً --}}
+    <div class="continaer--title" style="margin-top: 30px;">
+        <h6 class="categories">{{ __('messages.most_rated') }}</h6>
+        <a class="show--all">{{ __('messages.search_for_place') }}</a>
+    </div>
+
+    <div class="slider-container">
+        <div class="slider" id="placesSlider">
+            @forelse ($latestPlaces as $place)
+            <div class="place-card">
+                <img src="{{ asset('storage/' . $place->avatar) }}"
+                    alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
+
+                @php
+                $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
+                @endphp
+
+                @if (auth()->check() && auth()->id() != $place->user_id)
+                <div class="heart-icon @if ($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
+                    <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
+                        style="font-size: 18px;"></i>
+                </div>
+                @endif
+
+                <div class="rating-icon"
+                    style="position: absolute; top: 10px; right: 53px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                    <i class="fa-solid fa-star" style="font-size: 18px;"></i>
+                    <span style="font-size: 14px; font-weight: bold; color: #fff;">
+                        {{ number_format($place->ratings_avg_rating ?? 0, 1) }}
+                        ({{ $place->ratings_count ?? 0 }})
+                    </span>
+                </div>
+
+                <div class="category-tag">
+                    @if ($place->mainCategory)
+                    <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
+                        alt="{{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}">
+                    <span>
+                        {{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}
+                    </span>
+                    @else
+                    <img src="{{ asset('storage/placeholders/no-category.png') }}" alt="{{ __('بدون تصنيف') }}">
+                    <span>{{ __('بدون تصنيف') }}</span>
+                    @endif
+                </div>
+
+                <div class="place-name">
+                    {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
+                </div>
+
+                <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
+                    {{ __('messages.explore') }}
+
+                </a>
+            </div>
+            @empty
+            <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
+                <p style="color: #6c757d; font-size: 18px;">{{ __('لا يوجد أماكن للعرض حاليًا.') }}</p>
+            </div>
+            @endforelse
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             // استمع للنقرات على جميع أيقونات القلب
@@ -488,7 +478,7 @@
                     transition: all 0.3s ease;
                 `;
                     if (i === 0) {
-                        dot.style.background = '#ffb531';
+                        dot.style.background = 'maroon';
                         dot.style.transform = 'scale(1.2)';
                     }
                     dot.addEventListener('click', () => {
@@ -527,7 +517,7 @@
             const dots = container.querySelectorAll('.scroll-dot');
             dots.forEach((dot, index) => {
                 if (index === activeIndex) {
-                    dot.style.background = '#ffb531';
+                    dot.style.background = 'maroon';
                     dot.style.transform = 'scale(1.2)';
                 } else {
                     dot.style.background = 'rgba(255, 181, 49, 0.3)';
@@ -559,5 +549,5 @@
         });
         window.addEventListener('beforeunload', cleanup);
         window.addEventListener('pagehide', cleanup);
-    </script>
+</script>
 @endsection

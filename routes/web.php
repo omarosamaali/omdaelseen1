@@ -31,25 +31,54 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\TripController;
 use App\Http\Controllers\TripGuidelineController;
 use App\Http\Controllers\TripFeaturesController;
+use App\Http\Controllers\AddsController;
+use Illuminate\Support\Facades\Auth;
 
-// ...
+Route::get('/logout-and-register/{trip}', function ($tripId) {
+    if (Auth::check()) {
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+    }
+    return redirect()->route('mobile.trip.register', $tripId);
+})->name('logout.and.register');
 
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    // مسار index الذي يطابق الاسم المستخدم في الكنترولر
+Route::resource('adds', AddsController::class)->names('admin.omdaHome.adds');
+Route::get('/admin/omdaHome/trip/{trip}/create_table', [TripController::class, 'createActivity'])->name('admin.omdaHome.trip.create_table');
+Route::post('/admin/omdaHome/trip/{trip}/create_table', [TripController::class, 'storeActivity'])->name('admin.omdaHome.trip.create_table.store');
+Route::get('/admin/omdaHome/trip/{trip}/activities/{activity}/edit', [TripController::class, 'editActivity'])
+    ->name('admin.trip.activities.edit');
+
+// Route for handling the update submission
+Route::put('/admin/omdaHome/trip/{trip}/activities/{activity}', [TripController::class, 'updateActivity'])
+    ->name('admin.trip.activities.update');
+
+Route::delete('/admin/omdaHome/trip/{trip}/activities/{activity}', [TripController::class, 'destroyActivity'])
+    ->name('admin.trip.activities.destroy');
+    
+    Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('omdaHome/trip-features', [TripFeaturesController::class, 'index'])->name('omdaHome.trip-features.index');
-
-    // باقي المسارات (create, store, edit, update, destroy, show)
     Route::get('omdaHome/trip-features/create', [TripFeaturesController::class, 'create'])->name('omdaHome.trip-features.create');
     Route::post('omdaHome/trip-features', [TripFeaturesController::class, 'store'])->name('omdaHome.trip-features.store');
     Route::get('omdaHome/trip-features/{tripFeature}/edit', [TripFeaturesController::class, 'edit'])->name('omdaHome.trip-features.edit');
     Route::put('omdaHome/trip-features/{tripFeature}', [TripFeaturesController::class, 'update'])->name('omdaHome.trip-features.update');
     Route::delete('omdaHome/trip-features/{tripFeature}', [TripFeaturesController::class, 'destroy'])->name('omdaHome.trip-features.destroy');
     Route::get('omdaHome/trip-features/{tripFeature}', [TripFeaturesController::class, 'show'])->name('omdaHome.trip-features.show');
-    // ...
 });
+
+Route::prefix('admin/omda-home/trip')->name('admin.omdaHome.trip.')->group(
+    function () {
+        Route::post('/', [TripController::class, 'store'])->name('store');
+        Route::put('/{trip}', [TripController::class, 'update'])->name('update');
+        Route::delete('/{trip}', [TripController::class, 'destroy'])->name('destroy');
+    }
+);
+
 Route::get('admin.omdaHome.trip.trip-info', [TripGuidelineController::class, 'index'])->name('admin.omdaHome.trip.trip-info');
 Route::middleware(['auth'])->name('admin.')->group(function () {
-    
+    Route::get('omdaHome/editTrip/{trip}', [TripController::class, 'editTrip'])->name('omdaHome.trip.editTrip');
+
+    Route::get('omdaHome/trip/{trip}', [TripController::class, 'showTrip'])->name('omdaHome.trip.showTrip');
     Route::get('omdaHome/trip/trip-show/{tripGuideline}', [TripGuidelineController::class, 'show'])->name('omdaHome.trip.show');
     Route::get('omdaHome/trip/trip-edit/{tripGuideline}', [TripGuidelineController::class, 'edit'])->name('omdaHome.trip.edit');
     Route::get('omdaHome/trip/trip-create', [TripGuidelineController::class, 'create'])->name('omdaHome.trip.trip-create');
@@ -63,7 +92,7 @@ Route::get('admin.omdaHome.trip.create-info', [TripController::class, 'createInf
 Route::get('admin.omdaHome.trip.index', [TripController::class, 'index'])->name('admin.omdaHome.trip.index');
 Route::get('admin.omdaHome.trip.create', [TripController::class, 'create'])->name('admin.omdaHome.trip.create');
 Route::get('admin.omdaHome.trip.adds', [TripController::class, 'adds'])->name('admin.omdaHome.trip.adds');
-Route::get('admin.omdaHome.trip.trip-table', [TripController::class, 'tripTable'])->name('admin.omdaHome.trip.trip-table');
+Route::get('admin.omdaHome.trip.trip-table/{id}', [TripController::class, 'tripTable'])->name('admin.omdaHome.trip.trip-table');
 Route::get('admin.omdaHome.trip.create-table', [TripController::class, 'createTable'])->name('admin.omdaHome.trip.create-table');
 
 Route::prefix('admin')->group(function () {
@@ -109,7 +138,6 @@ Route::prefix('admin/banners')->name('admin.banners.')->group(function () {
 });
 
 
-Route::get('admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard.index');
 Route::prefix('admin/contact-messages')->name('admin.contact-messages.')->group(function () {
     Route::get('/', [ContactMessageController::class, 'index'])->name('index');
     Route::get('/{id}', [ContactMessageController::class, 'showAdmin'])->name('show');
@@ -174,7 +202,6 @@ Route::prefix('admin/events')->name('admin.events.')->group(function () {
     Route::delete('/{id}', [EventController::class, 'destroy'])->name('destroy');
     Route::post('/delete-image', [EventController::class, 'deleteImage'])->name('delete-image');
 });
-
 
 Route::prefix('admin/help_words')->name('admin.help_words.')->group(function () {
     Route::get('/', [HelpWordsController::class, 'index'])->name('index');
@@ -251,7 +278,6 @@ Route::prefix('admin/places')->name('admin.places.')->group(function () {
     Route::post('/delete-image', [PlacesController::class, 'deleteImage'])->name('delete-image');
 });
 
-
 Route::prefix('admin/regions')->name('admin.regions.')->group(function () {
     Route::get('/', [RegionsController::class, 'index'])->name('index');
     Route::get('/create', [RegionsController::class, 'create'])->name('create');
@@ -271,8 +297,6 @@ Route::prefix('admin/explorers')->name('admin.explorers.')->group(function () {
     Route::get('/{id}', [ExplorersController::class, 'show'])->name('show');
     Route::delete('/{id}', [ExplorersController::class, 'destroy'])->name('destroy');
 });
-
-// إضافة هذه الروابط إلى ملف web.php
 
 Route::prefix('admin/branches')->name('admin.branches.')->group(function () {
     Route::get('/', [BranchesController::class, 'index'])->name('index');
@@ -301,6 +325,8 @@ Route::get('/omdaHome
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard.index');
+
     Route::get('/home', function () {
         return view('home');
     })->name('home');
@@ -315,3 +341,4 @@ Route::middleware('auth')->group(function () {
 require __DIR__ . '/auth.php';
 require __DIR__ . '/mobile.php';
 require __DIR__ . '/mobile_auth.php';
+require __DIR__ . '/admin.php';

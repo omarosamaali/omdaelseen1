@@ -27,8 +27,46 @@ class FollowersUserController extends Controller
                 ];
             });
 
-        return view('mobile.profile.followers', compact('topUsers'));
+        $myFollowers = Followers::where('following_id', auth()->id())
+            ->with('follower')
+            ->get()
+            ->map(function ($follower) {
+                // هل أنا متابع الشخص ده ؟
+                $isFollowing = Followers::where('follower_id', auth()->id())
+                    ->where('following_id', $follower->follower_id)
+                    ->exists();
+
+                $follower->is_following_back = $isFollowing;
+                return $follower;
+            });
+
+
+
+        return view('mobile.profile.followers', compact('topUsers', 'myFollowers'));
     }
+
+
+    public function toggle($userId)
+    {
+        $existing = Followers::where('follower_id', auth()->id())
+            ->where('following_id', $userId)
+            ->first();
+
+        if ($existing) {
+            // لو أنا بالفعل متابع → أعمل إلغاء متابعة
+            $existing->delete();
+            return back()->with('status', 'تم إلغاء المتابعة');
+        } else {
+            // لو مش متابع → أعمل متابعة
+            Followers::create([
+                'follower_id' => auth()->id(),
+                'following_id' => $userId,
+            ]);
+            return back()->with('status', 'تمت المتابعة');
+        }
+    }
+
+
     /**
      * Show the form for creating a new resource.
      */

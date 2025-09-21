@@ -70,9 +70,8 @@
                                 @endphp
                                 <td class="th">{{ $counter }}</td>
                                 <td class="th">{{ $word->word_type }}</td>
-                                <td class="th">{{ $word->order }}</td>
+                                <td class="th">{{ $word->word_ar }}</td>
                                 @php $counter++; @endphp
-                                <td class="th">{{ Str::limit($word->word_ar, 30) }}</td>
                                 <td class="th">{{ Str::limit($word->word_en, 30) }}</td>
                                 <td class="th" style="display: flex; align-items: center;">
                                     {{ Str::limit($word->word_zh, 30) }}

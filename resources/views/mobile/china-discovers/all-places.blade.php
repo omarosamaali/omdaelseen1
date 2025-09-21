@@ -74,72 +74,62 @@
 </style>
 
 @section('content')
-    <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black" style="padding-top: 30px;">
-        <img src="{{ asset('assets/assets/images/header-bg.png') }}" class="image-header" alt="">
+<x-china-header :title="__('messages.all_categories')" :route="route('mobile.china-discovers.index')" />
+<div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
+    <div style="width: 100%; display: block;">
+        @if ($banners->isNotEmpty())
+        @foreach ($banners as $banner)
+        <img class="fav-image" src="{{ asset('storage/' . $banner->avatar) }}" alt="">
+        @endforeach
+        @endif
+    </div>
 
-        <div class="header-container flex justify-start items-center relative z-10" style="position: fixed; top: 8px;">
-            <a href="{{ route('mobile.china-discovers.index') }}"
-                class="profile-link bg-white p-2 rounded-full flex justify-center items-center text-xl dark:bg-color10">
-                <i class="ph ph-caret-left"></i>
-            </a>
-            <div class="logo-register">
-                {{ __('messages.all_categories') }}
+    <div style="display: flex; align-items: center; justify-content: flex-start; gap: 10px; margin: 10px;">
+        <a href="{{ route('all.places') }}" class="all-link region-link" data-region-id="0"
+            style="flex-shrink: 0; text-decoration: none; color: inherit; text-align: center;">
+            <div style="flex-shrink: 0;">
+                <p class="explorer-name" style="font-size: 15px;">{{ __('messages.all') }}</p>
             </div>
-        </div>
+        </a>
 
-        <div style="width: 100%; display: block;">
-            @if ($banners->isNotEmpty())
-                @foreach ($banners as $banner)
-                    <img class="fav-image" src="{{ asset('storage/' . $banner->avatar) }}" alt="">
-                @endforeach
-            @endif
-        </div>
-
-        <div style="display: flex; align-items: center; justify-content: flex-start; gap: 10px; margin: 10px;">
-            <a href="{{ route('all.places') }}" class="all-link region-link" data-region-id="0"
-                style="flex-shrink: 0; text-decoration: none; color: inherit; text-align: center;">
+        <div class="slider-container"
+            style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding: 10px; scrollbar-width: none; -ms-overflow-style: none;">
+            @foreach ($regions as $region)
+            <a href="{{ route('all.places', ['region_id' => $region->id]) }}" class="region-link"
+                data-region-id="{{ $region->id }}"
+                style="flex-shrink: 0; text-decoration: none; color: inherit; text-align: center; scroll-snap-align: start;">
                 <div style="flex-shrink: 0;">
-                    <p class="explorer-name" style="font-size: 15px;">{{ __('messages.all') }}</p>
+                    <img style="max-width: 68px; width: 100%; border-radius: 15px;"
+                        src="{{ asset('storage/' . $region->avatar) }}"
+                        alt="{{ app()->getLocale() == 'en' ? $region->name_en : (app()->getLocale() == 'zh' ? $region->name_ch : $region->name_ar) }}">
+                    <p class="explorer-name" style="padding-top: 9px; font-size: 15px;">
+                        {{ app()->getLocale() == 'en' ? $region->name_en : (app()->getLocale() == 'zh' ?
+                        $region->name_ch : $region->name_ar) }}
+                    </p>
                 </div>
             </a>
-
-            <div class="slider-container"
-                style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding: 10px; scrollbar-width: none; -ms-overflow-style: none;">
-                @foreach ($regions as $region)
-                    <a href="{{ route('all.places', ['region_id' => $region->id]) }}" class="region-link"
-                        data-region-id="{{ $region->id }}"
-                        style="flex-shrink: 0; text-decoration: none; color: inherit; text-align: center; scroll-snap-align: start;">
-                        <div style="flex-shrink: 0;">
-                            <img style="max-width: 68px; width: 100%; border-radius: 15px;"
-                                src="{{ asset('storage/' . $region->avatar) }}"
-                                alt="{{ app()->getLocale() == 'en' ? $region->name_en : (app()->getLocale() == 'zh' ? $region->name_ch : $region->name_ar) }}">
-                            <p class="explorer-name" style="padding-top: 9px; font-size: 15px;">
-                                {{ app()->getLocale() == 'en' ? $region->name_en : (app()->getLocale() == 'zh' ? $region->name_ch : $region->name_ar) }}
-                            </p>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
-        </div>
-
-        <div class="category-section" id="category-section">
-            @foreach ($explorers as $explorer)
-                <a href="{{ route('all.sub-category', ['explorer_id' => $explorer->id]) }}"
-                    class="category-card explorer-link" data-explorer-id="{{ $explorer->id }}">
-                    <img style="width: 100px;" class="category-card-image"
-                        src="{{ asset('storage/' . $explorer->avatar) }}"
-                        alt="{{ app()->getLocale() == 'en' ? $explorer->name_en : (app()->getLocale() == 'zh' ? $explorer->name_ch : $explorer->name_ar) }}">
-                    <p class="category-card-text explorer-name">
-                        {{ app()->getLocale() == 'en' ? $explorer->name_en : (app()->getLocale() == 'zh' ? $explorer->name_ch : $explorer->name_ar) }}
-                    </p>
-                </a>
             @endforeach
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
+    <div class="category-section" id="category-section">
+        @foreach ($explorers as $explorer)
+        <a href="{{ route('all.sub-category', ['explorer_id' => $explorer->id]) }}" class="category-card explorer-link"
+            data-explorer-id="{{ $explorer->id }}">
+            <img style="width: 100px;" class="category-card-image" src="{{ asset('storage/' . $explorer->avatar) }}"
+                alt="{{ app()->getLocale() == 'en' ? $explorer->name_en : (app()->getLocale() == 'zh' ? $explorer->name_ch : $explorer->name_ar) }}">
+            <p class="category-card-text explorer-name">
+                {{ app()->getLocale() == 'en' ? $explorer->name_en : (app()->getLocale() == 'zh' ? $explorer->name_ch :
+                $explorer->name_ar) }}
+            </p>
+        </a>
+        @endforeach
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
             $('.region-link').hover(
                 function() {
                     // On hover in
@@ -173,5 +163,5 @@
                 }
             );
         });
-    </script>
+</script>
 @endsection

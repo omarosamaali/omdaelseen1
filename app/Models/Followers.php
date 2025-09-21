@@ -37,7 +37,6 @@ class Followers extends Model
         return $this->belongsTo(User::class, 'following_id');
     }
 
-    // قواعد التحقق
     public static function rules(): array
     {
         return [
@@ -46,7 +45,6 @@ class Followers extends Model
         ];
     }
 
-    // إضافة scope للبحث
     public function scopeByFollower($query, $followerId)
     {
         return $query->where('follower_id', $followerId);
@@ -56,4 +54,5 @@ class Followers extends Model
     {
         return $query->where('following_id', $followingId);
     }
+
 }

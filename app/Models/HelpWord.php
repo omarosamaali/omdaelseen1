@@ -15,6 +15,18 @@ class HelpWord extends Model
         'word_zh',
         'status',
         'order',
+        'word_type',
         'word_type'
     ];
+
+    public function getTranslatedWordAttribute()
+    {
+        $locale = app()->getLocale();
+        if ($locale === 'en' && !empty($this->word_en)) {
+            return $this->word_en;
+        } elseif ($locale === 'zh' && !empty($this->word_zh)) {
+            return $this->word_zh;
+        }
+        return $this->word_ar ?? 'No word available';
+    }
 }

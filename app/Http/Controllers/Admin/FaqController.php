@@ -40,12 +40,19 @@ class FaqController extends Controller
             'answer_zh' => 'nullable|max:10000',
             'status' => 'required|in:نشط,غير نشط',
             'order' => 'required|integer|min:0',
+            'category' => 'required|in:الطلب,الشحن,الأماكن,اخرى',
         ]);
 
         Faq::create($request->only([
-            'question_ar', 'question_en', 'question_zh',
-            'answer_ar', 'answer_en', 'answer_zh',
-            'status', 'order'
+            'question_ar',
+            'question_en',
+            'question_zh',
+            'answer_ar',
+            'answer_en',
+            'answer_zh',
+            'status',
+            'order',
+            'category'
         ]));
 
         return redirect()->route('admin.faq.index')->with('success', 'تم إضافة السؤال بنجاح');
@@ -74,13 +81,20 @@ class FaqController extends Controller
             'answer_zh' => 'nullable|max:10000',
             'status' => 'required|in:نشط,غير نشط',
             'order' => 'required|integer|min:0',
+            'category' => 'required|in:الطلب,الشحن,الأماكن,اخرى',
         ]);
 
         $faq = Faq::findOrFail($id);
         $faq->update($request->only([
-            'question_ar', 'question_en', 'question_zh',
-            'answer_ar', 'answer_en', 'answer_zh',
-            'status', 'order'
+            'question_ar',
+            'question_en',
+            'question_zh',
+            'answer_ar',
+            'answer_en',
+            'answer_zh',
+            'status',
+            'order',
+            'category'
         ]));
 
         return redirect()->route('admin.faq.index')->with('success', 'تم تحديث السؤال بنجاح');

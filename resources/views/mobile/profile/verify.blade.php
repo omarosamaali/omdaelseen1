@@ -7,7 +7,6 @@
     <link rel="shortcut icon" href="{{ asset('assets/assets/images/logo.png') }}" type="image/x-icon" />
     <link rel="stylesheet" href="{{ asset('assets/assets/css/swiper.min.css') }}" />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="manifest" href="{{ asset('assets/assets/manifest.json') }}" />
     <title>توثيق الحساب | Account Verification</title>
     <link href="{{ asset('assets/assets/css/style.css') }}" rel="stylesheet">
 </head>

@@ -55,7 +55,7 @@
 .categories {
     font-weight: bold;
     font-size: 18px;
-    color: #4a2d0b;
+    color: white;
 }
 
 /* Slider Styles */
@@ -161,7 +161,7 @@
     gap: 5px;
     font-size: 12px;
     font-weight: bold;
-    color: #4a2d0b;
+    color: white;
 }
 
 .category-tag img {
@@ -189,8 +189,8 @@
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
-    background: #ffb531;
-    color: #4a2d0b;
+    background: maroon;
+    color: white;
     border: none;
     padding: 8px 20px;
     border-radius: 20px;
@@ -208,7 +208,7 @@
 }
 
 .popular-card {
-    border: 2px solid #ffb531;
+    border: 2px solid maroon;
     box-shadow: 0 6px 20px rgba(255, 181, 49, 0.2);
 }
 
@@ -218,13 +218,13 @@
 }
 
 .popular-tag {
-    background: linear-gradient(45deg, #ffb531, #ffa500);
+    background: linear-gradient(45deg, maroon, #ffa500);
     color: white;
     font-weight: bold;
 }
 
 .popular-btn {
-    background: linear-gradient(45deg, #ffb531, #ffa500);
+    background: linear-gradient(45deg, maroon, #ffa500);
     color: white;
     font-weight: bold;
 }
@@ -236,26 +236,28 @@
 }
 
 .latest-card {
-    background: linear-gradient(135deg,
-            rgba(255, 255, 255, 0.1),
-            rgba(255, 181, 49, 0.05));
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 181, 49, 0.05)
+    );
     backdrop-filter: blur(10px);
 }
 
 .latest-card .category-tag {
     background: rgba(74, 45, 11, 0.9);
-    color: #ffb531;
+    color: maroon;
 }
 
 .latest-card .explore-btn {
-    background: #4a2d0b;
-    color: #ffb531;
-    border: 1px solid #ffb531;
+    background: white;
+    color: maroon;
+    border: 1px solid maroon;
 }
 
 .latest-card .explore-btn:hover {
-    background: #ffb531;
-    color: #4a2d0b;
+    background: maroon;
+    color: white;
     transform: translateX(-50%) translateY(-2px);
 }
 
@@ -308,7 +310,7 @@
 }
 
 .overall-rating {
-    background: linear-gradient(135deg, #ffb531 0%, #ffa500 100%);
+    background: linear-gradient(135deg, maroon 0%, #ffa500 100%);
     color: white;
     padding: 20px;
     border-radius: 15px;
@@ -364,7 +366,7 @@
 .add-rating-title {
     font-size: 16px;
     font-weight: bold;
-    color: #4a2d0b;
+    color: white;
     margin-bottom: 15px;
     text-align: center;
 }
@@ -376,7 +378,7 @@
 .reviews-title {
     font-size: 18px;
     font-weight: bold;
-    color: #4a2d0b;
+    color: white;
     margin-bottom: 20px;
     display: flex;
     align-items: center;
@@ -401,7 +403,7 @@
 }
 
 .reviews-list::-webkit-scrollbar-thumb {
-    background: #ffb531;
+    background: maroon;
     border-radius: 3px;
 }
 
@@ -421,10 +423,12 @@
 }
 
 .review-item.new-review {
-    border-color: #ffb531;
-    background: linear-gradient(135deg,
-            rgba(255, 181, 49, 0.05) 0%,
-            rgba(255, 165, 0, 0.05) 100%);
+    border-color: maroon;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 181, 49, 0.05) 0%,
+        rgba(255, 165, 0, 0.05) 100%
+    );
     animation: newReviewAnimation 1s ease;
 }
 
@@ -457,7 +461,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #ffb531, #ffa500);
+    background: linear-gradient(135deg, maroon, #ffa500);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -468,7 +472,7 @@
 
 .reviewer-name {
     font-weight: bold;
-    color: #4a2d0b;
+    color: white;
     font-size: 14px;
 }
 
@@ -485,7 +489,7 @@
 }
 
 .review-stars .fa-solid.fa-star {
-    color: #ffb531;
+    color: maroon;
 }
 
 .review-stars .fa-star {
@@ -557,15 +561,17 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg,
-            transparent 0%,
-            rgba(255, 181, 49, 0.05) 100%);
+    background: linear-gradient(
+        135deg,
+        transparent 0%,
+        rgba(255, 181, 49, 0.05) 100%
+    );
     opacity: 0;
     transition: opacity 0.3s ease;
 }
 
 .rating-box:hover {
-    border-color: #ffb531;
+    border-color: maroon;
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(255, 181, 49, 0.2);
 }
@@ -575,7 +581,7 @@
 }
 
 .rating-box.selected {
-    background: linear-gradient(135deg, #ffb531 0%, #ffa500 100%);
+    background: linear-gradient(135deg, maroon 0%, #ffa500 100%);
     border-color: #ff8c00;
     color: white;
     transform: translateY(-5px);
@@ -584,7 +590,7 @@
 
 .rating-star {
     font-size: 24px;
-    color: #ffb531;
+    color: maroon;
     margin-bottom: 5px;
     transition: all 0.3s ease;
 }
@@ -597,7 +603,7 @@
 .rating-number {
     font-size: 14px;
     font-weight: bold;
-    color: #4a2d0b;
+    color: white;
     transition: color 0.3s ease;
 }
 
@@ -661,7 +667,7 @@
 .modal-title {
     font-size: 20px;
     font-weight: bold;
-    color: #4a2d0b;
+    color: white;
     text-align: center;
     margin-bottom: 20px;
     display: flex;
@@ -685,7 +691,7 @@
 }
 
 .modal-star.filled {
-    color: #ffb531;
+    color: maroon;
     animation: starPulse 0.5s ease;
 }
 
@@ -719,7 +725,7 @@
 
 .modal-comment:focus {
     outline: none;
-    border-color: #ffb531;
+    border-color: maroon;
     box-shadow: 0 0 0 3px rgba(255, 181, 49, 0.1);
 }
 
@@ -741,7 +747,7 @@
 }
 
 .confirm-button {
-    background: linear-gradient(135deg, #ffb531 0%, #ffa500 100%);
+    background: linear-gradient(135deg, maroon 0%, #ffa500 100%);
     color: white;
 }
 
@@ -936,7 +942,7 @@ body {
 }
 
 .tab-button.active {
-    background-color: #ffb531;
+    background-color: maroon;
 }
 
 .tab-button.details {
@@ -996,7 +1002,6 @@ body {
 }
 
 @keyframes shake {
-
     0%,
     100% {
         transform: translateX(0);
@@ -1067,5 +1072,7 @@ body {
     align-items: center;
     justify-content: space-around;
     top: 15px;
-    position: relative;
+    position: absolute;
+    right: 10px;
+    top: 10px;
 }

@@ -12,9 +12,9 @@
     </style>
 
     <div class="py-4 text-end" style="margin-top: 30px;">
-        <div style="">
+        <div>
             <div style="display: flex; flex-direction: row-reverse; justify-content: space-between;">
-                <a href="{{ route('admin.omdaHome.trip.create-table') }}" class=""
+                <a href="{{ route('admin.omdaHome.trip.create_table', $trip->id) }}" class=""
                     style="background: black; color: white; padding: 10px 20px; border-radius: 5px; margin: 15px 0px; margin-left: 20px;">إضافة
                     جديد</a>
                 <div
@@ -39,11 +39,20 @@
                 </div>
             </div>
             <div class="text-right justify-between flex px-6">
-                <span>عنوان الرحلة : زيارة معرض كانتون</span>
-                <span>تاريخ المغادرة : 1-9-2025</span>
-                <span>تاريخ العودة : 21-9-2025</span>
-                <span>الحالة : فعال</span>
+                <span>عنوان الرحلة : {{ $trip->title_ar }} </span>
+                <span>تاريخ المغادرة : {{ \Carbon\Carbon::parse($trip->departure_date)->format('d-m-Y') }} </span>
+                <span>تاريخ العودة : {{ \Carbon\Carbon::parse($trip->return_date)->format('d-m-Y') }} </span>
+                <span>الحالة : {{ $trip->status == 'active' ? 'فعال' : 'غير فعال' }} </span>
             </div>
+
+            <div class="relative overflow-x-auto" style="max-width: 100%; margin: 20px">
+                @if (session()->has('success'))
+                    <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 text-right" role="alert">
+                        {{ session()->get('success') }}
+                    </div>
+                @endif
+            </div>
+
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg" style="max-width: 100%; margin: 20px">
                 <table id="faqs_table" class="w-full text-sm text-left rtl:text-right text-gray-500"
                     style="background: #c9c9c9;">
@@ -56,44 +65,59 @@
                             <th scope="col" class="th">أجراءات</th>
                         </tr>
                     </thead>
-
                     <tbody>
-                        {{-- @foreach ($faqs as $faq)
-                    <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
-                        @php
-                        if(!isset($counter)) {
-                            $counter = 1;
-                        }
-                        @endphp
-                        <td class="th">{{ $counter }}</td>
-                        @php $counter++; @endphp
-                        <td class="th">{{ Str::limit($faq->question_ar, 30) }}</td>
-                        <td class="th">{{ $faq->order }}</td>
-                        <td class="th">
-                            @if ($faq->status == 'نشط')
-                            <span class="text-green-600">نشط</span>
-                            @else
-                            <span class="text-red-600">غير نشط</span>
-                            @endif
-                        </td>
-                        <td class="th" style="display: flex;">
-                            <a href="{{ route('admin.faq.edit', $faq->id) }}" class="font-medium text-blue-600">
-                                <svg class="w-6 h-6 text-blue-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
-                                </svg>
-                            </a>
-                            <form action="{{ route('admin.faq.destroy', $faq->id) }}" onclick="return confirm('هل أنت متأكد من حذف هذا؟')" method="POST" class="inline-block">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="font-medium text-red-600">
-                                    <svg class="w-6 h-6 text-red-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
-                                    </svg>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    @endforeach --}}
+                        @foreach ($trip->activities as $activity)
+                            <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
+                                <td class="th">{{ $loop->iteration }}</td>
+                                <td class="th">{{ \Carbon\Carbon::parse($activity->date)->format('d-m-Y') }}</td>
+                                <td class="th">
+                                    @if ($activity->period == 'morning')
+                                        الصباح
+                                    @endif
+                                    @if ($activity->period == 'afternoon')
+                                        الظهر
+                                    @endif
+                                    @if ($activity->period == 'evening')
+                                        المساء
+                                    @endif
+                                </td>
+                                <td class="th">
+                                    @if ($activity->place_name_ar)
+                                        {{ $activity->place_name_ar }}
+                                    @else
+                                        {{ $activity->place?->name_ar }}
+                                    @endif
+                                </td>
+                                <td class="th" style="display: flex;">
+                                    <a href="{{ route('admin.trip.activities.edit', ['trip' => $trip->id, 'activity' => $activity->id]) }}"
+                                        class="font-medium text-blue-600">
+                                        <svg class="w-6 h-6 text-blue-600" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                            viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                                        </svg>
+                                    </a>
+                                    <form
+                                        action="{{ route('admin.trip.activities.destroy', ['trip' => $trip->id, 'activity' => $activity->id]) }}"
+                                        method="POST" class="inline-block"
+                                        onsubmit="return confirm('هل أنت متأكد من حذف هذا؟')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="font-medium text-red-600">
+                                            <svg class="w-6 h-6 text-red-600" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -108,7 +132,8 @@
                 searchInput.addEventListener('input', function() {
                     const term = this.value.trim().toLowerCase();
                     rows.forEach(row => {
-                        const questionCell = row.querySelectorAll('td')[1]; // The question_ar column
+                        const questionCell = row.querySelectorAll('td')[
+                            3]; // Updated to the 'الفعالية' column index (3)
                         if (!questionCell) return;
 
                         const question = questionCell.innerText.trim().toLowerCase();

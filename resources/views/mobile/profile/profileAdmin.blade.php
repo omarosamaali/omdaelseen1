@@ -209,10 +209,10 @@
 
     <div class="relative z-10">
         <div class="grid grid-cols-3 gap-2 mx-6 py-5 border-b border-color21 border-dashed dark:border-color24">
-            <div class="flex flex-col gap-2 p-4 justify-center items-center border border-color12 rounded-xl">
+            <a href="{{ route('mobile.admin-orders') }}" class="flex flex-col gap-2 p-4 justify-center items-center border border-color12 rounded-xl">
                 <p class="text-xs font-semibold">{{ __('messages.requests') }}</p>
-                <p class="font-semibold py-1 px-8 bg-color12 rounded-full">280</p>
-            </div>
+                <p class="font-semibold py-1 px-8 bg-color12 rounded-full">{{ $all_orders }}</p>
+            </a>
             <a href="{{ route('mobile.china-discovers.my-places') }}"
                 class="flex flex-col gap-2 p-4 justify-center items-center border border-color12 rounded-xl dark:border-color24">
                 <p class="text-xs font-semibold">{{ __('messages.places') }}</p>

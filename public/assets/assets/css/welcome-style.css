@@ -1,0 +1,50 @@
+.container-btns {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.container-btns a {
+    background: #000000;
+    color: white;
+    border-radius: 10px;
+    padding: 10px 10px;
+    font-size: 13px;
+    margin-bottom: 11px;
+}
+
+.stats-count {
+    position: absolute;
+    top: -9px;
+    background: red;
+    color: white;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    text-align: center;
+    align-items: anchor-center;
+    justify-content: center;
+    display: flex;
+    margin: auto;
+    right: -5px;
+    font-size: 12px;
+}
+
+#countdown,
+#skip-button {
+    right: 0;
+    top: 0px;
+    width: 50px;
+    padding: 4px;
+    background: orange;
+    border-radius: 0px 0px 0px 13px;
+    font-size: 13px;
+}
+
+#logo-img {
+    height: 130px;
+    text-align: center;
+    margin: auto;
+    margin-top: 58px;
+}

@@ -613,8 +613,8 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.omdaHome.trip.adds') }}"
-                                        class="{{ Route::is('admin.omdaHome.trip.adds') ? 'active' : '' }}">
+                                    <a href="{{ route('admin.omdaHome.adds.index') }}"
+                                        class="{{ Route::is('admin.omdaHome.adds.index') ? 'active' : '' }}">
                                         <x-iconSub />
                                         الإضافات
                                     </a>
@@ -678,7 +678,7 @@
                                 <span class="arrow">▼</span>
                             </div>
                             <ul id="orders-submenu" class="submenu">
-                                <li><a href="#" class="{{ Route::is('orders.new') ? 'active' : '' }}">
+                                <li><a href="{{ route('admin.orders.index') }}" class="{{ Route::is('admin.orders.index') ? 'active' : '' }}">
                                         <x-iconSub />
                                         طلبات
                                         جديدة

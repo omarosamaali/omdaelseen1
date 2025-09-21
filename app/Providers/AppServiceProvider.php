@@ -239,39 +239,24 @@ class AppServiceProvider extends ServiceProvider
             $view->with('countNotifications', $finalCount);
         });
         View::composer(['mobile.profile.profile', 'mobile.welcome'], function ($view) {
-            $userId = Auth::user()->id;
-
-            // عد الأماكن الخاصة بالمستخدم
+            $userId = Auth::user()?->id;
             $placesCount = Places::where('user_id', $userId)->count();
-
-            // عد البلاغات التي قدمها المستخدم
             $userReportsCount = Report::where('user_id', $userId)->count();
-
-            // عد البلاغات المقدمة ضد أماكن المستخدم
             $reportsAgainstUserPlacesCount = Report::whereIn('place_id', function ($query) use ($userId) {
                 $query->select('id')
                     ->from('places')
                     ->where('user_id', $userId);
             })->count();
-
-            // عد المفضلات
             $favoritesCount = Favorites::where('user_id', $userId)->count();
-
-            // عد التقييمات التي قدمها المستخدم
             $ratingsCount = Rating::where('user_id', $userId)->count();
-
-            // عد بلاغات المراجعات التي قدمها المستخدم
             $reviewReportsCount = ReviewReport::where('user_id', $userId)->count();
-
-            // المجموع الكلي للإشعارات
             $totalCount = $placesCount +
                 $userReportsCount +
-                $reportsAgainstUserPlacesCount +  // البلاغات ضد أماكن المستخدم
+                $reportsAgainstUserPlacesCount +
                 $favoritesCount +
                 $ratingsCount +
                 $reviewReportsCount;
 
-            // حساب الإشعارات المخفية
             $hiddenNotificationsCount = 0;
             $hiddenNotificationsJson = Cookie::get('hidden_notifications');
             if ($hiddenNotificationsJson) {

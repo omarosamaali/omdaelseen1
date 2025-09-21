@@ -121,7 +121,7 @@ if (document.querySelector(".meter1")) {
       },
     },
     fill: {
-      colors: ["#FF710F", "#663300", "#5EBA67"],
+      colors: ["#FF710F", "#800000", "#5EBA67"],
     },
     dataLabels: {
       enabled: false,
@@ -162,7 +162,7 @@ if (document.querySelector(".meter2")) {
       },
     },
     fill: {
-      colors: ["#FF710F", "#663300"],
+      colors: ["#FF710F", "#800000"],
     },
     dataLabels: {
       enabled: false,

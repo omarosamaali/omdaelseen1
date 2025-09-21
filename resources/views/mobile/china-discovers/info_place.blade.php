@@ -78,7 +78,7 @@
     .edit-review-btn:hover,
     .delete-review-btn:hover,
     .report-review-btn:hover {
-        color: #ffb531;
+        color: maroon;
     }
 
     .report-review-btn.reported {
@@ -88,7 +88,7 @@
 
     .rating-icon {
         position: absolute;
-        top: 66px;
+        top: 24px;
         left: 79px;
         right: unset;
         color: #f9a50f;
@@ -120,36 +120,37 @@
 </style>
 
 @section('content')
-<div class="container dark:text-white dark:bg-black">
-    <div class="container--header">
-        <!-- Check if user is authenticated and is the owner of the place -->
-        @if (auth()->check() && Auth::user()->id == $place->user_id)
-        <a class="report-button" href="{{ route('mobile.china-discovers.edit', $place->id) }}"
-            style="min-width: fit-content; left: 82%;">
-            {{ __('messages.update_button') }}
-        </a>
-        @elseif(auth()->check())
-        <!-- Check if user has not reported the place -->
-        @php
-        $hasReported = App\Models\Report::where('user_id', Auth::user()->id)
-        ->where('place_id', $place->id)
-        ->exists();
-        @endphp
-        @if (!$hasReported)
-        <button class="report-button" onclick="openReportModal()" style="min-width: fit-content; left: 82%;">
-            {{ __('messages.report') }}
-        </button>
-        @else
-        <div class="report-button" style="min-width: fit-content; left: 82%; background: gray; cursor: default;">
-            {{ __('messages.already_reported') }}
-        </div>
-        @endif
-        @endif
-
-        <div>{{ __('messages.place_details') }}</div>
-
-        <x-back-button href="{{ route('mobile.china-discovers.index') }}" />
+<x-china-header :title="__('messages.place_details')" :route="route('mobile.china-discovers.index')" />
+<div class="container--header">
+    <!-- Check if user is authenticated and is the owner of the place -->
+    @if (auth()->check() && Auth::user()->id == $place->user_id)
+    <a class="report-button" href="{{ route('mobile.china-discovers.edit', $place->id) }}"
+        style="min-width: fit-content; left: 82%;">
+        {{ __('messages.update_button') }}
+    </a>
+    @elseif(auth()->check())
+    <!-- Check if user has not reported the place -->
+    @php
+    $hasReported = App\Models\Report::where('user_id', Auth::user()->id)
+    ->where('place_id', $place->id)
+    ->exists();
+    @endphp
+    @if (!$hasReported)
+    <button class="report-button" onclick="openReportModal()" style="min-width: fit-content; left: 82%;">
+        {{ __('messages.report') }}
+    </button>
+    @else
+    <div class="report-button" style="min-width: fit-content; left: 82%; background: gray; cursor: default;">
+        {{ __('messages.already_reported') }}
     </div>
+    @endif
+    @endif
+{{-- 
+    <div>{{ __('messages.place_details') }}</div>
+
+    <x-back-button href="{{ route('mobile.china-discovers.index') }}" /> --}}
+</div>
+<div class="container dark:text-white dark:bg-black">
     <script>
         function openReportModal() {
                 Swal.fire({
@@ -336,8 +337,7 @@
         <div id="tab2" class="tab-content" style="display: none;">
             <div class="gallery-images">
                 @php
-                $images = json_decode($place->additional_images, true);
-                @endphp
+                $images = json_decode($place->additional_images, true) ?? []; @endphp
                 @foreach ($images as $image)
                 <img src="{{ asset('storage/' . $image) }}" alt="Additional Image" onclick="openImageModal(this.src)">
                 @endforeach
@@ -474,7 +474,7 @@
                 <i class="fa fa-x"></i>
             </button>
             <h3 class="modal-title">
-                <i class="fa fa-chat-circle-text" style="color: #ffb531;"></i>
+                <i class="fa fa-chat-circle-text" style="color: maroon;"></i>
                 ما رأيك في هذا المكان؟
             </h3>
             <div class="modal-rating-display" id="modalStars">
@@ -838,8 +838,8 @@
 
             const activeButton = document.querySelector(`[onclick="showTab('${tabId}')"]`);
             if (activeButton) {
-                activeButton.style.backgroundColor = '#ffb531';
-                activeButton.style.color = '#4a2d0b';
+                activeButton.style.backgroundColor = 'maroon';
+                activeButton.style.color = 'white';
             }
 
             if (tabId === 'tab3') {
@@ -898,7 +898,7 @@
 
             commentInput.value = comment || '';
             confirmBtn.textContent = 'تحديث التقييم';
-            modalTitle.innerHTML = `<i class="fa fa-edit" style="color: #ffb531;"></i> تعديل تقييمك`;
+            modalTitle.innerHTML = `<i class="fa fa-edit" style="color: maroon;"></i> تعديل تقييمك`;
 
             const stars = modal.querySelectorAll('.modal-star');
             stars.forEach((star, index) => {
@@ -964,7 +964,7 @@
 
             if (confirmBtn) confirmBtn.textContent = 'تأكيد التقييم';
             if (modalTitle) modalTitle.innerHTML =
-                `<i class="fa fa-chat-circle-text" style="color: #ffb531;"></i> ما رأيك في هذا المكان؟`;
+                `<i class="fa fa-chat-circle-text" style="color: maroon;"></i> ما رأيك في هذا المكان؟`;
             isEditing = false;
             editingReviewId = null;
         }

@@ -12,7 +12,7 @@
     </style>
     <div class="py-4 text-end" style="margin-top: 30px;">
 
-        <div style="">
+        <div>
             <div style="display: flex; flex-direction: row-reverse; justify-content: space-between;">
                 <a href="{{ route('admin.omdaHome.trip.create') }}" class=""
                     style="background: black; color: white;
@@ -83,75 +83,94 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
-                            <td class="th">
-                                1
-                            </td>
-                            <td class="th">
-                                1
-                            </td>
-                            <td class="th">
-                                2
-                            </td>
-                            <td class="th">
-                                2
-                            </td>
-                            <td class="th">
-                                2
-                            </td>
-                            <td class="th">
-                                2
-                            </td>
-                            <td class="th">
-                                2
-                            </td>
-                            <td class="th">
-                                2
-                            </td>
-                            <td class="th" style="display: flex; ">
-                                <a href="#" class="font-medium text-green-600">
-                                    <svg class="w-6 h-6 text-green-800" aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                                        viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-width="2"
-                                            d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z" />
-                                        <path stroke="currentColor" stroke-width="2"
-                                            d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                    </svg>
-                                </a>
-                                <a href="#" class="font-medium text-blue-600">
-                                    <svg class="w-6 h-6 text-blue-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                        width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
-                                    </svg>
-                                </a>
-
-                                <form action="#" onclick="return confirm('هل انت متاكد من حذف هذا')" method="POST"
-                                    class="inline-block">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="font-medium text-red-600">
-                                        <svg class="w-6 h-6 text-red-600" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            fill="none" viewBox="0 0 24 24">
+                        @foreach ($trips as $trip)
+                            <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
+                                <td class="th">
+                                    {{ $loop->iteration }}
+                                </td>
+                                <td class="th">
+                                    {{ $trip->title_ar }}
+                                </td>
+                                <td class="th">
+                                    {{ $trip->departure_date->format('Y-m-d') }}
+                                </td>
+                                <td class="th">
+                                    {{ $trip->return_date->format('Y-m-d') }}
+                                </td>
+                                <td class="th">
+                                    <?php
+                                    if ($trip->trip_type == 'group') {
+                                        $trip_type = 'رحلة جماعية';
+                                    } elseif ($trip->trip_type == 'traders_only') {
+                                        $trip_type = 'للتجار فقط';
+                                    } elseif ($trip->trip_type == 'trade_and_tourism') {
+                                        $trip_type = 'للتجارة والسياحة';
+                                    } elseif ($trip->trip_type == 'tourism_only') {
+                                        $trip_type = 'للسياحة فقط';
+                                    } elseif ($trip->trip_type == 'family') {
+                                        $trip_type = 'عائلية';
+                                    }
+                                    ?>
+                                    {{ $trip_type }}
+                                </td>
+                                <td class="th">
+                                    2
+                                </td>
+                                <td class="th">
+                                    2
+                                </td>
+                                <td class="th">
+                                    {{ $trip->status == 'active' ? 'نشط' : 'غير نشط' }}
+                                </td>
+                                <td class="th" style="display: flex; ">
+                                    <a href="{{ route('admin.omdaHome.trip.showTrip', $trip->id) }}"
+                                        class="font-medium text-green-600">
+                                        <svg class="w-6 h-6 text-green-800" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                            viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-width="2"
+                                                d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z" />
+                                            <path stroke="currentColor" stroke-width="2"
+                                                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                        </svg>
+                                    </a>
+                                    <a href="{{ route('admin.omdaHome.trip.editTrip', $trip->id) }}"
+                                        class="font-medium text-blue-600">
+                                        <svg class="w-6 h-6 text-blue-600" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                            viewBox="0 0 24 24">
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                                 stroke-width="2"
-                                                d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                                                d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                                         </svg>
-                                    </button>
-                                </form>
+                                    </a>
 
-                                <a href="{{ route('admin.omdaHome.trip.trip-table') }}" class="font-medium text-orange-600">
-                                    <svg class="w-6 h-6 text-orange-600" fill="currentColor"
-                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="orange">
-                                        <path stroke="currentColor" stroke-linecap="round"
-                                            d="M216 64C229.3 64 240 74.7 240 88L240 128L400 128L400 88C400 74.7 410.7 64 424 64C437.3 64 448 74.7 448 88L448 128L480 128C515.3 128 544 156.7 544 192L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 192C96 156.7 124.7 128 160 128L192 128L192 88C192 74.7 202.7 64 216 64zM216 176L160 176C151.2 176 144 183.2 144 192L144 240L496 240L496 192C496 183.2 488.8 176 480 176L216 176zM144 288L144 480C144 488.8 151.2 496 160 496L480 496C488.8 496 496 488.8 496 480L496 288L144 288z" />
-                                    </svg>
-                                </a>
-                            </td>
-                        </tr>
+                                    <form action="#" onclick="return confirm('هل انت متاكد من حذف هذا')" method="POST"
+                                        class="inline-block">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="font-medium text-red-600">
+                                            <svg class="w-6 h-6 text-red-600" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2"
+                                                    d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                                            </svg>
+                                        </button>
+                                    </form>
+
+                                    <a href="{{ route('admin.omdaHome.trip.trip-table', $trip->id) }}"
+                                        class="font-medium text-orange-600">
+                                        <svg class="w-6 h-6 text-orange-600" fill="currentColor"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="orange">
+                                            <path stroke="currentColor" stroke-linecap="round"
+                                                d="M216 64C229.3 64 240 74.7 240 88L240 128L400 128L400 88C400 74.7 410.7 64 424 64C437.3 64 448 74.7 448 88L448 128L480 128C515.3 128 544 156.7 544 192L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 192C96 156.7 124.7 128 160 128L192 128L192 88C192 74.7 202.7 64 216 64zM216 176L160 176C151.2 176 144 183.2 144 192L144 240L496 240L496 192C496 183.2 488.8 176 480 176L216 176zM144 288L144 480C144 488.8 151.2 496 160 496L480 496C488.8 496 496 488.8 496 480L496 288L144 288z" />
+                                        </svg>
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
 
                     </tbody>
                 </table>

@@ -58,7 +58,7 @@
 .categories {
     font-weight: bold;
     font-size: 18px;
-    color: #4a2d0b;
+    color: white;
 }
 
 /* Slider Styles */
@@ -138,7 +138,7 @@
     gap: 5px;
     font-size: 12px;
     font-weight: bold;
-    color: #4a2d0b;
+    color: white;
 }
 
 .category-tag img {
@@ -166,8 +166,8 @@
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
-    background: #ffb531;
-    color: #4a2d0b;
+    background: maroon;
+    color: white;
     border: none;
     padding: 8px 20px;
     border-radius: 20px;
@@ -186,7 +186,7 @@
 
 /* Popular Places Styling */
 .popular-card {
-    border: 2px solid #ffb531;
+    border: 2px solid maroon;
     box-shadow: 0 6px 20px rgba(255, 181, 49, 0.2);
 }
 
@@ -196,13 +196,13 @@
 }
 
 .popular-tag {
-    background: linear-gradient(45deg, #ffb531, #ffa500);
+    background: linear-gradient(45deg, maroon, #ffa500);
     color: white;
     font-weight: bold;
 }
 
 .popular-btn {
-    background: linear-gradient(45deg, #ffb531, #ffa500);
+    background: linear-gradient(45deg, maroon, #ffa500);
     color: white;
     font-weight: bold;
 }
@@ -225,18 +225,18 @@
 
 .latest-card .category-tag {
     background: rgba(74, 45, 11, 0.9);
-    color: #ffb531;
+    color: maroon;
 }
 
 .latest-card .explore-btn {
-    background: #4a2d0b;
-    color: #ffb531;
-    border: 1px solid #ffb531;
+    background: white;
+    color: maroon;
+    border: 1px solid maroon;
 }
 
 .latest-card .explore-btn:hover {
-    background: #ffb531;
-    color: #4a2d0b;
+    background: maroon;
+    color: white;
     transform: translateX(-50%) translateY(-2px);
 }
 

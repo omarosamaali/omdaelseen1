@@ -6,13 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="shortcut icon" href="{{ asset('assets/assets/images/logo.png') }}" type="image/x-icon" />
+    <link rel="icon" href="{{ asset('assets/assets/images/logo.png') }}" type="image/x-icon">
     <link rel="stylesheet" href="assets/css/swiper.min.css" />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="manifest" href="manifest.json" />
     <title>@yield('title')</title>
     <link href="{{ asset('assets/assets/css/style.css') }}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Cairo:wght@200..1000&display=swap"
+        rel="stylesheet">
+        <script src="https://js.ziina.com/v1/ziina.js"></script>
 </head>
 
 <body class="-z-20" style="overflow-x: hidden;">

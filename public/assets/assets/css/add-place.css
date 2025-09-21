@@ -6,7 +6,6 @@ body {
     min-height: 100vh;
     position: relative;
     overflow: hidden;
-    padding: 32px 0;
 }
 
 .container.dark {
@@ -26,7 +25,7 @@ body {
 }
 
 .bg-p3 {
-    background: #ffb531;
+    background: maroon;
 }
 
 .bg-p2 {
@@ -192,7 +191,7 @@ body {
 }
 
 .dark\:border-p1.dark {
-    border-color: #ffb531;
+    border-color: maroon;
 }
 
 .dark\:bg-bgColor14.dark {
@@ -212,7 +211,7 @@ body {
 }
 
 .dark\:text-p1.dark {
-    color: #ffb531;
+    color: maroon;
 }
 
 .p-4 {
@@ -331,11 +330,10 @@ body {
 
 .modal-input {
     width: 100%;
-    border: 2px solid #e0e0e0;
+    border: 2px solid #e0e0e0 !important;
     border-radius: 12px;
     padding: 15px;
     font-size: 16px;
-    margin-bottom: 15px;
     transition: border-color 0.3s ease;
     box-sizing: border-box;
     font-family: inherit;
@@ -344,7 +342,7 @@ body {
 
 .modal-input:focus {
     outline: none;
-    border-color: #ffb531;
+    border-color: maroon;
     box-shadow: 0 0 0 3px rgba(255, 181, 49, 0.1);
 }
 
@@ -409,7 +407,7 @@ body {
 }
 
 .sub-image:hover {
-    border-color: #ffb531;
+    border-color: maroon;
 }
 
 .remove-sub-image-btn {

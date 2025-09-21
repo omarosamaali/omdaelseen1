@@ -3,349 +3,294 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Report;
-use App\Models\ReviewReport;
+use App\Models\Trip;
 use App\Models\User;
+use App\Models\Places;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\TripFeatures;
+use App\Models\TripGuideline;
+use App\Models\TripActivity;
 
 class TripController extends Controller
 {
-    protected $layout;
-
-    public function __construct()
-    {
-        $this->layout = Auth::check() && Auth::user()->role === 'admin'
-            ? 'layouts.appProfileAdmin'
-            : 'layouts.appProfile';
-    }
-
     public function index(Request $request)
     {
-        return view('admin.omdaHome.trip.index')->with('layout', $this->layout);
+        $trips = Trip::all();
+        return view('admin.omdaHome.trip.index', compact('trips'));
     }
 
-    public function create(Request $request)
+    public function showTrip(Trip $trip)
     {
-        return view('admin.omdaHome.trip.create')->with('layout', $this->layout);
+        return view('admin.omdaHome.trip.showTrip', compact('trip'));
     }
 
-    public function adds(Request $request)
+    public function editTrip(Trip $trip)
     {
-        return view('admin.omdaHome.trip.adds')->with('layout', $this->layout);
+        $availableFeatures = TripFeatures::where('status', 'active')->get();
+        $availableGuidelines = TripGuideline::where('status', 'active')->get();
+        return view('admin.omdaHome.trip.editTrip', compact('trip', 'availableFeatures', 'availableGuidelines'));
     }
 
-    public function tripTable(Request $request)
+    public function editActivity(Trip $trip, TripActivity $activity)
     {
-        return view('admin.omdaHome.trip.trip-table')->with('layout', $this->layout);
+        if ($activity->trip_id !== $trip->id) {
+            abort(403, 'Unauthorized action.');
+        }
+        $places = Places::all(); // Load all places for the dropdown
+
+        return view('admin.omdaHome.trip.edit_activity', compact('places','trip', 'activity'));
     }
 
-    public function createTable(Request $request)
+
+    public function create()
     {
-        return view('admin.omdaHome.trip.create-table')->with('layout', $this->layout);
-    }
-    
-    public function tripFeatures(Request $request)
-    {
-        return view('admin.omdaHome.trip.trip-features')->with('layout', $this->layout);
+        $availableFeatures = TripFeatures::where('status', 'active')->get();
+        $availableGuidelines = TripGuideline::where('status', 'active')->get();
+
+        return view('admin.omdaHome.trip.create', compact('availableFeatures', 'availableGuidelines'));
     }
 
-    public function tripInfo(Request $request)
-    {
-        return view('admin.omdaHome.trip.trip-info')->with('layout', $this->layout);
-    }
-
-    public function createInfo(Request $request)
-    {
-        return view('admin.omdaHome.trip.create-info')->with('layout', $this->layout);
-    }
-    public function createFeatures(Request $request)
-    {
-        return view('admin.omdaHome.trip.create-features')->with('layout', $this->layout);
-    }
-
-    /**
-     * إنشاء بلاغ مراجعة جديد
-     */
     public function store(Request $request)
     {
         try {
             $validated = $request->validate([
-                'user_id' => 'required|exists:users,id',
-                'place_id' => 'required|exists:places,id',
-                'review_id' => 'required|exists:ratings,id',
-                'report_type' => 'required|string',
+                'title_ar' => 'required|string|max:255',
+                'title_en' => 'required|string|max:255',
+                'title_ch' => 'required|string|max:255',
+                'departure_date' => 'required|date',
+                'return_date' => 'required|date',
+                'hotel_ar' => 'required|string|max:255',
+                'hotel_en' => 'required|string|max:255',
+                'hotel_ch' => 'required|string|max:255',
+                'transportation_type' => 'required|string',
+                'trip_type' => 'required|string',
+                'room_type' => 'required|string',
+                'shared_room_price' => 'nullable|numeric',
+                'private_room_price' => 'nullable|numeric',
+                'translators' => 'required|string',
+                'meals' => 'nullable|array',
+                'airport_pickup' => 'required|boolean',
+                'supervisor' => 'required|boolean',
+                'factory_visit' => 'required|boolean',
+                'tourist_sites_visit' => 'required|boolean',
+                'markets_visit' => 'required|boolean',
+                'tickets_included' => 'required|boolean',
+                'price' => 'nullable|numeric',
+                'status' => 'required|string',
+                'trip_features' => 'required|array',
+                'trip_features.*' => 'exists:trip_features,id',
+                'trip_guidelines' => 'required|array',
+                'trip_guidelines.*' => 'exists:trip_guidelines,id',
             ]);
 
-            ReviewReport::create(array_merge($validated, ['status' => 1]));
+            $validated['trip_features'] = json_encode($validated['trip_features']);
+            $validated['trip_guidelines'] = json_encode($validated['trip_guidelines']);
 
-            return redirect()->route('admin.reports.index')
-                ->with('success', 'تم إنشاء بلاغ المراجعة بنجاح');
+            $trip = Trip::create($validated);
+
+            return redirect()->route('admin.omdaHome.trip.index')
+                ->with('success', 'تم إضافة الرحلة بنجاح.');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء إنشاء البلاغ: ' . $e->getMessage());
+                ->withInput()
+                ->with('error', 'حدث خطأ أثناء إضافة الرحلة: ' . $e->getMessage());
         }
     }
 
-    /**
-     * عرض تفاصيل البلاغ
-     */
-    public function show($id)
+    public function show(Trip $trip)
     {
-        $report = Report::with(['user', 'place', 'place.user'])->findOrFail($id);
-        return view('admin.omdaHome.reports.show', compact('report'))
-            ->with('layout', $this->layout);
-    }
+        // تحميل المميزات والإرشادات المرتبطة بالرحلة
+        $trip->load(['features', 'guidelines']);
 
-    /**
-     * عرض تفاصيل بلاغ المراجعة
-     */
-    public function review_show($id)
+        return view('admin.omdaHome.trip.show', compact('trip'));
+    }
+    public function edit(Trip $trip)
     {
-        $report = ReviewReport::with(['user', 'place', 'place.user', 'rating'])->findOrFail($id);
-        return view('admin.omdaHome.reports.review_show', compact('report'))
-            ->with('layout', $this->layout);
-    }
+        $availableFeatures = TripFeatures::all();
+        $availableGuidelines = TripGuideline::all();
+        $trip->load(['features', 'guidelines']);
 
-    /**
-     * قبول بلاغ المراجعة
-     */
-    public function review_accept($id)
+        // الحصول على الـ IDs المرتبطة لتحديدها في الـ select
+        $selectedFeatures = $trip->features->pluck('id')->toArray();
+        $selectedGuidelines = $trip->guidelines->pluck('id')->toArray();
+
+        return view('admin.omdaHome.trip.edit', compact('trip', 'availableFeatures', 'availableGuidelines', 'selectedFeatures', 'selectedGuidelines'));
+    }
+    public function update(Request $request, Trip $trip)
     {
         try {
-            $report = ReviewReport::findOrFail($id);
-            $report->update([
-                'status' => 0,
-                'resolved_at' => now(),
-                'resolved_by' => Auth::id()
+            $validated = $request->validate([
+                'title_ar'            => 'required|string|max:255',
+                'title_en'            => 'required|string|max:255',
+                'title_ch'            => 'required|string|max:255',
+                'departure_date'      => 'required|date',
+                'return_date'         => 'required|date',
+                'hotel_ar'            => 'required|string|max:255',
+                'hotel_en'            => 'required|string|max:255',
+                'hotel_ch'            => 'required|string|max:255',
+                'transportation_type' => 'required|string',
+                'trip_type'           => 'required|string',
+                'room_type'           => 'required|string',
+                'shared_room_price'   => 'nullable|numeric',
+                'private_room_price'  => 'nullable|numeric',
+                'translators'         => 'required|string',
+                'meals'               => 'nullable|array',
+                'airport_pickup'      => 'required|boolean',
+                'supervisor'          => 'required|boolean',
+                'factory_visit'       => 'required|boolean',
+                'tourist_sites_visit' => 'required|boolean',
+                'markets_visit'       => 'required|boolean',
+                'tickets_included'    => 'required|boolean',
+                'price'               => 'nullable|numeric',
+                'status'              => 'required|string',
+                'trip_features'       => 'required|array',
+                'trip_features.*'     => 'exists:trip_features,id',
+                'trip_guidelines'     => 'required|array',
+                'trip_guidelines.*'   => 'exists:trip_guidelines,id',
             ]);
-            return redirect()->route('admin.reports.index')
-                ->with('success', 'تم قبول بلاغ المراجعة');
+
+            // تحديث بيانات الرحلة
+            $trip->update($validated);
+
+            return redirect()->route('admin.omdaHome.trip.index')
+                ->with('success', 'تم تحديث الرحلة بنجاح.');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء معالجة البلاغ: ' . $e->getMessage());
+                ->with('error', 'حدث خطأ أثناء تحديث الرحلة: ' . $e->getMessage());
         }
     }
-
-    /**
-     * تحرير البلاغ
-     */
-    public function edit($id)
+    public function createActivity(Trip $trip)
     {
-        $report = Report::with(['user', 'place', 'place.user'])->findOrFail($id);
-        return view('admin.omdaHome.reports.edit', compact('report'))
-            ->with('layout', $this->layout);
+        $places = Places::all(); // Load all places for the dropdown
+        return view('admin.omdaHome.trip.create_table', compact('trip', 'places'));
     }
-
-    /**
-     * قبول البلاغ وتعطيل المكان
-     */
-    public function accept($id)
+    public function storeActivity(Request $request, Trip $trip)
     {
-        try {
-            $report = Report::with('place')->findOrFail($id);
-            if ($report->place) {
-                $report->place->update(['status' => 'inactive']);
-            }
-            $report->update([
-                'status' => 'resolved',
-                'resolved_at' => now(),
-                'resolved_by' => Auth::id()
-            ]);
-            return redirect()->route('admin.reports.show', $report->id)
-                ->with('success', 'تم قبول البلاغ وتعطيل المكان بنجاح');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء معالجة البلاغ: ' . $e->getMessage());
-        }
-    }
+        $validatedData = $request->validate([
+            'date' => 'required|date|after_or_equal:' . $trip->departure_date . '|before_or_equal:' . $trip->return_date,
+            'period' => 'required|in:morning,afternoon,evening',
+            'status' => 'required|in:active,inactive',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Make required and add webp
+            'is_place_related' => 'required|boolean',
+            'place_id' => 'required_if:is_place_related,1|nullable|exists:places,id',
+            'place_name_ar' => 'required_if:is_place_related,0|nullable|string|max:255',
+            'place_name_en' => 'required_if:is_place_related,0|nullable|string|max:255',
+            'place_name_zh' => 'required_if:is_place_related,0|nullable|string|max:255',
+            'details_ar' => 'required_if:is_place_related,0|nullable|string',
+            'details_en' => 'nullable|string',
+            'details_zh' => 'nullable|string',
+        ], [
+            // Custom error messages in Arabic
+            'image.nullable' => 'صورة المكان مطلوبة.',
+            'image.image' => 'يجب أن يكون الملف صورة صالحة.',
+            'image.mimes' => 'يجب أن تكون الصورة من نوع: jpeg, png, jpg, gif, webp.',
+            'image.max' => 'حجم الصورة يجب أن يكون أقل من 2 ميجابايت.',
+            'place_name_ar.required_if' => 'اسم المكان باللغة العربية مطلوب.',
+            'place_name_en.required_if' => 'اسم المكان باللغة الإنجليزية مطلوب.',
+            'details_ar.required_if' => 'التفاصيل باللغة العربية مطلوبة.',
+        ]);
 
-    public function dismiss($id)
-    {
-        try {
-            $report = Report::findOrFail($id);
-            $report->update([
-                'status' => 'dismissed',
-                'resolved_at' => now(),
-                'resolved_by' => Auth::id()
-            ]);
-            return redirect()->route('admin.reports.show', $report->id)
-                ->with('success', 'تم رفض البلاغ');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء معالجة البلاغ: ' . $e->getMessage());
-        }
-    }
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
 
-
-    /**
-     * تحذير صاحب المكان
-     */
-    public function warn($id)
-    {
-        try {
-            $report = Report::with(['place', 'place.user'])->findOrFail($id);
-
-            $report->update([
-                'status' => 'resolved',
-                'admin_action' => 'warning_sent',
-                'resolved_at' => now(),
-                'resolved_by' => Auth::id()
-            ]);
-
-            return redirect()->route('admin.reports.show', $report->id)
-                ->with('success', 'تم إرسال تحذير لصاحب المكان');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء إرسال التحذير: ' . $e->getMessage());
-        }
-    }
-    /**
-     * رفض بلاغ المراجعة
-     */
-    public function review_dismiss($id)
-    {
-        try {
-            $report = ReviewReport::findOrFail($id);
-            $report->update([
-                'status' => 2,
-                'resolved_at' => now(),
-                'resolved_by' => Auth::id()
-            ]);
-            return redirect()->route('admin.reports.index')
-                ->with('success', 'تم رفض بلاغ المراجعة');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء معالجة البلاغ: ' . $e->getMessage());
-        }
-    }
-    /**
-     * حذف البلاغ نهائياً
-     */
-    public function destroy($id)
-    {
-        try {
-            $report = Report::findOrFail($id);
-            $report->delete();
-
-            return redirect()->route('admin.reports.index')
-                ->with('success', 'تم حذف البلاغ نهائياً');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء حذف البلاغ: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * تحديث ملاحظات الإدارة على البلاغ
-     */
-    public function updateNotes(Request $request, $id)
-    {
-        try {
-            $request->validate([
-                'admin_notes' => 'required|string|max:1000'
-            ]);
-
-            $report = Report::findOrFail($id);
-
-            $report->update([
-                'admin_notes' => $request->admin_notes,
-                'updated_by' => Auth::id()
-            ]);
-
-            return redirect()->back()
-                ->with('success', 'تم تحديث الملاحظات بنجاح');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء تحديث الملاحظات: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * إحصائيات البلاغات
-     */
-    public function statistics()
-    {
-        $stats = [
-            'total_reports' => Report::count(),
-            'pending_reports' => Report::where('status', 'pending')->count(),
-            'resolved_reports' => Report::where('status', 'resolved')->count(),
-            'dismissed_reports' => Report::where('status', 'dismissed')->count(),
-            'today_reports' => Report::whereDate('created_at', today())->count(),
-            'this_week_reports' => Report::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
-            'this_month_reports' => Report::whereMonth('created_at', now()->month)->count(),
-        ];
-
-        $top_reporters = Report::selectRaw('user_id, COUNT(*) as reports_count')
-            ->with('user')
-            ->groupBy('user_id')
-            ->orderBy('reports_count', 'desc')
-            ->limit(10)
-            ->get();
-
-        $most_reported_places = Report::selectRaw('place_id, COUNT(*) as reports_count')
-            ->with('place')
-            ->groupBy('place_id')
-            ->orderBy('reports_count', 'desc')
-            ->limit(10)
-            ->get();
-
-        return view('admin.omdaHome.reports.statistics', compact('stats', 'top_reporters', 'most_reported_places'))
-            ->with('layout', $this->layout);
-    }
-
-    /**
-     * معالجة جماعية للبلاغات
-     */
-    public function bulkAction(Request $request)
-    {
-        try {
-            $request->validate([
-                'report_ids' => 'required|array',
-                'action' => 'required|in:accept,dismiss,delete'
-            ]);
-
-            $reportIds = $request->report_ids;
-            $action = $request->action;
-
-            switch ($action) {
-                case 'accept':
-                    $reports = Report::with('place')->whereIn('id', $reportIds)->get();
-                    foreach ($reports as $report) {
-                        if ($report->place) {
-                            $report->place->update(['status' => 'inactive']);
-                        }
-                        $report->update([
-                            'status' => 'resolved',
-                            'admin_action' => 'place_inactive',
-                            'resolved_at' => now(),
-                            'resolved_by' => Auth::id()
-                        ]);
-                    }
-                    $message = 'تم قبول البلاغات وتعطيل الأماكن المخالفة';
-                    break;
-
-                case 'dismiss':
-                    Report::whereIn('id', $reportIds)->update([
-                        'status' => 'dismissed',
-                        'admin_action' => 'dismissed',
-                        'resolved_at' => now(),
-                        'resolved_by' => Auth::id()
-                    ]);
-                    $message = 'تم رفض البلاغات المحددة';
-                    break;
-
-                case 'delete':
-                    Report::whereIn('id', $reportIds)->delete();
-                    $message = 'تم حذف البلاغات نهائياً';
-                    break;
+            // Validate that the uploaded file is actually an image
+            if (!$image->isValid()) {
+                return back()->withErrors(['image' => 'فشل في رفع الصورة. حاول مرة أخرى.'])
+                    ->withInput();
             }
 
-            return redirect()->route('admin.reports.index')
-                ->with('success', $message);
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء المعالجة الجماعية: ' . $e->getMessage());
+            // Store the image
+            $path = $image->store('activities', 'public');
+            $validatedData['image'] = $path;
         }
+
+        $validatedData['trip_id'] = $trip->id;
+        $trip->activities()->create($validatedData);
+
+        if ($request->input('add_more')) {
+            return redirect()->route('admin.omdaHome.trip.create_table', $trip->id)
+                ->with('success', 'تم إضافة الفعالية بنجاح. يمكنك إضافة المزيد.');
+        }
+
+        return redirect()->route('admin.omdaHome.trip.trip-table', $trip->id)
+            ->with('success', 'تم إضافة الفعالية بنجاح.');
+    }
+
+
+    public function updateActivity(Request $request, Trip $trip, TripActivity $activity)
+    {
+        if ($activity->trip_id !== $trip->id) {
+            abort(403); // Unauthorized action
+        }
+
+        $validatedData = $request->validate([
+            'date' => 'required|date|after_or_equal:' . $trip->departure_date . '|before_or_equal:' . $trip->return_date,
+            'period' => 'required|in:morning,afternoon,evening',
+            'name_ar' => 'nullable|string|max:255',
+            'name_en' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'name_ch' => 'nullable|string|max:255',
+            'status' => 'required|in:active,inactive',
+            'is_place_related' => 'required|boolean',
+            'place_id' => 'required_if:is_place_related,1|nullable|exists:places,id',
+            'place_name_ar' => 'required_if:is_place_related,0|nullable|string|max:255',
+            'place_name_en' => 'required_if:is_place_related,0|nullable|string|max:255',
+            'place_name_zh' => 'required_if:is_place_related,0|nullable|string|max:255',
+            'details_ar' => 'required_if:is_place_related,0|nullable|string',
+            'details_en' => 'nullable|string',
+            'details_zh' => 'nullable|string',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('images/activities'), $imageName);
+            $validatedData['image'] = $imageName;
+        }
+
+        $activity->update($validatedData);
+
+        return redirect()->route('admin.omdaHome.trip.trip-table', $trip->id)
+            ->with('success', 'تم تحديث الفعالية بنجاح.');
+    }
+
+
+    // Use route model binding for both Trip and TripActivity
+    public function destroyActivity(Trip $trip, TripActivity $activity)
+    {
+        // The $trip and $activity models are now automatically provided by Laravel.
+        // We can add a check to make sure the activity belongs to the trip for security
+        if ($activity->trip_id !== $trip->id) {
+            abort(403); // Unauthorized action
+        }
+
+        $activity->delete();
+
+        return redirect()->route('admin.omdaHome.trip.trip-table', $trip->id)
+            ->with('success', 'تم حذف الفعالية بنجاح.');
+    }
+
+    public function adds(Request $request)
+    {
+        return view('admin.omdaHome.trip.adds');
+    }
+
+    public function tripTable($id)
+    {
+        $trip = Trip::with('activities')->findOrFail($id);
+
+        return view('admin.omdaHome.trip.trip-table', compact('trip'));
+    }
+
+    public function tripInfo(Request $request)
+    {
+        return view('admin.omdaHome.trip.trip-info');
+    }
+
+    public function createInfo(Request $request)
+    {
+        return view('admin.omdaHome.trip.create-info');
     }
 }

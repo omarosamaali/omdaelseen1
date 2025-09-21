@@ -13,12 +13,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'mobile_auth' => \App\Http\Middleware\mobile_auth::class,
-            'locale' => \App\Http\Middleware\SetLocale::class  // غير الاسم ده
+            'locale' => \App\Http\Middleware\SetLocale::class,
+            'set_layout' => \App\Http\Middleware\SetLayout::class,
         ]);
 
-        // أضف الـ middleware ده على كل الروتس
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\SetLayout::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

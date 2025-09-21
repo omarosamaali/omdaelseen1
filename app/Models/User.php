@@ -26,6 +26,12 @@ class User extends Authenticatable
         'otp',
     ];
 
+    public function tripRequests()
+    {
+        return $this->hasMany(TripRequest::class);
+    }
+
+
     public function ratings()
     {
         return $this->hasMany(Rating::class);

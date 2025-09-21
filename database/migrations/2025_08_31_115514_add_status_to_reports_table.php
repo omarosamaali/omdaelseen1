@@ -18,6 +18,9 @@ class AddStatusToReportsTable extends Migration
     public function down()
     {
         Schema::table('reports', function (Blueprint $table) {
+            // حذف القيد الأجنبي أولاً
+            $table->dropForeign(['resolved_by']);
+            // حذف الأعمدة
             $table->dropColumn(['status', 'resolved_at', 'resolved_by']);
         });
     }

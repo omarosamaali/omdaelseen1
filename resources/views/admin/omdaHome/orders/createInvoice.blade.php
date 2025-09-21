@@ -1,0 +1,82 @@
+@extends($layout)
+
+@section('content')
+<style>
+    .input-field {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        text-align: right;
+    }
+</style>
+
+<div style="display: flex; flex-direction: row-reverse; margin: 0 20px;">
+    <div class="container py-4 mx-auto max-w-4xl"
+        style="margin-top: 100px; background: white; border-radius: 10px; padding: 20px;">
+        <h2 class="text-right mb-4 font-bold text-xl">إضافة فاتورة جديدة</h2>
+        <form action="{{ route('admin.orders.storeInvoice', $order->id) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <input type="hidden" name="order_type" value="{{ $orderType }}">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">رقم الفاتورة</label>
+                    <input type="text" id="invoice_number" name="invoice_number"
+                        class="input-field @error('invoice_number') border-red-500 @enderror"
+                        value="{{ old('invoice_number', default: $invoiceNumber) }}" required>
+                    @error('invoice_number')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">تاريخ الفاتورة</label>
+                    <input type="date" id="invoice_date" name="invoice_date"
+                        class="input-field @error('invoice_date') border-red-500 @enderror"
+                        value="{{ old('invoice_date', now()->format('Y-m-d')) }}" required>
+                    @error('invoice_date')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">عنوان الفاتورة</label>
+                    <input type="text" id="title" name="title"
+                        class="input-field @error('title') border-red-500 @enderror"
+                        value="{{ old('title', $orderType == App\Models\TripRequest::class ? 'رحلة' : 'منتج خاص') }}"
+                        required>
+                    @error('title')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">المبلغ</label>
+                    <input type="number" step="0.01" id="amount" name="amount"
+                        class="input-field @error('amount') border-red-500 @enderror" value="{{ old('amount') }}"
+                        required>
+                    @error('amount')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">الحالة</label>
+                <select name="status" class="input-field @error('status') border-red-500 @enderror"
+                    style="direction: ltr;">
+                    <option value="">اختر</option>
+                    <option value="مدفوعة" {{ old('status')=='مدفوعة' ? 'selected' : '' }}>مدفوعة</option>
+                    <option value="غير مدفوعة" {{ old('status')=='غير مدفوعة' ? 'selected' : '' }}>غير مدفوعة</option>
+                    <option value="ملغية" {{ old('status')=='ملغية' ? 'selected' : '' }}>ملغية</option>
+                </select>
+                @error('status')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <button type="submit" class="btn btn-dark px-4 py-2 mt-4 bg-black text-white rounded-md">إضافة</button>
+        </form>
+    </div>
+</div>
+@endsection

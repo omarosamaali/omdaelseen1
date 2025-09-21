@@ -6,7 +6,7 @@
         <form action="{{ route('admin.help_words.store') }}" method="POST">
             @csrf
             <div class="mb-4">
-                <label for="word_type" class=" text-right  text-right block text-sm font-medium text-gray-700">نوع الكلمة</label>
+                <label for="word_type" class="text-right block text-sm font-medium text-gray-700">نوع الكلمة</label>
                 <select name="word_type" id="word_type"
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm @error('word_type') border-red-500 @enderror"
                     required>

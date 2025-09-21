@@ -4,22 +4,10 @@
 <link rel="stylesheet" href="{{ asset('assets/assets/css/add-place.css') }}">
 
 @section('content')
+<x-china-header :title="__('messages.add_new_place')" :route="route('mobile.china-discovers.index')" />
 <div class="container dark:text-white dark:bg-color1">
-    <img src="{{ asset('assets/images/header-bg-2.png') }}" class="absolute header-bg" alt="" />
-    <div class="absolute top-0 left-0 bg-p3 bg-blur-145"></div>
-    <div class="absolute top-40 right-0 bg-[#0ABAC9] bg-blur-150"></div>
-    <div class="absolute top-80 right-40 bg-p2 bg-blur-235"></div>
-    <div class="absolute bottom-0 right-0 bg-p3 bg-blur-220"></div>
-
     <div class="relative z-30 px-6">
-        <div class="flex justify-center items-center gap-4 relative">
-            <a href="{{ url('/mobile/china-discovers') }}" class="absolute-left-0 bg-white size-8 rounded-full flex justify-center items-center text-xl dark:bg-color10">
-                <i class="ph ph-caret-left"></i>
-            </a>
-            <h2 class="text-2xl font-semibold text-black text-center">{{ __('messages.add_new_place') }}</h2>
-        </div>
-
-        <div class="p-6 rounded-xl bg-white dark:bg-color9 mt-12 border border-color21">
+        <div class="p-6 rounded-xl bg-white dark:bg-color9 border border-color21">
             <form action="{{ route('mobile.china-discovers.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 

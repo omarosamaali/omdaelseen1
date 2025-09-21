@@ -72,7 +72,7 @@
     .categories {
         font-weight: bold;
         font-size: 18px;
-        color: #4a2d0b;
+        color: white;
     }
 
     /* Slider Styles */
@@ -152,7 +152,7 @@
         gap: 5px;
         font-size: 12px;
         font-weight: bold;
-        color: #4a2d0b;
+        color: white;
     }
 
     .category-tag img {
@@ -180,8 +180,8 @@
         bottom: 10px;
         left: 50%;
         transform: translateX(-50%);
-        background: #ffb531;
-        color: #4a2d0b;
+        background: maroon;
+        color: white;
         border: none;
         padding: 8px 20px;
         border-radius: 20px;
@@ -200,7 +200,7 @@
 
     /* Popular Places Styling */
     .popular-card {
-        border: 2px solid #ffb531;
+        border: 2px solid maroon;
         box-shadow: 0 6px 20px rgba(255, 181, 49, 0.2);
     }
 
@@ -210,13 +210,13 @@
     }
 
     .popular-tag {
-        background: linear-gradient(45deg, #ffb531, #ffa500);
+        background: linear-gradient(45deg, maroon, #ffa500);
         color: white;
         font-weight: bold;
     }
 
     .popular-btn {
-        background: linear-gradient(45deg, #ffb531, #ffa500);
+        background: linear-gradient(45deg, maroon, #ffa500);
         color: white;
         font-weight: bold;
     }
@@ -235,18 +235,18 @@
 
     .latest-card .category-tag {
         background: rgba(74, 45, 11, 0.9);
-        color: #ffb531;
+        color: maroon;
     }
 
     .latest-card .explore-btn {
-        background: #4a2d0b;
-        color: #ffb531;
-        border: 1px solid #ffb531;
+        background: white;
+        color: maroon;
+        border: 1px solid maroon;
     }
 
     .latest-card .explore-btn:hover {
-        background: #ffb531;
-        color: #4a2d0b;
+        background: maroon;
+        color: white;
         transform: translateX(-50%) translateY(-2px);
     }
 
@@ -331,55 +331,50 @@
 </style>
 
 @section('content')
-    <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black" style="padding-top: 30px;">
-        <img src="{{ asset('assets/assets/images/header-bg.png') }}" class="image-header" alt="">
-
-        <div class="header-container flex justify-start items-center relative z-10" style="position: fixed; top: 8px;">
-            <a href="{{ route('mobile.china-discovers.all-places') }}"
-                class="profile-link bg-white p-2 rounded-full flex justify-center items-center text-xl dark:bg-color10">
-                <i class="ph ph-caret-left"></i>
-            </a>
-            <div class="logo-register">
-                {{ app()->getLocale() == 'en' ? $branch->name_en : (app()->getLocale() == 'zh' ? $branch->name_ch : $branch->name_ar) }}
-            </div>
+<x-china-header
+    :title="app()->getLocale() == 'en' ? $branch->name_en : (app()->getLocale() == 'zh' ? $branch->name_ch : $branch->name_ar)"
+    :route="route('mobile.china-discovers.all-places')" />
+<div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black" style="padding-top: 30px;">
+    <div style="width: 100%; display: block;">
+        @if ($banners->isNotEmpty())
+        @foreach ($banners as $banner)
+        <img class="fav-image" src="{{ asset('storage/' . $banner->avatar) }}" alt="">
+        @endforeach
+        @endif
+    </div>
+    <div class="container--features">
+        <div class="box-info">
+            <img src="{{ asset('storage/' . $places[0]->region?->avatar) }}" alt="">
+            <p>{{ app()->getLocale() == 'en' ? $places[0]->region?->name_en : (app()->getLocale() == 'zh' ?
+                $places[0]->region?->name_ch : $places[0]->region?->name_ar) }}
+            </p>
         </div>
-
-        <div style="width: 100%; display: block;">
-            @if ($banners->isNotEmpty())
-                @foreach ($banners as $banner)
-                    <img class="fav-image" src="{{ asset('storage/' . $banner->avatar) }}" alt="">
-                @endforeach
-            @endif
+        <div class="box-info">
+            <img src="{{ asset('storage/' . $branch?->avatar) }}" alt="">
+            <p>{{ app()->getLocale() == 'en' ? $branch?->name_en : (app()->getLocale() == 'zh' ? $branch?->name_ch :
+                $branch?->name_ar) }}
+            </p>
         </div>
-        <div class="container--features">
-            <div class="box-info">
-                <img src="{{ asset('storage/' . $places[0]->region?->avatar) }}" alt="">
-                <p>{{ app()->getLocale() == 'en' ? $places[0]->region?->name_en : (app()->getLocale() == 'zh' ? $places[0]->region?->name_ch : $places[0]->region?->name_ar) }}
-                </p>
-            </div>
-            <div class="box-info">
-                <img src="{{ asset('storage/' . $branch?->avatar) }}" alt="">
-                <p>{{ app()->getLocale() == 'en' ? $branch?->name_en : (app()->getLocale() == 'zh' ? $branch?->name_ch : $branch?->name_ar) }}
-                </p>
-            </div>
-            <div class="box-info">
-                <img src="{{ asset('storage/' . $branch->explorer?->avatar) }}" alt="">
-                <p>{{ app()->getLocale() == 'en' ? $branch->explorer?->name_en : (app()->getLocale() == 'zh' ? $branch->explorer?->name_ch : $branch->explorer?->name_ar) }}
-                </p>
-            </div>
-        </div>
-        <div style="display: flex; gap: 10px; margin: 0px 10px; height: 221px; justify-content: center;">
-            @foreach ($places as $place)
-                <a href="{{ route('mobile.china-discovers.info_place', $place) }}" style="width: 100%;">
-                    <img style="width: 100%; border-radius: 15px; border: 2px solid #ffb531; height: 200px;"
-                        src="{{ asset('storage/' . $place->avatar) }}"
-                        alt="{{ app()->getLocale() == 'en' ? $place->name_en : (app()->getLocale() == 'zh' ? $place->name_ch : $place->name_ar) }}">
-                    <p
-                        style="text-align: center; padding: 9px 0px; font-size: 15px; position: relative; top: -60px; background-color: rgba(255, 255, 255, 0.5);">
-                        {{ app()->getLocale() == 'en' ? $place->name_en : (app()->getLocale() == 'zh' ? $place->name_ch : $place->name_ar) }}
-                    </p>
-                </a>
-            @endforeach
+        <div class="box-info">
+            <img src="{{ asset('storage/' . $branch->explorer?->avatar) }}" alt="">
+            <p>{{ app()->getLocale() == 'en' ? $branch->explorer?->name_en : (app()->getLocale() == 'zh' ?
+                $branch->explorer?->name_ch : $branch->explorer?->name_ar) }}
+            </p>
         </div>
     </div>
+    <div style="display: flex; gap: 10px; margin: 0px 10px; height: 221px; justify-content: center;">
+        @foreach ($places as $place)
+        <a href="{{ route('mobile.china-discovers.info_place', $place) }}" style="width: 100%;">
+            <img style="width: 100%; border-radius: 15px; border: 2px solid maroon; height: 200px;"
+                src="{{ asset('storage/' . $place->avatar) }}"
+                alt="{{ app()->getLocale() == 'en' ? $place->name_en : (app()->getLocale() == 'zh' ? $place->name_ch : $place->name_ar) }}">
+            <p
+                style="text-align: center; padding: 9px 0px; font-size: 15px; position: relative; top: -60px; background-color: rgba(255, 255, 255, 0.5);">
+                {{ app()->getLocale() == 'en' ? $place->name_en : (app()->getLocale() == 'zh' ? $place->name_ch :
+                $place->name_ar) }}
+            </p>
+        </a>
+        @endforeach
+    </div>
+</div>
 @endsection
