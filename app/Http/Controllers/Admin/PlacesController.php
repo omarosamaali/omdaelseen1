@@ -201,8 +201,7 @@ class PlacesController extends Controller
 
     public function edit($id)
     {
-        $place = Places::findOrFail($id);
-        $explorers = Explorers::all(['id', 'name_ar']);
+        $place = Places::with(['mainCategory', 'subCategory', 'region'])->findOrFail($id);        $explorers = Explorers::all(['id', 'name_ar']);
         $branches = Branches::all(['id', 'name_ar', 'main']);
         $regions = Regions::all(['id', 'name_ar']);
 
