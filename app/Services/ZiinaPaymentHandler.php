@@ -75,14 +75,22 @@ public function calculatePriceWithFees($trip, $roomType = null)
                 throw new Exception("Trip price ($totalPrice AED) is below minimum (2 AED)");
             }
 
-            // Convert price to fils (AED * 100) - لا تضيف رسوم إضافية هنا
+            // Convert price to fils (AED * 100)
             $amountInFils = (int)($totalPrice * 100);
 
-            // تحسين رسالة الدفع
-            $message = "اشتراك في الرحلة: " . ($trip->title_ar ?? $trip->title ?? 'رحلة');
+            // ✅ تحسين الرسالة لتكون بطول مناسب
+            $title = $trip->title_ar ?? $trip->title ?? 'رحلة';
+            $title = mb_substr($title, 0, 80); // لا تتعدى 80 حرف
+
+            $message = "حجز رحلة: {$title}";
             if ($roomType) {
                 $roomTypeAr = $roomType === 'shared' ? 'غرفة مشتركة' : 'غرفة خاصة';
-                $message .= " - " . $roomTypeAr;
+                $message .= " - {$roomTypeAr}";
+            }
+
+            // إذا كانت الرسالة قصيرة جدًا أضف كلمة افتراضية
+            if (mb_strlen($message) < 10) {
+                $message .= " - حجز";
             }
 
             $data = [
@@ -96,7 +104,7 @@ public function calculatePriceWithFees($trip, $roomType = null)
                     'trip_title' => $trip->title_ar ?? $trip->title ?? '',
                     'customer_id' => (string)(auth()->id() ?? 'guest'),
                     'room_type' => $roomType ?? 'standard',
-                    'final_price_with_fees' => $totalPrice, // السعر النهائي شامل الرسوم
+                    'final_price_with_fees' => $totalPrice,
                     'environment' => app()->environment()
                 ]
             ];
@@ -105,11 +113,13 @@ public function calculatePriceWithFees($trip, $roomType = null)
                 $data['test'] = true;
             }
 
+            // ✅ أضف الرسالة إلى الـ log
             Log::info('Creating Ziina payment intent', [
                 'trip_id' => $trip->id,
                 'amount' => $amountInFils,
                 'room_type' => $roomType,
                 'final_price' => $totalPrice,
+                'message' => $message,
                 'test_mode' => $isTest || app()->environment('local', 'testing')
             ]);
 
@@ -130,6 +140,7 @@ public function calculatePriceWithFees($trip, $roomType = null)
             throw $e;
         }
     }
+
     /**
      * Get Payment Intent status
      */
