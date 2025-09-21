@@ -33,10 +33,12 @@ class PlacesController extends Controller
         }
 
         // Handle search
-        if ($request->has('user_search') && $request->user_search) {
-            $query->where('name_ar', 'like', '%' . $request->user_search . '%')
-                ->orWhere('name_en', 'like', '%' . $request->user_search . '%')
-                ->orWhere('name_ch', 'like', '%' . $request->user_search . '%');
+        if ($request->filled('user_search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name_ar', 'like', '%' . $request->user_search . '%')
+                    ->orWhere('name_en', 'like', '%' . $request->user_search . '%')
+                    ->orWhere('name_ch', 'like', '%' . $request->user_search . '%');
+            });
         }
 
         // Handle filtering
@@ -52,7 +54,9 @@ class PlacesController extends Controller
         }
 
         // Load places with related data
-        $places = $query->with(['mainCategory', 'subCategory', 'region'])->paginate(10);
+        $places = $query->with(['mainCategory', 'subCategory', 'region'])
+            ->paginate(10)
+            ->withQueryString();
 
         // Get favorites count per place
         $favoritesCount = Favorites::select('place_id')

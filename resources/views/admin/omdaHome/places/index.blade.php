@@ -31,11 +31,12 @@
                                     d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
                             </svg>
                         </span>
-                        <input aria-autocomplete="off" autocomplete="off" type="text" id="user_search"
-                            name="user_search"
-                            style="text-align: right; width: 100%; padding: 0.5rem 2.5rem 0.5rem 0.5rem; border: 1px solid #d1d5db; border-radius: 30px; background-color: transparent;"
-                            placeholder="بحث" required>
-                    </div>
+<form method="GET" action="{{ route('admin.places.index') }}" style="display: flex; align-items: center;">
+    <input aria-autocomplete="off" autocomplete="off" type="text" id="user_search" name="user_search"
+        value="{{ request('user_search') }}"
+        style="text-align: right; width: 100%; padding: 0.5rem 2.5rem 0.5rem 0.5rem; border: 1px solid #d1d5db; border-radius: 30px; background-color: transparent;"
+        placeholder="بحث">
+</form>                    </div>
                 </div>
 
             </div>
