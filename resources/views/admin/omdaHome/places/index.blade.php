@@ -195,28 +195,53 @@
         {{-- {{ $places->links() }} --}}
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-                const searchInput = document.getElementById('user_search');
-                const table = document.getElementById('places_table');
-                const rows = table.querySelectorAll('tbody tr');
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('user_search');
+        const tableBody = document.querySelector('#places_table tbody');
+        const paginationDiv = document.querySelector('.pagination'); // لتحديث الـ pagination
 
-                searchInput.addEventListener('input', function() {
-                    const term = this.value.trim().toLowerCase();
+        searchInput.addEventListener('input', function() {
+            const term = this.value.trim();
 
-                    rows.forEach(row => {
-                        const nameCell = row.querySelectorAll('td')[1];
-                        if (!nameCell) return;
+            // إرسال طلب AJAX
+            fetch('{{ route("admin.places.search") }}?search=' + encodeURIComponent(term), {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // تحديث محتوى الجدول
+                tableBody.innerHTML = data.html;
 
-                        const name = nameCell.textContent.trim().toLowerCase();
-                        if (name.includes(term) || term === '') {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
-                        }
-                    });
-                });
+                // تحديث الـ pagination إذا كانت موجودة
+                if (paginationDiv) {
+                    paginationDiv.innerHTML = data.pagination;
+                }
+
+                // إذا لم يتم العثور على نتائج
+                if (data.html === '') {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="11" style="text-align: center; padding: 20px;">
+                                لا يوجد أماكن مطابقة للبحث
+                            </td>
+                        </tr>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="11" style="text-align: center; padding: 20px;">
+                            حدث خطأ أثناء البحث
+                        </td>
+                    </tr>`;
             });
-    </script>
+        });
+    });
+</script>
 </div>
 @endsection

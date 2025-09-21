@@ -135,7 +135,8 @@
                                     @endif
                                 </th>
                                 <td class="th">
-                                    {{ $user->name }}
+                                    {{-- {{ $user->name }} --}}
+                                    {{ $loop->iteration + $users->firstitem() - 1  }}
                                 </td>
                                 <td class="th">
                                     {{ $user->role == 'admin' ? 'مدير' : 'مستخدم' }}
