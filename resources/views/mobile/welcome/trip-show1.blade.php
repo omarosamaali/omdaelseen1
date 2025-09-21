@@ -66,22 +66,30 @@
                             @csrf
                             <div class="flex justify-between items-center">
                                 <label style="display:flex; flex-direction:column; align-items:center;">
-                                    <input type="radio" name="room_type" value="shared" required>
+                                    {{-- <input type="radio" name="room_type" value="shared" required> --}}
                                     <i class="fa-solid fa-bed" style="color: maroon;"></i>
                                     غرفة مشتركة
-                                    <span id="shared-price">{{ $trip->shared_room_price }} درهم</span>
+                                    <span id="shared-price">{{ $trip->shared_room_price }} <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+										</svg></span>
                                 </label>
                                 <label style="display:flex; flex-direction:column; align-items:center;">
-                                    <input type="radio" name="room_type" value="private" required>
+                                    {{-- <input type="radio" name="room_type" value="private" required> --}}
                                     <i class="fa-solid fa-bed" style="color: maroon;"></i>
                                     غرفة خاصة
-                                    <span id="private-price">{{ $trip->private_room_price }} درهم</span>
+                                    <span id="private-price">{{ $trip->private_room_price }} <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+										</svg></span>
                                 </label>
                             </div>
                             <div class="mb-4 text-center">
                                 <div
                                     style=" background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 15px; border-radius: 12px; margin: 15px 0;">
-                                    <span style="font-size: 14px; color: #495057; display: block; margin-bottom: 5px;">
+                                    {{-- <span style="font-size: 14px; color: #495057; display: block; margin-bottom: 5px;">
                                         السعر
                                         الإجمالي:
                                     </span>
@@ -89,8 +97,12 @@
                                         style="font-size: 24px; font-weight: bold; color: maroon;">
                                         {{ number_format($trip->shared_room_price + $trip->shared_room_price * 0.029, 2)
                                         }}
-                                        درهم
-                                    </span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+										</svg>
+                                    </span> --}}
                                     <span
                                         style="text-align: center; display: block; font-size: 12px; color: rgb(97, 95, 95);">
                                         يشمل 2.9% رسوم بوابة الدفع
@@ -142,7 +154,7 @@
                                     @endphp
                                     <span style="display: flex; align-items: center;">
                                         {{ number_format($priceWithFee, 2) }}
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        {{-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                             viewBox="0 0 24 24" fill="none">
                                             <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z"
                                                 stroke="#000" stroke-width="1.5" stroke-miterlimit="10"
@@ -154,8 +166,12 @@
                                             <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5"
                                                 stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
                                             </path>
-                                        </svg>
-                                        درهم
+                                        </svg> --}}
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+										</svg>
                                     </span>
                                 </p>
                             </div>
@@ -174,7 +190,11 @@
                                     <span id="total-price-display"
                                         style="font-size: 24px; font-weight: bold; color: maroon;">
                                         {{ number_format($trip->price + $trip->price * 0.029, 2) }}
-                                        درهم
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+										</svg>
                                     </span>
                                     <span
                                         style="text-align: center; display: block; font-size: 12px; color: rgb(97, 95, 95);">
@@ -245,7 +265,7 @@
                                         @if ($activity->place?->subCategory->name_ar)
                                         <p>{{ $activity->place->subCategory->name_ar }}</p>
                                         @else
-                                        <p>جديد</p>
+                                        <p>فعالية</p>
                                         @endif
                                     </div>
                                     <div class="sub-category-right">
@@ -348,7 +368,7 @@
                             }
                             @endphp
                             @if ($feature)
-                            <li>{{ $feature?->name_ar }}</li>
+                            <li style="display: flex; align-items: center;"><x-iconSub /> {{ $feature?->name_ar }}</li>
                             @endif
                             @empty
                             <li>لا توجد مميزات مُضافة.</li>
@@ -382,7 +402,8 @@
                             }
                             @endphp
                             @if ($guideline)
-                            <li>{{ $guideline?->name_ar }}</li>
+                          <li style="display: flex; align-items: center;">
+                                <x-iconSub />{{ $guideline?->name_ar }}</li>
                             @endif
                             @empty
                             <li>لا توجد إرشادات مُضافة.</li>
@@ -450,7 +471,7 @@
                             array_map(function ($meal) {
                             switch ($meal) {
                             case 'breakfast':
-                            return 'فطار';
+                            return 'إفطار';
                             case 'lunch':
                             return 'غداء';
                             case 'dinner':
@@ -500,7 +521,7 @@
                         </p>
                     </div>
 
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                    {{-- <div style="display: flex; align-items: center; justify-content: space-between;">
                         <p class="tab-details-content"
                             style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-ticket" style="color: maroon;"></i>
@@ -517,13 +538,36 @@
                             </span>
                             {{ $trip->price }}
                         </p>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>
     </div>
 </body>
+<script>
+    window.showTab = function(tabId) {
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(content => content.style.display = 'none');
 
+        const buttons = document.querySelectorAll('.tab-button');
+        buttons.forEach(button => {
+            button.style.backgroundColor = 'black';
+            button.style.color = 'white';
+        });
+
+        document.getElementById(tabId).style.display = 'block';
+
+        const active_button = document.querySelector(`[onclick="showTab('${tabId}')"]`);
+        if (active_button) {
+            active_button.style.backgroundColor = 'maroon';
+            active_button.style.color = 'white';
+        }
+    };
+
+    window.onload = function() {
+        window.showTab('tab1');
+    };
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -548,7 +592,11 @@
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2
                             });
-                            totalPriceDisplay.textContent = newPrice + ' درهم';
+                            totalPriceDisplay.textContent = newPrice + ' <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+										</svg>';
                         }
                     });
                 });
@@ -642,7 +690,29 @@
                     renderReviews();
                 }
             }
-
+function showTab(tabId) {
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(content => {
+        content.style.display = 'none';
+        });
+        
+        const buttons = document.querySelectorAll('.tab-button');
+        buttons.forEach(button => {
+        button.style.backgroundColor = 'black';
+        button.style.color = 'white';
+        });
+        
+        document.getElementById(tabId).style.display = 'block';
+        
+        const active_button = document.querySelector(`[onclick="showTab('${tabId}')"]`);
+        active_button.style.backgroundColor = 'maroon';
+        active_button.style.color = 'white';
+        
+        if (tabId === 'tab3') {
+        updateAverageRating();
+        renderReviews();
+        }
+        }
             window.onload = function() {
                 showTab('tab1');
             };

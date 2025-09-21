@@ -68,7 +68,7 @@
     class="container relative overflow-hidden py-8 px-6 dark:text-white dark:bg-color1">
     <img src="{{ asset('assets/assets/images/logo.png') }}" alt="" class="logo-img">
     <p class="text-p">تم التسجيل بنجاح ورقم الطلب </p>
-    <p class="text-p1">REF123269120 </p>
+    <p class="text-p1">{{ $trip->refrence_number }} </p>
    @if($trip)
 <a href="{{ route('logout.and.register', $trip->id) }}" class="text-p2 trip-button">
     تسجيل مشترك اخر

@@ -14,6 +14,15 @@
                     @endforeach
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="mb-4 text-right">
+                            <label for="image" class="block text-gray-700 font-bold mb-2">بانر الرحلة *</label>
+                            <input type="file" name="image" id="image" value="{{ old('image') }}"
+                                class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
+                            @error('image')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4 text-right">
                             <label for="title_ar" class="block text-gray-700 font-bold mb-2">العنوان بالعربي *</label>
                             <input type="text" name="title_ar" id="title_ar" value="{{ old('title_ar') }}"
                                 class="w-full border-gray-300 rounded-md shadow-sm text-right" required>

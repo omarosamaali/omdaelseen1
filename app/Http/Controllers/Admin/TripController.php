@@ -78,6 +78,7 @@ class TripController extends Controller
                 'tickets_included' => 'required|boolean',
                 'price' => 'nullable|numeric',
                 'status' => 'required|string',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
                 'trip_features' => 'required|array',
                 'trip_features.*' => 'exists:trip_features,id',
                 'trip_guidelines' => 'required|array',
@@ -88,6 +89,14 @@ class TripController extends Controller
             $validated['trip_guidelines'] = json_encode($validated['trip_guidelines']);
 
             $trip = Trip::create($validated);
+
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('images/trips'), $imageName);
+                $trip->image = $imageName;
+                $trip->save();
+            }
 
             return redirect()->route('admin.omdaHome.trip.index')
                 ->with('success', 'تم إضافة الرحلة بنجاح.');
@@ -100,18 +109,15 @@ class TripController extends Controller
 
     public function show(Trip $trip)
     {
-        // تحميل المميزات والإرشادات المرتبطة بالرحلة
         $trip->load(['features', 'guidelines']);
-
         return view('admin.omdaHome.trip.show', compact('trip'));
     }
+
     public function edit(Trip $trip)
     {
         $availableFeatures = TripFeatures::all();
         $availableGuidelines = TripGuideline::all();
         $trip->load(['features', 'guidelines']);
-
-        // الحصول على الـ IDs المرتبطة لتحديدها في الـ select
         $selectedFeatures = $trip->features->pluck('id')->toArray();
         $selectedGuidelines = $trip->guidelines->pluck('id')->toArray();
 
@@ -137,6 +143,7 @@ class TripController extends Controller
                 'translators'         => 'required|string',
                 'meals'               => 'nullable|array',
                 'airport_pickup'      => 'required|boolean',
+                'image'               => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
                 'supervisor'          => 'required|boolean',
                 'factory_visit'       => 'required|boolean',
                 'tourist_sites_visit' => 'required|boolean',
@@ -149,9 +156,24 @@ class TripController extends Controller
                 'trip_guidelines'     => 'required|array',
                 'trip_guidelines.*'   => 'exists:trip_guidelines,id',
             ]);
+            if ($request->hasFile('image')) {
+                // حذف الصورة القديمة لو موجودة
+                if ($trip->image && file_exists(public_path('images/trips/' . $trip->image))) {
+                    unlink(public_path('images/trips/' . $trip->image));
+                }
+
+                $image = $request->file('image');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('images/trips'), $imageName);
+                $validated['image'] = $imageName;
+            } else {
+                // لو مفيش صورة جديدة، احذف العمود من البيانات المرسلة
+                unset($validated['image']);
+            }
 
             // تحديث بيانات الرحلة
             $trip->update($validated);
+
 
             return redirect()->route('admin.omdaHome.trip.index')
                 ->with('success', 'تم تحديث الرحلة بنجاح.');

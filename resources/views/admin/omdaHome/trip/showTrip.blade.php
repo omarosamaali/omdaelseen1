@@ -15,7 +15,7 @@
                         <div class="bg-gray-100 p-4 rounded-lg shadow-sm">
                             <h3 class="font-semibold text-lg mb-2 text-gray-700 border-b pb-2">تفاصيل الرحلة</h3>
                             <p class="mb-1"><strong>عنوان الرحلة:</strong> {{ $trip->title_ar }}</p>
-                            <p class="mb-1"><strong>تاريخ المغادرة:</strong> {{ $trip->departure_date->format('Y-m-d') }}
+<img src="{{ asset('images/trips/' . $trip->image) }}" alt="">                            <p class="mb-1"><strong>تاريخ المغادرة:</strong> {{ $trip->departure_date->format('Y-m-d') }}
                             </p>
                             <p class="mb-1"><strong>تاريخ العودة:</strong> {{ $trip->return_date->format('Y-m-d') }}</p>
                             <p class="mb-1"><strong>نوع الرحلة:</strong>
@@ -33,8 +33,8 @@
                             <?php
                             if ($trip->room_type == 'shared') {
                                 $room_type = 'مشتركة';
-                            } elseif ($trip->trip_type == 'private') {
-                                $trip_type = 'خاصة';
+                            } elseif ($trip->room_type == 'private') {
+                                $room_type = 'خاصة';
                             } elseif ($trip->room_type == 'by_choice') {
                                 $room_type = 'حسب الاختيار';
                             }

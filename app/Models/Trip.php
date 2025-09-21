@@ -29,6 +29,7 @@ class Trip extends Model
         'meals',
         'airport_pickup',
         'supervisor',
+        'image',
         'factory_visit',
         'tourist_sites_visit',
         'markets_visit',

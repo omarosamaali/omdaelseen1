@@ -50,7 +50,7 @@
                 <p class="text-sm font-semibold pb-2">الإسم</p>
                 <div
                     class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
-                    <input type="text" name="name" value="omar osama" placeholder="الإسم"
+                    <input type="text" name="name" value="{{ old('name') }}" placeholder="الإسم"
                         class="outline-none bg-transparent text-n600 text-sm placeholder:text-sm w-full placeholder:text-bgColor18 dark:text-color18 dark:placeholder:text-color18" />
                     <i class="ph ph-user text-xl text-bgColor18 !leading-none"></i>
                 </div>
@@ -59,16 +59,11 @@
                 @enderror
             </div>
 
-            @php
-            use Illuminate\Support\Str;
-            $randomEmail = Str::random(8) . '@gmail.com';
-            @endphp
-
             <div class="pt-4">
                 <p class="text-sm font-semibold pb-2">البريد الإلكتروني</p>
                 <div
                     class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
-                    <input type="email" name="email" value="{{ $randomEmail }}" placeholder="أدخل البريد الإلكتروني"
+                    <input type="email" name="email" value="{{ old('email') }}" placeholder="أدخل البريد الإلكتروني"
                         class="outline-none bg-transparent text-n600 text-sm placeholder:text-sm w-full placeholder:text-bgColor18 dark:text-color18 dark:placeholder:text-color18" />
                     <i class="ph ph-envelope-simple text-xl text-bgColor18 !leading-none"></i>
                 </div>
@@ -80,9 +75,8 @@
                 <p class="text-sm font-semibold pb-2">رقم الهاتف</p>
                 <div
                     class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
-                    <input type="tel" name="phone" value="{{ rand(1000, 9999) }}" placeholder="رقم الهاتف المحترك"
-                        class="outline-none bg-transparent text-n600 text-sm placeholder:text-sm w-full placeholder:text-bgColor18 dark:text-color18 dark:placeholder:text-color18" />
-                    <i class="ph ph-phone text-xl text-bgColor18 !leading-none"></i>
+<input type="tel" name="phone" value="{{ old('phone', '971') }}" placeholder="رقم الهاتف"
+    class="outline-none bg-transparent text-n600 text-sm placeholder:text-sm w-full placeholder:text-bgColor18 dark:text-color18 dark:placeholder:text-color18" />                    <i class="ph ph-phone text-xl text-bgColor18 !leading-none"></i>
                 </div>
                 @error('phone')
                 <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
@@ -93,14 +87,14 @@
                 <p class="text-sm font-semibold pb-2">الدولة</p>
                 <div
                     class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
-                    <select name="country"
-                        class="outline-none bg-transparent text-n600 text-sm placeholder:text-sm w-full placeholder:text-bgColor18 dark:text-color18 dark:placeholder:text-color18">
-                        @foreach (__('countries') as $code => $name)
-                        <option value="{{ $code }}" {{ old('country')==$code ? 'selected' : '' }}>
-                            {{ $name }}
-                        </option>
-                        @endforeach
-                    </select>
+                 <select name="country"
+                    class="outline-none bg-transparent text-n600 text-sm placeholder:text-sm w-full placeholder:text-bgColor18 dark:text-color18 dark:placeholder:text-color18">
+                    @foreach (__('countries') as $code => $name)
+                    <option value="{{ $code }}" {{ old('country', 'AE' )==$code ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                    @endforeach
+                </select>
                 </div>
                 @error('country')
                 <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
@@ -111,7 +105,7 @@
                 <p class="text-sm font-semibold pb-2">كلمة المرور</p>
                 <div
                     class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
-                    <input type="password" name="password" value="o1m2r3e4l5" placeholder="*****"
+                    <input type="password" name="password" placeholder="*****"
                         class="outline-none bg-transparent text-n600 text-sm placeholder:text-sm w-full placeholder:text-bgColor18 dark:text-color18 dark:placeholder:text-color18 passwordField" />
                     <i
                         class="ph ph-eye-slash text-xl text-bgColor18 !leading-none passowordShow cursor-pointer dark:text-color18"></i>
@@ -125,7 +119,7 @@
                 <p class="text-sm font-semibold pb-2">تأكيد كلمة المرور</p>
                 <div
                     class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
-                    <input type="password" name="password_confirmation" value="o1m2r3e4l5" placeholder="*****"
+                    <input type="password" name="password_confirmation" placeholder="*****"
                         class="outline-none bg-transparent text-n600 text-sm placeholder:text-sm w-full placeholder:text-bgColor18 dark:text-color18 dark:placeholder:text-color18 confirmPasswordField" />
                     <i
                         class="ph ph-eye-slash text-xl text-bgColor18 !leading-none confirmPasswordShow cursor-pointer dark:text-color18"></i>
@@ -308,6 +302,121 @@
 </div>
 
 <script>
+    // أضف هذا الكود في نهاية الـ script الموجود في ملف الـ Blade
+    
+    document.addEventListener('DOMContentLoaded', function() {
+    // فحص الإيميل المكرر
+    const emailInput = document.querySelector('input[name="email"]');
+    const form = document.getElementById('registration-form');
+    
+    // إنشاء div لرسالة الخطأ
+    const emailDiv = emailInput.closest('div').parentElement;
+    let emailError = emailDiv.querySelector('.email-duplicate-error');
+    if (!emailError) {
+    emailError = document.createElement('span');
+    emailError.className = 'email-duplicate-error text-red-500 text-xs mt-1 hidden';
+    emailError.textContent = 'هذا الإيميل مسجل مسبقاً في هذه الرحلة';
+    emailDiv.appendChild(emailError);
+    }
+    
+    function checkDuplicateEmail() {
+    const email = emailInput.value.trim();
+    const tripId = '{{ $trip->id }}';
+    
+    if (email) {
+    // جلب قائمة الإيميلات المسجلة لهذه الرحلة
+    const registeredEmails = JSON.parse(localStorage.getItem(`trip_${tripId}_emails`) || '[]');
+    
+    if (registeredEmails.includes(email.toLowerCase())) {
+    emailError.classList.remove('hidden');
+    return false;
+    } else {
+    emailError.classList.add('hidden');
+    return true;
+    }
+    }
+    return true;
+    }
+    
+    // فحص عند كتابة الإيميل
+    emailInput.addEventListener('input', checkDuplicateEmail);
+    emailInput.addEventListener('blur', checkDuplicateEmail);
+    
+    // باقي الكود الموجود للغرف...
+    const roomRadios = document.querySelectorAll('.room-radio');
+    const totalPriceDisplay = document.getElementById('total-price-display');
+    const selectedPriceInput = document.getElementById('selected-price-input');
+    
+    if (roomRadios.length > 0) {
+    const sharedPrice = {{ $trip->shared_room_price ?? 0 }};
+    const privatePrice = {{ $trip->private_room_price ?? 0 }};
+    const feePercent = 0.029;
+    
+    function updateTotalPrice() {
+    const selectedRoom = document.querySelector('.room-radio:checked');
+    if (!selectedRoom) return;
+    
+    let basePrice = 0;
+    if (selectedRoom.value === 'shared') {
+    basePrice = sharedPrice;
+    } else if (selectedRoom.value === 'private') {
+    basePrice = privatePrice;
+    }
+    
+    const totalPrice = basePrice * (1 + feePercent);
+    
+    if (totalPriceDisplay) {
+    totalPriceDisplay.textContent = totalPrice.toFixed(2) + ' درهم';
+    }
+    
+    if (selectedPriceInput) {
+    selectedPriceInput.value = totalPrice.toFixed(2);
+    }
+    }
+    
+    roomRadios.forEach(radio => {
+    radio.addEventListener('change', updateTotalPrice);
+    });
+    
+    updateTotalPrice();
+    }
+    
+    // تعديل submit event للتحقق من الإيميل المكرر
+    form.addEventListener('submit', function(e) {
+    // فحص تكرار الإيميل أولاً
+    if (!checkDuplicateEmail()) {
+    e.preventDefault();
+    return;
+    }
+    
+    // فحص اختيار الغرفة
+    const selectedRoom = document.querySelector('.room-radio:checked');
+    const roomError = document.getElementById('room-error');
+    
+    if (roomRadios.length > 0 && !selectedRoom) {
+    e.preventDefault();
+    if (roomError) {
+    roomError.classList.remove('hidden');
+    roomError.classList.add('show');
+    }
+    } else {
+    if (roomError) {
+    roomError.classList.add('hidden');
+    roomError.classList.remove('show');
+    }
+    
+    // حفظ الإيميل في Local Storage عند نجاح التسجيل
+    const email = emailInput.value.trim().toLowerCase();
+    const tripId = '{{ $trip->id }}';
+    const registeredEmails = JSON.parse(localStorage.getItem(`trip_${tripId}_emails`) || '[]');
+    
+    if (!registeredEmails.includes(email)) {
+    registeredEmails.push(email);
+    localStorage.setItem(`trip_${tripId}_emails`, JSON.stringify(registeredEmails));
+    }
+    }
+    });
+    });
     document.addEventListener('DOMContentLoaded', function() {
     // التحقق من وجود خيارات الغرف
     const roomRadios = document.querySelectorAll('.room-radio');
