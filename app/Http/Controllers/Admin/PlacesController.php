@@ -23,18 +23,6 @@ class PlacesController extends Controller
             ? 'layouts.appProfileAdmin'
             : 'layouts.appProfile';
     }
-    public function search(Request $request)
-    {
-        $search = $request->query('search', '');
-        $places = Places::where('name_ar', 'like', '%' . $search . '%')
-            ->when($request->user_id, fn($query, $user_id) => $query->where('user_id', $user_id))
-            ->paginate(10)
-            ->load(['mainCategory', 'subCategory', 'region']);
-
-        return response()->json([
-            'html' => view('admin.places.partials.table', compact('places', 'ratingsData', 'favoritesCount', 'commentsCount'))->render()
-        ]);
-    }
     public function index(Request $request)
     {
         $query = Places::query();

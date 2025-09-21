@@ -34,7 +34,6 @@ use App\Http\Controllers\TripFeaturesController;
 use App\Http\Controllers\AddsController;
 use Illuminate\Support\Facades\Auth;
 
-Route::get('/admin/places/search', [App\Http\Controllers\Admin\PlacesController::class, 'search'])->name('admin.places.search');
 Route::get('/logout-and-register/{trip}', function ($tripId) {
     if (Auth::check()) {
         Auth::logout();

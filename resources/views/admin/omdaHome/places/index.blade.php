@@ -195,37 +195,28 @@
         {{-- {{ $places->links() }} --}}
     </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('user_search');
-        const tableBody = document.querySelector('#places_table tbody');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('user_search');
+                const table = document.getElementById('places_table');
+                const rows = table.querySelectorAll('tbody tr');
 
-        searchInput.addEventListener('input', function() {
-            const term = this.value.trim();
+                searchInput.addEventListener('input', function() {
+                    const term = this.value.trim().toLowerCase();
 
-            fetch('{{ route("admin.places.search") }}?search=' + encodeURIComponent(term), {
-                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-            })
-            .then(response => response.json())
-            .then(data => {
-                tableBody.innerHTML = data.html || `
-                    <tr>
-                        <td colspan="11" style="text-align: center; padding: 20px;">
-                            لا يوجد أماكن مطابقة
-                        </td>
-                    </tr>`;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="11" style="text-align: center; padding: 20px;">
-                            حدث خطأ
-                        </td>
-                    </tr>`;
+                    rows.forEach(row => {
+                        const nameCell = row.querySelectorAll('td')[1];
+                        if (!nameCell) return;
+
+                        const name = nameCell.textContent.trim().toLowerCase();
+                        if (name.includes(term) || term === '') {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
             });
-        });
-    });
-</script>
+    </script>
 </div>
 @endsection
