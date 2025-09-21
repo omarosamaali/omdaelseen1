@@ -61,34 +61,39 @@
                             @enderror
                         </div>
 
-                        <div class="mb-4 text-right">
-                            <label for="main_category_id" class="block text-gray-700 font-bold mb-2">التصنيف الرئيسي
-                                *</label>
-                            <select name="main_category_id" id="main_category_id" class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
-                                @foreach ($explorers as $explorer)
-                                <option value="{{ $explorer->id }}" {{ old('main_category_id', $place->mainCategory) == $explorer->id ? 'selected' : '' }}>
-                                    {{ $explorer->name_ar }}
-                                </option>
-                                @endforeach
-                            </select>
-                            @error('main_category_id')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="mb-4 text-right">
-                            <label for="sub_category_id" class="block text-gray-700 font-bold mb-2">التصنيف الفرعي
-                                *</label>
-                            <select name="sub_category_id" id="sub_category_id" class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
-                                @foreach ($branches as $branch)
-                                <option value="{{ $branch->id }}" data-main="{{ $branch->main }}" {{ old('sub_category_id', $place->sub) == $branch->id ? 'selected' : '' }}>
-                                    {{ $branch->name_ar }}
-                                </option>
-                                @endforeach
-                            </select>
-                            @error('sub_category_id')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
+<div class="mb-4 text-right">
+    <label for="main_category_id" class="block text-gray-700 font-bold mb-2">التصنيف الرئيسي *</label>
+    <select name="main_category_id" id="main_category_id" class="w-full border-gray-300 rounded-md shadow-sm text-right"
+        required>
+        <option value="" disabled>اختر التصنيف الرئيسي</option>
+        @foreach ($explorers as $explorer)
+        <option value="{{ $explorer->id }}" {{ old('main_category_id', $place->main_category_id) == $explorer->id ?
+            'selected' : '' }}>
+            {{ $explorer->name_ar }}
+        </option>
+        @endforeach
+    </select>
+    @error('main_category_id')
+    <span class="text-red-500 text-sm">{{ $message }}</span>
+    @enderror
+</div>
+
+<div class="mb-4 text-right">
+    <label for="sub_category_id" class="block text-gray-700 font-bold mb-2">التصنيف الفرعي *</label>
+    <select name="sub_category_id" id="sub_category_id" class="w-full border-gray-300 rounded-md shadow-sm text-right"
+        required>
+        <option value="" disabled>اختر التصنيف الفرعي</option>
+        @foreach ($branches as $branch)
+        <option value="{{ $branch->id }}" data-main="{{ $branch->main_category_id }}" {{ old('sub_category_id', $place->
+            sub_category_id) == $branch->id ? 'selected' : '' }}>
+            {{ $branch->name_ar }}
+        </option>
+        @endforeach
+    </select>
+    @error('sub_category_id')
+    <span class="text-red-500 text-sm">{{ $message }}</span>
+    @enderror
+</div>
 
                         <div class="mb-4 text-right">
                             <label for="region_id" class="block text-gray-700 font-bold mb-2">المنطقة *</label>
@@ -328,48 +333,40 @@
         });
 
         // Handle subcategory dropdown
-        $('#main_category_id').on('change', function() {
-            const mainCategoryId = this.value;
-            const subCategorySelect = $('#sub_category_id');
+$('#main_category_id').on('change', function() {
+const mainCategoryId = this.value;
+const subCategorySelect = $('#sub_category_id');
+subCategorySelect.html('<option value="" disabled selected>جاري التحميل...</option>');
 
-            // Set a loading state
-            subCategorySelect.html('<option value="" disabled selected>جاري التحميل...</option>');
+if (mainCategoryId) {
+$.ajax({
+url: `/get-subcategories/${mainCategoryId}`,
+method: 'GET',
+headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+success: function(data) {
+subCategorySelect.html('<option value="" disabled selected>اختر</option>');
+if (data.length === 0) {
+subCategorySelect.append('<option value="" disabled>لا يوجد تصنيفات فرعية</option>');
+} else {
+data.forEach(subcategory => {
+const selected = subcategory.id == '{{ old('sub_category_id', $place->sub_category_id) }}' ? 'selected' : '';
+subCategorySelect.append(`<option value="${subcategory.id}" data-main="${subcategory.main_category_id}" ${selected}>
+    ${subcategory.name_ar}</option>`);
+});
+}
+},
+error: function() {
+subCategorySelect.html('<option value="" disabled selected>حدث خطأ</option>');
+}
+});
+} else {
+subCategorySelect.html('<option value="" disabled selected>اختر</option>');
+}
+});
 
-            if (mainCategoryId) {
-                $.ajax({
-                    url: `/get-subcategories/${mainCategoryId}`
-                    , method: 'GET'
-                    , headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                    , success: function(data) {
-                        subCategorySelect.html('<option value="" disabled selected>اختر</option>');
-                        if (data.length === 0) {
-                            subCategorySelect.append('<option value="" disabled>لا يوجد تصنيفات فرعية</option>');
-                        } else {
-                            data.forEach(subcategory => {
-                                const option = $('<option>').val(subcategory.id).text(subcategory.name_ar);
-                                if (subcategory.id == '{{ old('sub_category_id', $place->sub_category_id) }}') {
-                                    option.prop('selected', true);
-                                }
-                                subCategorySelect.append(option);
-                            });
-                        }
-                    }
-                    , error: function(xhr, status, error) {
-                        subCategorySelect.html('<option value="" disabled selected>حدث خطأ</option>');
-                    }
-                });
-            } else {
-                subCategorySelect.html('<option value="" disabled selected>اختر</option>');
-            }
-        });
-
-        // Trigger subcategory fetch on page load
-        if ($('#main_category_id').val()) {
-            $('#main_category_id').trigger('change');
-        }
-    });
+if ($('#main_category_id').val()) {
+$('#main_category_id').trigger('change');
+}    });
 
 </script>
 
