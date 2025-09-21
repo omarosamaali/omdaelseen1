@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\TripBooking;
-use App\Models\Trip;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
@@ -22,65 +20,45 @@ class ZiinaPaymentHandler
         }
     }
 
-    /**
-     * Create Payment Intent for trip booking
-     * ✅ Updated to handle room type
-     */
-
-
-    /**
-     * ✅ دالة لحساب سعر الرحلة حسب نوع الغرفة
-     */
-private function calculateTripPrice($trip, $roomType = null)
-{
-    // إذا كان هناك أسعار مختلفة للغرف
-    if ($trip->private_room_price && $roomType) {
-        switch ($roomType) {
-            case 'shared':
-                return $trip->shared_room_price ?? $trip->price;
-            case 'private':
-                return $trip->private_room_price;
-            default:
-                return $trip->price;
+    private function calculateTripPrice($trip, $roomType = null)
+    {
+        if ($trip->private_room_price && $roomType) {
+            switch ($roomType) {
+                case 'shared':
+                    return $trip->shared_room_price ?? $trip->price;
+                case 'private':
+                    return $trip->private_room_price;
+                default:
+                    return $trip->price;
+            }
         }
+        return $trip->price ?? 0;
     }
 
-    // إذا لم يكن هناك تقسيم للغرف، استخدم السعر الأساسي
-    return $trip->price ?? 0;
-}
-
-/**
- * دالة لحساب السعر مع الرسوم (للاستخدام كـ fallback)
- */
-public function calculatePriceWithFees($trip, $roomType = null)
-{
-    $basePrice = $this->calculateTripPrice($trip, $roomType);
-    $feePercent = 0.029; // 2.9%
-    return $basePrice * (1 + $feePercent);
-}
-
+    public function calculatePriceWithFees($trip, $roomType = null)
+    {
+        $basePrice = $this->calculateTripPrice($trip, $roomType);
+        $feePercent = 0.029;
+        return $basePrice * (1 + $feePercent);
+    }
 
     public function createTripPaymentIntent($trip, $successUrl, $cancelUrl, $isTest = false, $finalPrice = null, $roomType = null)
     {
         try {
-            // Validate trip data
             if (!$trip) {
                 throw new Exception('Trip data is missing');
             }
 
-            // ✅ استخدم السعر النهائي المرسل مباشرة (شامل الرسوم)
             $totalPrice = $finalPrice ?? $this->calculateTripPrice($trip, $roomType);
 
             if ($totalPrice < 2) {
                 throw new Exception("Trip price ($totalPrice AED) is below minimum (2 AED)");
             }
 
-            // Convert price to fils (AED * 100)
             $amountInFils = (int)($totalPrice * 100);
 
-            // ✅ تحسين الرسالة لتكون بطول مناسب
             $title = $trip->title_ar ?? $trip->title ?? 'رحلة';
-            $title = mb_substr($title, 0, 80); // لا تتعدى 80 حرف
+            $title = mb_substr($title, 0, 80);
 
             $message = "حجز رحلة: {$title}";
             if ($roomType) {
@@ -88,7 +66,6 @@ public function calculatePriceWithFees($trip, $roomType = null)
                 $message .= " - {$roomTypeAr}";
             }
 
-            // إذا كانت الرسالة قصيرة جدًا أضف كلمة افتراضية
             if (mb_strlen($message) < 10) {
                 $message .= " - حجز";
             }
@@ -113,14 +90,13 @@ public function calculatePriceWithFees($trip, $roomType = null)
                 $data['test'] = true;
             }
 
-            // ✅ أضف الرسالة إلى الـ log
             Log::info('Creating Ziina payment intent', [
                 'trip_id' => $trip->id,
                 'amount' => $amountInFils,
                 'room_type' => $roomType,
                 'final_price' => $totalPrice,
                 'message' => $message,
-                'test_mode' => $isTest || app()->environment('local', 'testing')
+                'test_mode' => $isTest || false
             ]);
 
             $response = $this->makeApiCall('/payment_intent', 'POST', $data);
@@ -141,9 +117,6 @@ public function calculatePriceWithFees($trip, $roomType = null)
         }
     }
 
-    /**
-     * Get Payment Intent status
-     */
     public function getPaymentIntent($paymentIntentId)
     {
         try {
@@ -168,9 +141,6 @@ public function calculatePriceWithFees($trip, $roomType = null)
         }
     }
 
-    /**
-     * Make API call to Ziina with improved error handling
-     */
     private function makeApiCall($endpoint, $method = 'GET', $data = null)
     {
         $url = $this->baseUrl . $endpoint;
@@ -254,17 +224,13 @@ public function calculatePriceWithFees($trip, $roomType = null)
         return $decodedResponse;
     }
 
-    /**
-     * Validate webhook signature (optional - can be skipped for now)
-     */
     public function validateWebhook($payload, $signature, $secret = null)
     {
         $webhookSecret = $secret ?? config('services.ziina.webhook_secret');
 
-        // If no webhook secret is configured, skip validation
         if (empty($webhookSecret)) {
             Log::info('Webhook validation skipped - no secret configured');
-            return true; // Allow webhook to proceed
+            return true;
         }
 
         $expectedSignature = hash_hmac('sha256', $payload, $webhookSecret);

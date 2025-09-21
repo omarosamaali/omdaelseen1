@@ -17,14 +17,12 @@ class TripController extends Controller
         try {
             $trip = Trip::findOrFail($id);
 
-            // الحصول على نوع الغرفة والسعر النهائي من الـ request أو session
             $roomType = $request->input('room_type') ?? $request->query('room_type') ?? session('selected_room_type', 'shared');
             $totalPrice = $request->input('total_price') ?? $request->query('total_price');
 
-            // إذا لم يكن السعر موجود، احسبه مع الرسوم
             if (!$totalPrice) {
                 $basePrice = $this->calculateTripPrice($trip, $roomType);
-                $feePercent = 0.029; // 2.9%
+                $feePercent = 0.029;
                 $totalPrice = $basePrice * (1 + $feePercent);
             }
 
@@ -43,12 +41,11 @@ class TripController extends Controller
                 $trip,
                 $successUrl,
                 $cancelUrl,
-                app()->environment('local', 'testing'), // test mode للتطوير
-                $totalPrice,  // ✅ السعر النهائي شامل الرسوم
-                $roomType     // نوع الغرفة
+                false,
+                $totalPrice,
+                $roomType
             );
 
-            // حفظ معلومات الحجز مؤقتاً
             session([
                 'pending_booking' => [
                     'trip_id' => $trip->id,
@@ -59,7 +56,6 @@ class TripController extends Controller
                 ]
             ]);
 
-            // توجيه المستخدم لصفحة الدفع
             return redirect()->away($response['redirect_url']);
         } catch (\Exception $e) {
             Log::error('Failed to initiate payment', [
@@ -96,7 +92,7 @@ class TripController extends Controller
                     'payment_intent_id' => $paymentIntentId,
                     'trip_id' => $tripId
                 ]);
-                return redirect()->route('mobile.auth.done' )
+                return redirect()->route('mobile.auth.done')
                     ->with('error', 'بيانات الدفع غير مكتملة');
             }
 
@@ -117,14 +113,11 @@ class TripController extends Controller
                             ->with('success', 'تم تأكيد الحجز مسبقاً');
                     }
 
-                    // استخراج البيانات من session أو metadata
                     $pendingBooking = session('pending_booking');
                     $roomType = $paymentIntent['metadata']['room_type'] ?? $pendingBooking['room_type'] ?? 'shared';
 
-                    // استخدام السعر النهائي من session أو metadata
                     $totalPrice = $pendingBooking['total_price'] ?? $paymentIntent['metadata']['final_price_with_fees'] ?? null;
 
-                    // إذا لم يكن السعر موجود، احسبه مع الرسوم
                     if (!$totalPrice) {
                         $basePrice = $this->calculateTripPrice($trip, $roomType);
                         $totalPrice = $basePrice * (1 + 0.029);
@@ -134,7 +127,7 @@ class TripController extends Controller
                         'trip_id' => $tripId,
                         'user_id' => auth()->id(),
                         'payment_intent_id' => $paymentIntentId,
-                        'amount' => $totalPrice, // السعر النهائي شامل الرسوم
+                        'amount' => $totalPrice,
                         'room_type' => $roomType,
                         'status' => 'confirmed',
                         'payment_status' => 'paid',
@@ -147,7 +140,6 @@ class TripController extends Controller
                         $trip->increment('current_participants');
                     }
 
-                    // مسح البيانات المؤقتة
                     session()->forget(['pending_booking', 'selected_room_type']);
 
                     Log::info('Trip booking created successfully', [
