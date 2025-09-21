@@ -4,6 +4,11 @@
 <link href="{{ asset('assets/assets/css/trip-show.css') }}" rel="stylesheet">
 
 @section('content')
+<style>
+    .tab-button {
+        padding: 8px 7px;
+    }
+</style>
 
 <body class="relative -z-20">
     <x-china-header-two />
