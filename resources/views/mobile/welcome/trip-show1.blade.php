@@ -219,11 +219,11 @@
                             <div class="mb-4 text-center">
                                 <div
                                     style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 15px; border-radius: 12px; margin: 15px 0;">
-                                    <span style="font-size: 14px; color: #495057; display: block; margin-bottom: 5px;">
+                                    {{-- <span style="font-size: 14px; color: #495057; display: block; margin-bottom: 5px;">
                                         السعر
                                         الإجمالي:
-                                    </span>
-                                    <span id="total-price-display"
+                                    </span> --}}
+                                    {{-- <span id="total-price-display"
                                         style="font-size: 24px; font-weight: bold; color: maroon;">
                                         {{ number_format($trip->price + $trip->price * 0.029, 2) }}
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -238,7 +238,7 @@
                                                 stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
                                             </path>
                                         </svg>
-                                    </span>
+                                    </span> --}}
                                     <span
                                         style="text-align: center; display: block; font-size: 12px; color: rgb(97, 95, 95);">
                                         يشمل 2.9% رسوم بوابة الدفع
