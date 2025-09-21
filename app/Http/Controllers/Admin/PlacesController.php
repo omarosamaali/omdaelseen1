@@ -201,10 +201,11 @@ class PlacesController extends Controller
 
     public function edit($id)
     {
-        $place = Places::with(['mainCategory', 'subCategory', 'region'])->findOrFail($id);
+        $place = Places::findOrFail($id);
         $explorers = Explorers::all(['id', 'name_ar']);
-        $branches = Branches::all(['id', 'name_ar', 'main_category_id']);
+        $branches = Branches::all(['id', 'name_ar', 'main']);
         $regions = Regions::all(['id', 'name_ar']);
+
         return view('admin.omdaHome.places.edit', compact('place', 'explorers', 'branches', 'regions'))
             ->with('layout', $this->layout);
     }
