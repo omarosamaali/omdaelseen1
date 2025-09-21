@@ -66,7 +66,7 @@
                                 *</label>
                             <select name="main_category_id" id="main_category_id" class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
                                 @foreach ($explorers as $explorer)
-                                <option value="{{ $explorer->id }}" {{ old('main_category_id', $place->main) == $explorer->id ? 'selected' : '' }}>
+                                <option value="{{ $explorer->id }}" {{ old('main_category_id', $place->mainCategory) == $explorer->id ? 'selected' : '' }}>
                                     {{ $explorer->name_ar }}
                                 </option>
                                 @endforeach
