@@ -70,12 +70,8 @@ class TripController extends Controller
         }
     }
 
-    /**
-     * ✅ دالة لحساب سعر الرحلة حسب نوع الغرفة
-     */
     private function calculateTripPrice($trip, $roomType = null)
     {
-        // إذا كان هناك أسعار مختلفة للغرف
         if ($trip->private_room_price && $roomType) {
             switch ($roomType) {
                 case 'shared':
@@ -86,8 +82,6 @@ class TripController extends Controller
                     return $trip->price;
             }
         }
-
-        // إذا لم يكن هناك تقسيم للغرف، استخدم السعر الأساسي
         return $trip->price;
     }
 

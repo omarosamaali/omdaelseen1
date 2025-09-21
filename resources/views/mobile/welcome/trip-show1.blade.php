@@ -69,27 +69,44 @@
                                     {{-- <input type="radio" name="room_type" value="shared" required> --}}
                                     <i class="fa-solid fa-bed" style="color: maroon;"></i>
                                     غرفة مشتركة
-                                    <span id="shared-price">{{ $trip->shared_room_price }} <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-										</svg></span>
+                                    <span id="shared-price">{{ $trip->shared_room_price }} <svg
+                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none">
+                                            <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z"
+                                                stroke="#000" stroke-width="1.5" stroke-miterlimit="10"
+                                                stroke-linecap="round" stroke-linejoin="round"></path>
+                                            <path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            </path>
+                                            <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            </path>
+                                        </svg></span>
                                 </label>
                                 <label style="display:flex; flex-direction:column; align-items:center;">
                                     {{-- <input type="radio" name="room_type" value="private" required> --}}
                                     <i class="fa-solid fa-bed" style="color: maroon;"></i>
                                     غرفة خاصة
-                                    <span id="private-price">{{ $trip->private_room_price }} <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-										</svg></span>
+                                    <span id="private-price">{{ $trip->private_room_price }} <svg
+                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none">
+                                            <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z"
+                                                stroke="#000" stroke-width="1.5" stroke-miterlimit="10"
+                                                stroke-linecap="round" stroke-linejoin="round"></path>
+                                            <path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            </path>
+                                            <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            </path>
+                                        </svg></span>
                                 </label>
                             </div>
                             <div class="mb-4 text-center">
                                 <div
                                     style=" background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 15px; border-radius: 12px; margin: 15px 0;">
-                                    {{-- <span style="font-size: 14px; color: #495057; display: block; margin-bottom: 5px;">
+                                    {{-- <span
+                                        style="font-size: 14px; color: #495057; display: block; margin-bottom: 5px;">
                                         السعر
                                         الإجمالي:
                                     </span>
@@ -97,11 +114,18 @@
                                         style="font-size: 24px; font-weight: bold; color: maroon;">
                                         {{ number_format($trip->shared_room_price + $trip->shared_room_price * 0.029, 2)
                                         }}
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-										</svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none">
+                                            <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z"
+                                                stroke="#000" stroke-width="1.5" stroke-miterlimit="10"
+                                                stroke-linecap="round" stroke-linejoin="round"></path>
+                                            <path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            </path>
+                                            <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            </path>
+                                        </svg>
                                     </span> --}}
                                     <span
                                         style="text-align: center; display: block; font-size: 12px; color: rgb(97, 95, 95);">
@@ -109,16 +133,16 @@
                                     </span>
                                 </div>
                             </div>
-                       <a href="{{ route('logout.and.register', $trip->id) }}" class="trip-button">
-                        الاشتراك
-                    </a>
-                        
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                            @csrf
-                        </form>
-                        
-                        <script>
-                            function handleTripRegister(event) {
+                            <a href="{{ route('logout.and.register', $trip->id) }}" class="trip-button">
+                                الاشتراك
+                            </a>
+
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+
+                            <script>
+                                function handleTripRegister(event) {
                                 event.preventDefault();
                         
                                 @if(Auth::check())
@@ -136,7 +160,7 @@
                                     window.location.href = "{{ route('mobile.trip.register', $trip->id) }}";
                                 @endif
                             }
-                        </script>
+                            </script>
                             <span style="text-align: center; display: block; font-size: 12px; color: rgb(97, 95, 95);">
                                 يسهُب إشتراكك في الخدمة موافقتك الكاملة على جميع البنود والشروط الواردة في الإشادات
                             </span>
@@ -167,11 +191,18 @@
                                                 stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
                                             </path>
                                         </svg> --}}
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-										</svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none">
+                                            <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z"
+                                                stroke="#000" stroke-width="1.5" stroke-miterlimit="10"
+                                                stroke-linecap="round" stroke-linejoin="round"></path>
+                                            <path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            </path>
+                                            <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            </path>
+                                        </svg>
                                     </span>
                                 </p>
                             </div>
@@ -190,11 +221,18 @@
                                     <span id="total-price-display"
                                         style="font-size: 24px; font-weight: bold; color: maroon;">
                                         {{ number_format($trip->price + $trip->price * 0.029, 2) }}
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-										</svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none">
+                                            <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z"
+                                                stroke="#000" stroke-width="1.5" stroke-miterlimit="10"
+                                                stroke-linecap="round" stroke-linejoin="round"></path>
+                                            <path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            </path>
+                                            <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            </path>
+                                        </svg>
                                     </span>
                                     <span
                                         style="text-align: center; display: block; font-size: 12px; color: rgb(97, 95, 95);">
@@ -202,17 +240,16 @@
                                     </span>
                                 </div>
                             </div>
-     <a href="#" class="trip-button"
-   onclick="handleTripRegister(event)">
-    الاشتراك
-</a>
+                            <a href="#" class="trip-button" onclick="handleTripRegister(event)">
+                                الاشتراك
+                            </a>
 
-<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-    @csrf
-</form>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
 
-<script>
-    function handleTripRegister(event) {
+                            <script>
+                                function handleTripRegister(event) {
         event.preventDefault();
 
         @if(Auth::check())
@@ -230,7 +267,7 @@
             window.location.href = "{{ route('mobile.trip.register', $trip->id) }}";
         @endif
     }
-</script>
+                            </script>
 
                         </form>
                         <span style="text-align: center; display: block; font-size: 12px; color: rgb(97, 95, 95);">
@@ -368,7 +405,10 @@
                             }
                             @endphp
                             @if ($feature)
-                            <li style="display: flex; align-items: center;"><x-iconSub /> {{ $feature?->name_ar }}</li>
+                            <li style="display: flex; align-items: center;">
+                                <x-iconSub2 />
+                                {{ $feature?->name_ar }}
+                            </li>
                             @endif
                             @empty
                             <li>لا توجد مميزات مُضافة.</li>
@@ -402,8 +442,10 @@
                             }
                             @endphp
                             @if ($guideline)
-                          <li style="display: flex; align-items: center;">
-                                <x-iconSub />{{ $guideline?->name_ar }}</li>
+                            <li style="display: flex; align-items: center;">
+                                <x-iconSub2 />
+                                {{ $guideline?->name_ar }}
+                            </li>
                             @endif
                             @empty
                             <li>لا توجد إرشادات مُضافة.</li>

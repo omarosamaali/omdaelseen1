@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\TripFeatures;
 use App\Models\TripGuideline;
 use App\Models\TripActivity;
+use Nette\Utils\Random;
 
 class TripController extends Controller
 {
@@ -87,7 +88,7 @@ class TripController extends Controller
 
             $validated['trip_features'] = json_encode($validated['trip_features']);
             $validated['trip_guidelines'] = json_encode($validated['trip_guidelines']);
-
+            $validated['reference_number'] = 'REF' . mt_rand(10000000, 99999999);
             $trip = Trip::create($validated);
 
             if ($request->hasFile('image')) {

@@ -18,6 +18,7 @@ class Trip extends Model
         'departure_date',
         'return_date',
         'hotel_ar',
+        'reference_number',
         'hotel_en',
         'hotel_ch',
         'transportation_type',
