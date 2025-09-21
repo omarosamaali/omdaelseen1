@@ -92,7 +92,7 @@
                         @foreach ($places as $place)
                             <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
                                 <td class="th">
-                                    {{ $place->id }}
+                                    {{ $loop->iteration }}
                                 </td>
                                 <td class="th">
                                     {{ $place->name_ar }}
