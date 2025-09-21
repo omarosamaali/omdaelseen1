@@ -50,20 +50,35 @@
         @enderror
     </div>
 
-    <div id="place_select" class="mb-4 text-right {{ old('is_place_related', 0) == 1 ? '' : 'hidden' }}">
-        <label for="place_id" class="block text-gray-700 font-bold mb-2">اختر المكان *</label>
-        <select name="place_id" id="place_id" class="w-full border-gray-300 rounded-md shadow-sm text-right">
-            <option value="" disabled selected>اختر مكانًا</option>
-            @foreach ($places as $place)
-                <option value="{{ $place->id }}" {{ old('place_id') == $place->id ? 'selected' : '' }}>
-                    {{ $place->name_ar }}
-                </option>
-            @endforeach
-        </select>
-        @error('place_id')
-            <span class="text-red-500 text-sm">{{ $message }}</span>
-        @enderror
-    </div>
+<div id="place_select" class="mb-4 text-right {{ old('is_place_related', 0) == 1 ? '' : 'hidden' }}">
+    <label for="place_id" class="block text-gray-700 font-bold mb-2">اختر المكان *</label>
+    <select name="place_id" id="place_id" class="w-full border-gray-300 rounded-md shadow-sm text-right">
+        <option value="" disabled selected>اختر مكانًا</option>
+        @foreach ($places as $place)
+        <option value="{{ $place->id }}" {{ old('place_id')==$place->id ? 'selected' : '' }}>
+            {{ $place->name_ar }}
+        </option>
+        @endforeach
+    </select>
+    @error('place_id')
+    <span class="text-red-500 text-sm">{{ $message }}</span>
+    @enderror
+</div>
+
+{{-- Tom Select --}}
+<link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        new TomSelect('#place_id', {
+            maxOptions: null,
+            create: false,
+            sortField: { field: "text", direction: "asc" },
+            placeholder: 'ابحث عن مكان...'
+        });
+    });
+</script>
 
     <div id="place_manual" class="mb-4 text-right {{ old('is_place_related', 0) == 0 ? '' : 'hidden' }}">
         {{-- حقل الصورة --}}
