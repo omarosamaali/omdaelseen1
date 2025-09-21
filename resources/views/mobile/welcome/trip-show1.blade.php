@@ -8,7 +8,7 @@
 <body class="relative -z-20">
     <x-china-header-two />
     <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white -z-10 dark:bg-color1">
-        <img class="main-image" src="{{ asset('storage/' . $trip->image) }}" max-height="300px" alt="">
+        <img class="main-image" src="{{ asset('images/trips/' . $trip->image) }}" max-height="300px" alt="">
         <div class="relative z-10">
             <div class="main-image-container">
                 <div>
