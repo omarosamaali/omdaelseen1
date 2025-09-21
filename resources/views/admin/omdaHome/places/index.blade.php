@@ -199,44 +199,28 @@
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('user_search');
         const tableBody = document.querySelector('#places_table tbody');
-        const paginationDiv = document.querySelector('.pagination'); // لتحديث الـ pagination
 
         searchInput.addEventListener('input', function() {
             const term = this.value.trim();
 
-            // إرسال طلب AJAX
             fetch('{{ route("admin.places.search") }}?search=' + encodeURIComponent(term), {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                }
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
             })
             .then(response => response.json())
             .then(data => {
-                // تحديث محتوى الجدول
-                tableBody.innerHTML = data.html;
-
-                // تحديث الـ pagination إذا كانت موجودة
-                if (paginationDiv) {
-                    paginationDiv.innerHTML = data.pagination;
-                }
-
-                // إذا لم يتم العثور على نتائج
-                if (data.html === '') {
-                    tableBody.innerHTML = `
-                        <tr>
-                            <td colspan="11" style="text-align: center; padding: 20px;">
-                                لا يوجد أماكن مطابقة للبحث
-                            </td>
-                        </tr>`;
-                }
+                tableBody.innerHTML = data.html || `
+                    <tr>
+                        <td colspan="11" style="text-align: center; padding: 20px;">
+                            لا يوجد أماكن مطابقة
+                        </td>
+                    </tr>`;
             })
             .catch(error => {
                 console.error('Error:', error);
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="11" style="text-align: center; padding: 20px;">
-                            حدث خطأ أثناء البحث
+                            حدث خطأ
                         </td>
                     </tr>`;
             });
