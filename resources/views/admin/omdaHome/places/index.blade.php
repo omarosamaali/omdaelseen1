@@ -196,7 +196,7 @@
         {{-- {{ $places->links() }} --}}
     </div>
 
-    <script>
+    {{-- <script>
         document.addEventListener('DOMContentLoaded', function() {
                 const searchInput = document.getElementById('user_search');
                 const table = document.getElementById('places_table');
@@ -218,6 +218,6 @@
                     });
                 });
             });
-    </script>
+    </script> --}}
 </div>
 @endsection
