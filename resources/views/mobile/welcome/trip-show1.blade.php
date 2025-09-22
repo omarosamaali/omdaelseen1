@@ -20,12 +20,28 @@
                     <div class="py-5 bg-white dark:bg-color10">
                         <div style="border-bottom: 1px dashed rgba(150, 147, 147, 0.401) !important;"
                             class="text-center pb-4 border-b border-dashed border-black dark:border-color24 border-opacity-10 ">
-                            <p class="font-semibold text-sm" style="margin-bottom: 15px;">
+                            <p class=" text-sm" style="margin-bottom: 15px;">
                                 {{ app()->getLocale() == 'en'
                                 ? $trip->title_en
                                 : (app()->getLocale() == 'zh'
                                 ? $trip->title_zh
                                 : $trip->title_ar) }}
+                            </p>
+                            <?php
+                                if($trip->trip_type == 'group'){
+                                    $trip->trip_type = 'رحلة جماعية';
+                                } elseif($trip->trip_type == 'traders_only'){
+                                    $trip->trip_type = 'للتجار فقط';
+                                } elseif($trip->trip_type == 'trade_and_tourism'){
+                                    $trip->trip_type = 'للتجارة والسياحة';
+                                } elseif($trip->trip_type == 'tourism_only'){
+                                    $trip->trip_type = 'للسياحة فقط';
+                                } elseif($trip->trip_type == 'family'){
+                                    $trip->trip_type = 'عائلية';
+                                }
+                            ?>
+                            <p class="text-sm font-bold" style="color:maroon; margin-bottom: 15px;">
+                               نوع الرحلة : {{ $trip->trip_type }}
                             </p>
                         </div>
                         <img src="{{ asset('assets/assets/images/fly-GIF.gif') }}" class="fly-img" style="z-index: 999;"
@@ -565,6 +581,23 @@
                                 زيارة المواقع السياحية
                             </span>
                             {{ $trip->tourist_sites_visit == '1' ? 'نعم' : 'لا' }}
+                        </p>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <p class="tab-details-content" style="display: flex; flex-direction: column; align-items: center;">
+                            <i class="fa-solid fa-shopping-basket" style="color: maroon;"></i>
+                            <span style="color: maroon">
+                                زيارة الأسواق
+                            </span>
+                            {{ $trip->markets_visit == '1' ? 'نعم' : 'لا' }}
+                        </p>
+                        <p class="tab-details-content" style="display: flex; flex-direction: column; align-items: center;">
+                            <i class="fa-solid fa-ticket" style="color: maroon;"></i>
+                            <span style="color: maroon">
+                                التذاكر مشمولة
+                            </span>
+                            {{ $trip->tickets_included == '1' ? 'نعم' : 'لا' }}
                         </p>
                     </div>
 

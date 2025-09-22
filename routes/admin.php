@@ -24,6 +24,8 @@ Route::prefix('admin/orders')->name('admin.orders.')->group(function () {
     Route::get('/createInvoice/{id}', [OrderController::class, 'createInvoice'])->name('createInvoice');
     Route::post('/store-invoice/{id}', [OrderController::class, 'storeInvoice'])->name('storeInvoice');
     Route::get('/show/{invoice_id}', [OrderController::class, 'showInvoice'])->name('showInvoice');
+    Route::get('/bookingShow/{id}', [OrderController::class, 'bookingShow'])->name('bookingShow');
+    
     Route::get('/note/{id}', [OrderController::class, 'note'])->name('note');
     Route::get('/createNote/{id}', [OrderController::class, 'createNote'])->name('createNote');
     Route::post('/store-note/{id}', [OrderController::class, 'storeNote'])->name('storeNote');

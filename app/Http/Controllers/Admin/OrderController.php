@@ -13,6 +13,7 @@ use App\Models\Note;
 use App\Models\Document;
 use App\Models\ShippingNote;
 use App\Models\Approval;
+use App\Models\Booking;
 use Illuminate\Support\Facades\Storage;
 use App\Models\OrderMessage;
 use App\Models\Trip;
@@ -83,9 +84,18 @@ class OrderController extends Controller
             ]);
         }]);
 
+        $bookings = Booking::with(['user' => function ($query) {
+            $query->withCount([
+                'followers',
+                'tripRequests',
+                'places'
+            ]);
+        }]);
+
         if ($status) {
             $products->where('status', $status);
             $trip_requests->where('status', $status);
+            $bookings->where('status', $status);
         };
 
         if ($search) {
@@ -94,16 +104,20 @@ class OrderController extends Controller
                 $products->whereRaw('1 = 0');
             } elseif (str_contains($search, 'منتج')) {
                 $trip_requests->whereRaw('1 = 0');
+            } elseif (str_contains($search, 'رحلة')) {
+                $bookings->whereRaw('1 = 0');
             } else {
                 $trip_requests->whereRelation('user', 'name', 'LIKE', "%{$search}%");
                 $products->whereRelation('user', 'name', 'LIKE', "%{$search}%");
+                $bookings->whereRelation('user', 'name', 'LIKE', "%{$search}%");
             }
         }
 
         $products = $products->get();
+        $bookings = $bookings->get();
         $trip_requests = $trip_requests->get();
 
-        return view('admin.omdaHome.orders.index', compact('trip_requests', 'products'));
+        return view('admin.omdaHome.orders.index', compact('trip_requests', 'products', 'bookings'));
     }
 
     public function showProduct(string $id)
@@ -111,6 +125,13 @@ class OrderController extends Controller
         $trip_request = Product::find($id)->with(relations: 'orderProducts')->first();
         $places_count = Places::where('user_id', $trip_request->user_id)->count();
         return view('admin.omdaHome.orders.show-product', compact('trip_request', 'places_count'));
+    }
+
+    public function bookingShow(string $id)
+    {
+        $trip_request = Booking::find($id);
+        $places_count = Places::where('user_id', $trip_request->user_id)->count();
+        return view('admin.omdaHome.orders.booking-show', compact('trip_request', 'places_count'));
     }
 
     public function show(string $id)

@@ -48,11 +48,12 @@
                         <option value="ملغي" {{ request('status')=='ملغي' ? 'selected' : '' }}>ملغي</option>
                         <option value="مكرر" {{ request('status')=='مكرر' ? 'selected' : '' }}>مكرر</option>
                         <option value="منتهي" {{ request('status')=='منتهي' ? 'selected' : '' }}>منتهي</option>
-                        <option value="تحتاج لموافقة"{{ request('status')=='تحتاج لموافقة' ? 'selected' : '' }}>تحتاج لموافقة</option>
+                        <option value="تحتاج لموافقة" {{ request('status')=='تحتاج لموافقة' ? 'selected' : '' }}>تحتاج
+                            لموافقة</option>
 
-<option value="التجهيز للشحن" {{ old('status')=='التجهيز للشحن' ? 'selected' : '' }}>التجهيز
+                        <option value="التجهيز للشحن" {{ old('status')=='التجهيز للشحن' ? 'selected' : '' }}>التجهيز
                             للشحن</option>
-                        <option value="تم الشحن" {{ old('status')=='تم الشحن' ? 'selected' : '' }}>تم الشحن</option>                        
+                        <option value="تم الشحن" {{ old('status')=='تم الشحن' ? 'selected' : '' }}>تم الشحن</option>
                         <option value="تم الاستلام في الصين" {{ request('status')=='تم الاستلام في الصين' ? 'selected'
                             : '' }}>تم الاستلام في الصين</option>
                         <option value="تم الاستلام بالامارات" {{ request('status')=='تم الاستلام بالامارات' ? 'selected'
@@ -81,6 +82,53 @@
                 </tr>
             </thead>
             <tbody>
+                @foreach ($bookings as $trip)
+                <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
+                    <td class="th">{{ $trip->order_number }}</td>
+                    <td class="th">{{ $trip->created_at }}</td>
+                    <td class="th">رحلة</td>
+                    <td class="th">رحلة خاصة</td>
+                    <td class="th">{{ $trip->user->name }}</td>
+                    <td class="th status-cell" data-id="{{ $trip->id }}">{{ $trip->payment_status == 'paid' ? 'مدفوعة' : 'غير مدفوعة' }}</td>
+                    <td class="th" style="display: flex; gap: 8px;">
+                        <a href="{{ route('admin.orders.bookingShow', $trip->id) }}" class="font-medium text-green-600">
+                            <svg class="w-6 h-6 text-green-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-width="2"
+                                    d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z" />
+                                <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                        </a>
+                        <button onclick="showClientData({{ json_encode($trip->user) }})"
+                            class="font-medium text-blue-600">
+                            <i class="fa-regular fa-id-badge" style="font-size: 18px;"></i>
+                        </button>
+                        <a href="{{ route('admin.orders.invoice', $trip->id) }}" class="text-yellow-600">
+                            <i class="fa-solid fa-file-invoice" style="font-size: 18px;"></i>
+                        </a>
+                        <a href="{{ route('admin.orders.document', $trip->id) }}" class="text-purple-600">
+                            <i class="fa-regular fa-folder-open" style="font-size: 18px;"></i>
+                        </a>
+                        <a href="{{ route('admin.orders.shippingNote', $trip->id) }}" class="text-orange-600">
+                            <i class="fa-solid fa-truck" style="font-size: 18px;"></i>
+                        </a>
+                        <a href="{{ route('admin.orders.approval', $trip->id) }}" class="text-green-600">
+                            <i class="fa-solid fa-check-circle" style="font-size: 18px;"></i>
+                        </a>
+                        <button class="text-indigo-600">
+                            <i class="fa-regular fa-envelope" style="font-size: 18px;"></i>
+                        </button>
+                        <button
+                            onclick="showStatusModal('{{ $trip->id }}', 'App\\Models\\TripRequest', '{{ $trip->status }}')"
+                            class="text-red-600">
+                            <i class="fa-solid fa-pen-to-square" style="font-size: 18px;"></i>
+                        </button>
+                        <a href="{{ route('admin.orders.note', $trip->id) }}" class="text-blue-600">
+                            <i class="fa-solid fa-sticky-note" style="font-size: 18px;"></i>
+                        </a>
+                    </td>
+                </tr>
+                @endforeach
                 @foreach ($trip_requests as $trip)
                 <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
                     <td class="th">{{ $trip->reference_number }}</td>
@@ -162,7 +210,8 @@
                         <a href="{{ route('admin.orders.approval', $trip->id) }}" class="text-green-600">
                             <i class="fa-solid fa-check-circle" style="font-size: 18px;"></i>
                         </a>
-                        <a href="{{ route('mobile.profile.actions.userAdminChat', $trip->id) }}" class="text-indigo-600">
+                        <a href="{{ route('mobile.profile.actions.userAdminChat', $trip->id) }}"
+                            class="text-indigo-600">
                             <i class="fa-regular fa-envelope" style="font-size: 18px;"></i>
                         </a>
                         <button
@@ -231,7 +280,8 @@
             <input type="hidden" name="order_type" id="orderType">
             <div class="mt-4">
                 <label class="block text-sm font-medium text-gray-700">الحالة</label>
-                <select name="status" id="statusSelect" style="text-align: center !important;" class="!text-center input-field" required>
+                <select name="status" id="statusSelect" style="text-align: center !important;"
+                    class="!text-center input-field" required>
                     <option value="">اختر الحالة</option>
                     <option value="في المراجعة">في المراجعة</option>
                     <option value="بإنتظار الدفع">بإنتظار الدفع</option>

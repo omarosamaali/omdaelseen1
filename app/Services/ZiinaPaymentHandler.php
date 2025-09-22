@@ -96,7 +96,7 @@ class ZiinaPaymentHandler
                 'room_type' => $roomType,
                 'final_price' => $totalPrice,
                 'message' => $message,
-                'test_mode' => $isTest || false
+                'test_mode' => $isTest || app()->environment('local', 'testing')
             ]);
 
             $response = $this->makeApiCall('/payment_intent', 'POST', $data);

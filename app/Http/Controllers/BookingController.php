@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\Trip;
-use App\Models\Booking; // تغيير من TripBooking إلى Booking
 use App\Services\ZiinaPaymentHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Exception;
 
-class TripController extends Controller
+class BookingController extends Controller
 {
     public function initiatePayment(Request $request, $id)
     {
@@ -28,8 +28,8 @@ class TripController extends Controller
             }
 
             $paymentHandler = new ZiinaPaymentHandler();
-            $successUrl = route('trip.payment.success');
-            $cancelUrl = route('trip.payment.cancel');
+            $successUrl = route('booking.payment.success');
+            $cancelUrl = route('booking.payment.cancel');
 
             Log::info('Initiating payment with calculated price', [
                 'trip_id' => $id,
@@ -81,6 +81,7 @@ class TripController extends Controller
         }
         return $trip->price;
     }
+
     public function paymentSuccess(Request $request)
     {
         try {
@@ -92,17 +93,12 @@ class TripController extends Controller
                     'payment_intent_id' => $paymentIntentId,
                     'trip_id' => $tripId
                 ]);
-                return view('mobile.auth.done')
-                    ->with('error', 'بيانات الدفع غير مكتملة')
-                    ->with('orderNumber', null);
+                return redirect()->route('mobile.auth.done')
+                    ->with('error', 'بيانات الدفع غير مكتملة');
             }
 
             $ziinaHandler = new ZiinaPaymentHandler();
             $paymentIntent = $ziinaHandler->getPaymentIntent($paymentIntentId);
-
-            Log::info('Payment intent response', [
-                'payment_intent' => $paymentIntent
-            ]);
 
             if ($paymentIntent['status'] === 'completed') {
                 return DB::transaction(function () use ($tripId, $paymentIntentId, $paymentIntent) {
@@ -114,31 +110,21 @@ class TripController extends Controller
                             'payment_intent_id' => $paymentIntentId,
                             'trip_id' => $tripId
                         ]);
-                        return view('mobile.auth.done')
-                            ->with('error', 'المستخدم غير مسجل الدخول')
-                            ->with('orderNumber', null);
+                        return redirect()->route('mobile.auth.done')
+                            ->with('error', 'المستخدم غير مسجل الدخول');
                     }
 
-                    // لو الحجز موجود بالفعل نرجع نفس رقم الطلب
                     $existingBooking = Booking::where('payment_intent_id', $paymentIntentId)->first();
                     if ($existingBooking) {
                         Log::info('Booking already exists for payment intent', [
                             'payment_intent_id' => $paymentIntentId,
                             'booking_id' => $existingBooking->id
                         ]);
-                        return view('mobile.auth.done')
-                            ->with('success', 'تم تأكيد الحجز مسبقاً، رقم الطلب: ' . $existingBooking->order_number)
-                            ->with('booking', $existingBooking)
-                            ->with('trip', $trip)
-                            ->with('orderNumber', $existingBooking->order_number);
+                        return redirect()->route('mobile.auth.done')
+                            ->with('success', 'تم تأكيد الحجز مسبقاً، رقم الطلب: ' . $existingBooking->order_number);
                     }
 
-                    // قراءة بيانات الحجز من السيشن
                     $pendingBooking = session('pending_booking');
-                    Log::info('Session pending_booking', [
-                        'pending_booking' => $pendingBooking
-                    ]);
-
                     $roomType = $paymentIntent['metadata']['room_type'] ?? $pendingBooking['room_type'] ?? 'shared';
                     $totalPrice = $pendingBooking['total_price'] ?? $paymentIntent['metadata']['final_price_with_fees'] ?? null;
 
@@ -148,7 +134,7 @@ class TripController extends Controller
                     }
 
                     // توليد رقم طلب مميز
-                    $orderNumber = 'REF' . mt_rand(10000000, 99999999);
+                    $orderNumber = 'TRIP-' . now()->format('Ymd') . '-' . Str::random(6);
 
                     // تخزين الحجز في جدول bookings
                     $booking = Booking::create([
@@ -181,11 +167,8 @@ class TripController extends Controller
                         'room_type' => $roomType
                     ]);
 
-                    return view('mobile.auth.done')
-                        ->with('success', 'تم حجز الرحلة بنجاح! رقم الطلب: ' . $orderNumber)
-                        ->with('booking', $booking)
-                        ->with('trip', $trip)
-                        ->with('orderNumber', $orderNumber);
+                    return redirect()->route('mobile.auth.done')
+                        ->with('success', 'تم حجز الرحلة بنجاح! رقم الطلب: ' . $orderNumber);
                 });
             } elseif ($paymentIntent['status'] === 'pending') {
                 Log::info('Payment still pending', [
@@ -216,12 +199,10 @@ class TripController extends Controller
                 'trip_id' => $request->get('trip_id'),
                 'error' => $e->getMessage()
             ]);
-            return view('mobile.auth.done')
-                ->with('error', 'حدث خطأ في التحقق من الدفع: ' . $e->getMessage())
-                ->with('orderNumber', null);
+            return redirect()->route('mobile.auth.done')
+                ->with('error', 'حدث خطأ في التحقق من الدفع: ' . $e->getMessage());
         }
     }
-
 
     public function paymentCancel(Request $request)
     {
@@ -239,122 +220,5 @@ class TripController extends Controller
 
         return redirect()->route('mobile.auth.done')
             ->with('warning', 'تم إلغاء عملية الدفع');
-    }
-
-    private function isTripAvailable($trip)
-    {
-        if (!$trip) {
-            return [
-                'available' => false,
-                'reason' => 'الرحلة غير موجودة'
-            ];
-        }
-
-        if (!isset($trip->price) || $trip->price <= 0) {
-            return [
-                'available' => false,
-                'reason' => 'سعر الرحلة غير محدد أو غير صالح'
-            ];
-        }
-
-        if (isset($trip->is_active) && !$trip->is_active) {
-            return [
-                'available' => false,
-                'reason' => 'الرحلة غير نشطة'
-            ];
-        }
-
-        if (isset($trip->start_date) && $trip->start_date) {
-            try {
-                $startDate = \Carbon\Carbon::parse($trip->start_date);
-                if ($startDate->isPast()) {
-                    return [
-                        'available' => false,
-                        'reason' => 'الرحلة قد بدأت بالفعل'
-                    ];
-                }
-            } catch (Exception $e) {
-                Log::warning('Invalid start_date format', [
-                    'start_date' => $trip->start_date,
-                    'error' => $e->getMessage()
-                ]);
-            }
-        }
-
-        if (isset($trip->max_participants) && isset($trip->current_participants)) {
-            if ($trip->current_participants >= $trip->max_participants) {
-                return [
-                    'available' => false,
-                    'reason' => 'الرحلة مكتملة العدد'
-                ];
-            }
-        }
-
-        return [
-            'available' => true,
-            'reason' => 'متاحة للحجز'
-        ];
-    }
-
-    public function webhook(Request $request)
-    {
-        try {
-            $payload = $request->getContent();
-            $signature = $request->header('X-Ziina-Signature');
-
-            $ziinaHandler = new ZiinaPaymentHandler();
-
-            if (!$ziinaHandler->validateWebhook($payload, $signature)) {
-                Log::warning('Invalid webhook signature');
-                return response('Unauthorized', 401);
-            }
-
-            $data = json_decode($payload, true);
-
-            switch ($data['type'] ?? '') {
-                case 'payment_intent.succeeded':
-                    $this->handlePaymentSucceeded($data);
-                    break;
-
-                case 'payment_intent.failed':
-                    $this->handlePaymentFailed($data);
-                    break;
-            }
-
-            return response('OK', 200);
-        } catch (Exception $e) {
-            Log::error('Webhook handling failed', [
-                'error' => $e->getMessage()
-            ]);
-            return response('Internal Server Error', 500);
-        }
-    }
-
-    private function handlePaymentSucceeded($data)
-    {
-        Log::info('Payment succeeded webhook received', $data);
-    }
-
-    private function handlePaymentFailed($data)
-    {
-        Log::info('Payment failed webhook received', $data);
-    }
-
-    public function debugTrip($tripId)
-    {
-        $trip = Trip::findOrFail($tripId);
-        $availability = $this->isTripAvailable($trip);
-
-        return response()->json([
-            'trip_data' => $trip->toArray(),
-            'availability' => $availability,
-            'user_authenticated' => auth()->check(),
-            'user_id' => auth()->id(),
-            'prices' => [
-                'base_price' => $trip->price,
-                'shared_room_price' => $trip->shared_room_price,
-                'private_room_price' => $trip->private_room_price
-            ]
-        ]);
     }
 }

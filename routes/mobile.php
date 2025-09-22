@@ -88,18 +88,25 @@ Route::get('/debug-trip/{id}', [TripController::class, 'debugTrip'])->name('debu
 Route::get('/payment/success', [TripController::class, 'paymentSuccess'])->name('trip.payment.success');
 Route::get('/payment/cancel', [TripController::class, 'paymentCancel'])->name('trip.payment.cancel');
 
+
 Route::get('mobile/done', function (Request $request) {
     $tripId = $request->query('trip');
     $trip = $tripId ? Trip::find($tripId) : null;
-
-    // لو مفيش رحلة → رجّع المستخدم لأي مكان مناسب
-    if (!$trip) {
-        return redirect()->route('mobile.auth.done')
-            ->with('warning', 'لا توجد رحلة مرتبطة بهذه الصفحة');
+    $data = ['trip' => $trip];
+    if (!$trip && !$request->session()->has('success')) {
+        $data['warning'] = 'لا توجد رحلة مرتبطة بهذه الصفحة';
     }
-
-    return view('mobile.auth.done', compact('trip'));
+    return view('mobile.auth.done', $data);
 })->name('mobile.auth.done');
+
+Route::get('/logout-and-register/{trip}', function ($tripId) {
+    if (Auth::check()) {
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+    }
+    return redirect()->route('mobile.trip.register', $tripId);
+})->name('logout.and.register');
 
 
 Route::get('/mobile/orders/trip-invoice/{id}', function ($id) {

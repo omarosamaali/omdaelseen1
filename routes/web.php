@@ -32,16 +32,13 @@ use App\Http\Controllers\Admin\TripController;
 use App\Http\Controllers\TripGuidelineController;
 use App\Http\Controllers\TripFeaturesController;
 use App\Http\Controllers\AddsController;
+use App\Http\Controllers\BookingController;
 use Illuminate\Support\Facades\Auth;
 
-Route::get('/logout-and-register/{trip}', function ($tripId) {
-    if (Auth::check()) {
-        Auth::logout();
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
-    }
-    return redirect()->route('mobile.trip.register', $tripId);
-})->name('logout.and.register');
+Route::get('booking/{id}/payment', [BookingController::class, 'initiatePayment'])->name('booking.payment');
+Route::get('booking/payment/success', [BookingController::class, 'paymentSuccess'])->name('booking.payment.success');
+Route::get('booking/payment/cancel', [BookingController::class, 'paymentCancel'])->name('booking.payment.cancel');
+
 
 Route::resource('adds', AddsController::class)->names('admin.omdaHome.adds');
 Route::get('/admin/omdaHome/trip/{trip}/create_table', [TripController::class, 'createActivity'])->name('admin.omdaHome.trip.create_table');
