@@ -75,8 +75,9 @@
                 <p class="text-sm font-semibold pb-2">رقم الهاتف</p>
                 <div
                     class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
-<input type="tel" name="phone" value="{{ old('phone', '971') }}" placeholder="رقم الهاتف"
-    class="outline-none bg-transparent text-n600 text-sm placeholder:text-sm w-full placeholder:text-bgColor18 dark:text-color18 dark:placeholder:text-color18" />                    <i class="ph ph-phone text-xl text-bgColor18 !leading-none"></i>
+                    <input type="tel" name="phone" value="{{ old('phone', '971') }}" placeholder="رقم الهاتف"
+                        class="outline-none bg-transparent text-n600 text-sm placeholder:text-sm w-full placeholder:text-bgColor18 dark:text-color18 dark:placeholder:text-color18" />
+                    <i class="ph ph-phone text-xl text-bgColor18 !leading-none"></i>
                 </div>
                 @error('phone')
                 <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
@@ -87,14 +88,14 @@
                 <p class="text-sm font-semibold pb-2">الدولة</p>
                 <div
                     class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
-                 <select name="country"
-                    class="outline-none bg-transparent text-n600 text-sm placeholder:text-sm w-full placeholder:text-bgColor18 dark:text-color18 dark:placeholder:text-color18">
-                    @foreach (__('countries') as $code => $name)
-                    <option value="{{ $code }}" {{ old('country', 'AE' )==$code ? 'selected' : '' }}>
-                        {{ $name }}
-                    </option>
-                    @endforeach
-                </select>
+                    <select name="country"
+                        class="outline-none bg-transparent text-n600 text-sm placeholder:text-sm w-full placeholder:text-bgColor18 dark:text-color18 dark:placeholder:text-color18">
+                        @foreach (__('countries') as $code => $name)
+                        <option value="{{ $code }}" {{ old('country', 'AE' )==$code ? 'selected' : '' }}>
+                            {{ $name }}
+                        </option>
+                        @endforeach
+                    </select>
                 </div>
                 @error('country')
                 <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
@@ -157,75 +158,66 @@
             </div>
 
             @if ($trip->private_room_price)
-            <div class="flex justify-between items-center mb-4">
-                <div
-                    style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px;">
-                    <!-- Shared Room Option -->
-                    <div class="room-option flex-1">
-                        <input type="radio" id="shared-room" name="room_type" value="shared" class="hidden room-radio"
-                            {{ old('room_type', 'shared' )=='shared' ? 'checked' : '' }}>
-                        <label for="shared-room"
-                            class="room-label cursor-pointer block text-center p-3 border border-gray-300 rounded-lg transition-all">
-                            <div class="flex flex-col items-center">
-                                <i class="fa-solid fa-bed mb-2"></i>
-                                <span class="text-sm">غرفة مشتركة</span>
-                                <span class="font-bold mt-1">
-                                    {{ number_format($trip->shared_room_price, 0) }}
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                        fill="none" class="inline">
-                                        <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z"
-                                            stroke="currentColor" stroke-width="1.5"></path>
-                                        <path d="M6.5 11H18.5" stroke="currentColor" stroke-width="1.5"></path>
-                                        <path d="M6.5 13H12.5H18.5" stroke="currentColor" stroke-width="1.5"></path>
-                                    </svg>
-                                </span>
-                            </div>
-                        </label>
-                    </div>
+@php
+$feePercent = 7.9 / 100;
+$fixedFee = 1;
+@endphp
 
-                    <!-- Private Room Option -->
-                    <div class="room-option flex-1">
-                        <input type="radio" id="private-room" name="room_type" value="private" class="hidden room-radio"
-                            {{ old('room_type')=='private' ? 'checked' : '' }}>
-                        <label for="private-room"
-                            class="room-label cursor-pointer block text-center p-3 border border-gray-300 rounded-lg transition-all">
-                            <div class="flex flex-col items-center">
-                                <i class="fa-solid fa-bed mb-2"></i>
-                                <span class="text-sm">غرفة خاصة</span>
-                                <span class="font-bold mt-1">
-                                    {{ number_format($trip->private_room_price, 0) }}
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                        fill="none" class="inline">
-                                        <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z"
-                                            stroke="currentColor" stroke-width="1.5"></path>
-                                        <path d="M6.5 11H18.5" stroke="currentColor" stroke-width="1.5"></path>
-                                        <path d="M6.5 13H12.5H18.5" stroke="currentColor" stroke-width="1.5"></path>
-                                    </svg>
-                                </span>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-            </div>
+<div class="flex justify-between items-center mb-4">
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px;">
 
-            <!-- إضافة hidden input لحفظ السعر المحدد -->
-            <input type="hidden" name="selected_price" id="selected-price-input" value="">
-
-            <div class="mb-4 text-center">
-                <div
-                    style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 15px; border-radius: 12px; margin: 15px 0;">
-                    <span style="font-size: 14px; color: #495057; display: block; margin-bottom: 5px;">
-                        السعر الإجمالي:
-                    </span>
-                    <span id="total-price-display" style="font-size: 24px; font-weight: bold; color: maroon;">
-                        <!-- سيتم تحديثه بواسطة JavaScript -->
-                    </span>
-                    <span style="text-align: center; display: block; font-size: 12px; color: rgb(97, 95, 95);">
-                        يشمل 2.9% رسوم بوابة الدفع
+        <!-- Shared Room Option -->
+        <div class="room-option flex-1">
+            <input type="radio" id="shared-room" name="room_type" value="shared" class="hidden room-radio" {{
+                old('room_type', 'shared' )=='shared' ? 'checked' : '' }}>
+            <label for="shared-room"
+                class="room-label cursor-pointer block text-center p-3 border border-gray-300 rounded-lg transition-all">
+                <div class="flex flex-col items-center">
+                    <i class="fa-solid fa-bed mb-2"></i>
+                    <span class="text-sm">غرفة مشتركة</span>
+                    <span class="font-bold mt-1 text-gray-700">
+                        {{ number_format($trip->shared_room_price, 2) }} <small>درهم</small>
                     </span>
                 </div>
-            </div>
-            <span id="room-error" class="error-text text-red-500 text-sm hidden">يجب اختيار نوع الغرفة</span>
+            </label>
+        </div>
+
+        <!-- Private Room Option -->
+        <div class="room-option flex-1">
+            <input type="radio" id="private-room" name="room_type" value="private" class="hidden room-radio" {{
+                old('room_type')=='private' ? 'checked' : '' }}>
+            <label for="private-room"
+                class="room-label cursor-pointer block text-center p-3 border border-gray-300 rounded-lg transition-all">
+                <div class="flex flex-col items-center">
+                    <i class="fa-solid fa-bed mb-2"></i>
+                    <span class="text-sm">غرفة خاصة</span>
+                    <span class="font-bold mt-1 text-gray-700">
+                        {{ number_format($trip->private_room_price, 2) }} <small>درهم</small>
+                    </span>
+                </div>
+            </label>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" name="selected_price" id="selected-price-input" value="">
+
+<div class="mb-4 text-center">
+    <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                padding: 15px; border-radius: 12px; margin: 15px 0;">
+        <span style="font-size: 14px; color: #495057; display: block; margin-bottom: 5px;">
+            السعر الإجمالي بعد الرسوم:
+        </span>
+        <span id="total-price-display"
+            style="font-size: 24px; justify-content: center; font-weight: bold; color: maroon; display: flex; align-items: center">
+        </span>
+        <span style="text-align: center; display: block; font-size: 12px; color: rgb(97, 95, 95);">
+            يشمل درهم رسوم بوابة الدفع
+        </span>
+    </div>
+</div>
+
+<span id="room-error" class="error-text text-red-500 text-sm hidden">يجب اختيار نوع الغرفة</span>
 
             @else
             <div class="flex justify-between items-center mb-4">
@@ -254,8 +246,9 @@
 
             @php
             $basePrice = $trip->price;
-            $feePercent = 2.9 / 100;
-            $totalPrice = $basePrice * (1 + $feePercent);
+            $feePercent = 7.9 / 100;
+            $fixedFee = 1;
+            $totalPrice = ($basePrice * (1 + $feePercent)) + $fixedFee;
             @endphp
 
             <div class="mb-4 text-center">
@@ -264,23 +257,29 @@
                     <span style="font-size: 14px; color: #495057; display: block; margin-bottom: 5px;">
                         السعر الإجمالي:
                     </span>
-                    <span style="font-size: 24px; font-weight: bold; color: maroon;">
-                        {{ number_format($totalPrice, 2) }} <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-										</svg>
+                    <span
+                        style="font-size: 24px; font-weight: bold; color: maroon; display: flex; align-items: center; justify-content: center;">
+                        {{ number_format($totalPrice, 2) }}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000"
+                                stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                     </span>
                     <span style="text-align: center; display: block; font-size: 12px; color: rgb(97, 95, 95);">
-                        يشمل 2.9% رسوم بوابة الدفع
+                        يشمل رسوم بوابة الدفع
                     </span>
                 </div>
             </div>
             @endif
 
             <div class="mb-4">
-                <span style="font-size: 12px; color: rgb(97, 95, 95);">
-                    ملاحظة: سيتم إضافة 2.9% رسوم بوابة الدفع
+                <span style="font-size: 12px; color: rgb(97, 95, 95); text-align: center; display: block;">
+                    يسهُب إشتراكك في الخدمة موافقتك الكاملة على جميع البنود والشروط الواردة في الإشادات
                 </span>
             </div>
 
@@ -306,194 +305,50 @@
 </div>
 
 <script>
-    // أضف هذا الكود في نهاية الـ script الموجود في ملف الـ Blade
-    
-    document.addEventListener('DOMContentLoaded', function() {
-    // فحص الإيميل المكرر
-    const emailInput = document.querySelector('input[name="email"]');
-    const form = document.getElementById('registration-form');
-    
-    // إنشاء div لرسالة الخطأ
-    const emailDiv = emailInput.closest('div').parentElement;
-    let emailError = emailDiv.querySelector('.email-duplicate-error');
-    if (!emailError) {
-    emailError = document.createElement('span');
-    emailError.className = 'email-duplicate-error text-red-500 text-xs mt-1 hidden';
-    emailError.textContent = 'هذا الإيميل مسجل مسبقاً في هذه الرحلة';
-    emailDiv.appendChild(emailError);
-    }
-    
-    function checkDuplicateEmail() {
-    const email = emailInput.value.trim();
-    const tripId = '{{ $trip->id }}';
-    
-    if (email) {
-    // جلب قائمة الإيميلات المسجلة لهذه الرحلة
-    const registeredEmails = JSON.parse(localStorage.getItem(`trip_${tripId}_emails`) || '[]');
-    
-    if (registeredEmails.includes(email.toLowerCase())) {
-    emailError.classList.remove('hidden');
-    return false;
-    } else {
-    emailError.classList.add('hidden');
-    return true;
-    }
-    }
-    return true;
-    }
-    
-    // فحص عند كتابة الإيميل
-    emailInput.addEventListener('input', checkDuplicateEmail);
-    emailInput.addEventListener('blur', checkDuplicateEmail);
-    
-    // باقي الكود الموجود للغرف...
+    document.addEventListener('DOMContentLoaded', function () {
     const roomRadios = document.querySelectorAll('.room-radio');
     const totalPriceDisplay = document.getElementById('total-price-display');
     const selectedPriceInput = document.getElementById('selected-price-input');
-    
-    if (roomRadios.length > 0) {
+
     const sharedPrice = {{ $trip->shared_room_price ?? 0 }};
     const privatePrice = {{ $trip->private_room_price ?? 0 }};
-    const feePercent = 0.029;
-    
+    const feePercent = 0.079; // 7.9%
+    const fixedFee = 1;
+
     function updateTotalPrice() {
-    const selectedRoom = document.querySelector('.room-radio:checked');
-    if (!selectedRoom) return;
-    
-    let basePrice = 0;
-    if (selectedRoom.value === 'shared') {
-    basePrice = sharedPrice;
-    } else if (selectedRoom.value === 'private') {
-    basePrice = privatePrice;
-    }
-    
-    const totalPrice = basePrice * (1 + feePercent);
-    
-    if (totalPriceDisplay) {
-    totalPriceDisplay.textContent = totalPrice.toFixed(2) + ' <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-										</svg>';
-    }
-    
-    if (selectedPriceInput) {
-    selectedPriceInput.value = totalPrice.toFixed(2);
-    }
-    }
-    
-    roomRadios.forEach(radio => {
-    radio.addEventListener('change', updateTotalPrice);
-    });
-    
-    updateTotalPrice();
-    }
-    
-    // تعديل submit event للتحقق من الإيميل المكرر
-    form.addEventListener('submit', function(e) {
-    // فحص تكرار الإيميل أولاً
-    if (!checkDuplicateEmail()) {
-    e.preventDefault();
-    return;
-    }
-    
-    // فحص اختيار الغرفة
-    const selectedRoom = document.querySelector('.room-radio:checked');
-    const roomError = document.getElementById('room-error');
-    
-    if (roomRadios.length > 0 && !selectedRoom) {
-    e.preventDefault();
-    if (roomError) {
-    roomError.classList.remove('hidden');
-    roomError.classList.add('show');
-    }
-    } else {
-    if (roomError) {
-    roomError.classList.add('hidden');
-    roomError.classList.remove('show');
-    }
-    
-    // حفظ الإيميل في Local Storage عند نجاح التسجيل
-    const email = emailInput.value.trim().toLowerCase();
-    const tripId = '{{ $trip->id }}';
-    const registeredEmails = JSON.parse(localStorage.getItem(`trip_${tripId}_emails`) || '[]');
-    
-    if (!registeredEmails.includes(email)) {
-    registeredEmails.push(email);
-    localStorage.setItem(`trip_${tripId}_emails`, JSON.stringify(registeredEmails));
-    }
-    }
-    });
-    });
-    document.addEventListener('DOMContentLoaded', function() {
-    // التحقق من وجود خيارات الغرف
-    const roomRadios = document.querySelectorAll('.room-radio');
-    const totalPriceDisplay = document.getElementById('total-price-display');
-    const selectedPriceInput = document.getElementById('selected-price-input');
-    
-    if (roomRadios.length > 0) {
-        // الأسعار الأساسية لكل غرفة
-        const sharedPrice = {{ $trip->shared_room_price ?? 0 }};
-        const privatePrice = {{ $trip->private_room_price ?? 0 }};
-        const feePercent = 0.029; // 2.9%
+        const selectedRoom = document.querySelector('.room-radio:checked');
+        if (!selectedRoom) return;
 
-        function updateTotalPrice() {
-            const selectedRoom = document.querySelector('.room-radio:checked');
-            if (!selectedRoom) return;
-
-            let basePrice = 0;
-            if (selectedRoom.value === 'shared') {
-                basePrice = sharedPrice;
-            } else if (selectedRoom.value === 'private') {
-                basePrice = privatePrice;
-            }
-
-            // حساب السعر الإجمالي مع الرسوم
-            const totalPrice = basePrice * (1 + feePercent);
-            
-            // تحديث العرض
-            if (totalPriceDisplay) {
-                totalPriceDisplay.textContent = totalPrice.toFixed(2) + ' <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-										</svg>';
-            }
-            
-            // حفظ السعر في الـ hidden input
-            if (selectedPriceInput) {
-                selectedPriceInput.value = totalPrice.toFixed(2);
-            }
+        let basePrice = 0;
+        if (selectedRoom.value === 'shared') {
+            basePrice = sharedPrice;
+        } else if (selectedRoom.value === 'private') {
+            basePrice = privatePrice;
         }
 
-        // استمع لتغيير أي خيار
-        roomRadios.forEach(radio => {
-            radio.addEventListener('change', updateTotalPrice);
-        });
+        // حساب السعر النهائي
+        const totalPrice = (basePrice * (1 + feePercent)) + fixedFee;
 
-        // تحديث السعر عند التحميل (إذا كان خيار محدد مسبقاً)
-        updateTotalPrice();
-        
-        // التحقق من اختيار الغرفة عند إرسال الفورم
-        const form = document.getElementById('registration-form');
-        form.addEventListener('submit', function(e) {
-            const selectedRoom = document.querySelector('.room-radio:checked');
-            const roomError = document.getElementById('room-error');
-            
-            if (!selectedRoom) {
-                e.preventDefault();
-                if (roomError) {
-                    roomError.classList.remove('hidden');
-                    roomError.classList.add('show');
-                }
-            } else {
-                if (roomError) {
-                    roomError.classList.add('hidden');
-                    roomError.classList.remove('show');
-                }
-            }
-        });
+        if (totalPriceDisplay) {
+            totalPriceDisplay.innerHTML = totalPrice.toFixed(2) +
+                ' <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">' +
+                '<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5"></path>' +
+                '<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5"></path>' +
+                '<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5"></path>' +
+                '</svg>';
+        }
+
+        if (selectedPriceInput) {
+            selectedPriceInput.value = totalPrice.toFixed(2);
+        }
     }
+
+    roomRadios.forEach(radio => {
+        radio.addEventListener('change', updateTotalPrice);
+    });
+
+    // حساب السعر النهائي لو فيه اختيار مسبق
+    updateTotalPrice();
 });
-</script>
+</script>f
 @endsection

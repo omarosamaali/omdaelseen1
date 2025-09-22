@@ -150,7 +150,7 @@
                                     </span> --}}
                                     <span
                                         style="text-align: center; display: block; font-size: 12px; color: rgb(97, 95, 95);">
-                                        يشمل 2.9% رسوم بوابة الدفع
+                                        يشمل رسوم بوابة الدفع
                                     </span>
                                 </div>
                             </div>
@@ -257,7 +257,7 @@
                                     </span> --}}
                                     <span
                                         style="text-align: center; display: block; font-size: 12px; color: rgb(97, 95, 95);">
-                                        يشمل 2.9% رسوم بوابة الدفع
+                                        يشمل رسوم بوابة الدفع
                                     </span>
                                 </div>
                             </div>
@@ -441,40 +441,44 @@
 
                 <div id="tab2" class="tab-content">
 
-                    @if ($trip->trip_guidelines)
-                    <div class="bg-gray-100 p-4 rounded-lg shadow-sm">
-                        <h3 class="font-semibold text-lg mb-4 text-right text-gray-700 border-b pb-2">إرشادات
-                            الرحلة
-                        </h3>
-                        <ul class="list-disc list-inside text-right text-gray-600">
-                            @php
-                            $guidelines = $trip->trip_guidelines;
-                            if (is_string($guidelines)) {
-                            $guidelines = json_decode($guidelines, true);
-                            }
-                            @endphp
+@if ($trip->trip_guidelines)
+<div class="bg-gray-100 p-4 rounded-lg shadow-sm">
+    <h3 class="font-semibold text-lg mb-4 text-right text-gray-700 border-b pb-2">
+        إرشادات الرحلة
+    </h3>
+    <ul class="list-disc list-inside text-right text-gray-600">
+        @php
+        $guidelines = $trip->trip_guidelines;
+        if (is_string($guidelines)) {
+        $guidelines = json_decode($guidelines, true);
+        }
 
-                            @forelse ($guidelines as $guideline_id)
-                            @php
-                            if (is_numeric($guideline_id)) {
-                            $guideline = \App\Models\TripGuideline::find($guideline_id);
-                            } else {
-                            $guideline = null;
-                            }
-                            @endphp
-                            @if ($guideline)
-                            <li style="display: flex; align-items: center;">
-                                <x-iconSub2 />
-                                {{ $guideline?->name_ar }}
-                            </li>
-                            @endif
-                            @empty
-                            <li>لا توجد إرشادات مُضافة.</li>
-                            @endforelse
-                        </ul>
-                    </div>
-                    @endif
+        // 👇 عكس الترتيب
+        if (is_array($guidelines)) {
+        $guidelines = array_reverse($guidelines);
+        }
+        @endphp
 
+        @forelse ($guidelines as $guideline_id)
+        @php
+        if (is_numeric($guideline_id)) {
+        $guideline = \App\Models\TripGuideline::find($guideline_id);
+        } else {
+        $guideline = null;
+        }
+        @endphp
+        @if ($guideline)
+        <li style="display: flex; align-items: center;">
+            <x-iconSub2 />
+            {{ $guideline?->name_ar }}
+        </li>
+        @endif
+        @empty
+        <li>لا توجد إرشادات مُضافة.</li>
+        @endforelse
+    </ul>
+</div>
+@endif
                 </div>
 
                 <div id="tab1" class="tab-content">
