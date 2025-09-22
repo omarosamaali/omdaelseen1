@@ -86,9 +86,9 @@ class ZiinaPaymentHandler
                 ]
             ];
 
-            if ($isTest || app()->environment('local', 'testing')) {
-                $data['test'] = true;
-            }
+            // if ($isTest || app()->environment('local', 'testing')) {
+            //     $data['test'] = true;
+            // }
 
             Log::info('Creating Ziina payment intent', [
                 'trip_id' => $trip->id,
@@ -96,7 +96,7 @@ class ZiinaPaymentHandler
                 'room_type' => $roomType,
                 'final_price' => $totalPrice,
                 'message' => $message,
-                'test_mode' => $isTest || app()->environment('local', 'testing')
+                'test_mode' => $isTest || false
             ]);
 
             $response = $this->makeApiCall('/payment_intent', 'POST', $data);
