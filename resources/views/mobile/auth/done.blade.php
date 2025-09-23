@@ -69,9 +69,9 @@
     <img src="{{ asset('assets/assets/images/logo.png') }}" alt="" class="logo-img">
     <p class="text-p">تم التسجيل بنجاح ورقم الطلب </p>
     <p class="text-p1">{{ $orderNumber }} </p>
-<a href="{{ route('logout.and.register', $trip->id) }}" class="text-p2 trip-button">
+{{-- <a href="{{ route('logout.and.register', $trip->id) }}" class="text-p2 trip-button">
     تسجيل مشترك اخر
-</a>
+</a> --}}
     <img src="{{ asset('assets/assets/images/china-omda.gif') }}" alt="" class="chair-img">
 </div>
 @endsection

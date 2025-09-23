@@ -24,6 +24,8 @@ class Booking extends Model
         'payment_status',
         'payment_data',
         'order_number',
+        'payment_gateway_fee', // ✅ ضيف العمود هنا
+
     ];
 
     protected $casts = [

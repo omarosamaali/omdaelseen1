@@ -47,6 +47,14 @@ use App\Http\Controllers\TripController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\TripRegistrationController;
 
+Route::get('/emails/success-preview', function () {
+    $booking = \App\Models\Booking::latest()->first();
+    $trip = $booking->trip;
+    $user = $booking->user;
+    return view('emails.success', compact('booking', 'trip', 'user'));
+});
+
+
 Route::get('/trip/{id}/payment', [TripController::class, 'initiatePayment'])->name('trip.payment');
 
 
@@ -65,13 +73,13 @@ Route::get('/payment/cancel', function (Request $request) {
 
 // صفحة التسجيل للرحلة
 Route::get('mobile/trip-register/{trip_id}', [TripRegistrationController::class, 'showRegistrationForm'])
-     ->name('mobile.trip.register');
+    ->name('mobile.trip.register');
 Route::match(['get', 'post'], '/trip/{id}/payment', [TripController::class, 'initiatePayment'])
     ->name('trip.payment');
 
 // معالجة التسجيل والتوجه للدفع
 Route::post('mobile/trip-register', [TripRegistrationController::class, 'quickRegisterAndPay'])
-     ->name('mobile.trip.register.submit');
+    ->name('mobile.trip.register.submit');
 
 
 Route::get('mobile/step2/{id}', function ($id) {
@@ -529,4 +537,3 @@ Route::middleware('mobile_auth')->group(function () {
         return view('mobile.profile.discovers', compact('users'));
     })->name('mobile.users.index');
 });
-

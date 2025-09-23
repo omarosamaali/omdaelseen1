@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Exception;
+use Illuminate\Support\Facades\Mail;
 
 class TripController extends Controller
 {
@@ -29,8 +30,8 @@ class TripController extends Controller
     }
     private function calculateFinalPriceWithFees($basePrice)
     {
-        $feePercent = 7.9 / 100; // 7.9%
-        $fixedFee = 1; // 1 درهم ثابتة
+        $feePercent = 7.9 / 100;
+        $fixedFee = 1;
         return ($basePrice * (1 + $feePercent)) + $fixedFee;
     }
 
@@ -63,6 +64,7 @@ class TripController extends Controller
                 $successUrl,
                 $cancelUrl,
                 false,
+                // app()->environment('local', 'testing'),
                 $totalPrice,
                 $roomType
             );
@@ -86,7 +88,6 @@ class TripController extends Controller
             return back()->with('error', 'حدث خطأ في عملية الدفع. يرجى المحاولة مرة أخرى.');
         }
     }
-
     public function paymentSuccess(Request $request)
     {
         try {
@@ -94,99 +95,136 @@ class TripController extends Controller
             $tripId = $request->get('trip_id');
 
             if (!$paymentIntentId || !$tripId) {
-                Log::warning('Incomplete payment success data', [
+                Log::warning('Payment success data missing', [
                     'payment_intent_id' => $paymentIntentId,
                     'trip_id' => $tripId
                 ]);
-                return view('mobile.auth.done')
-                    ->with('error', 'بيانات الدفع غير مكتملة')
-                    ->with('orderNumber', null);
+
+                return view('mobile.auth.done', [
+                    'error' => 'بيانات الدفع غير مكتملة',
+                    'orderNumber' => null
+                ]);
+            }
+
+            $trip = Trip::find($tripId);
+            if (!$trip) {
+                return view('mobile.auth.done', [
+                    'error' => 'لم يتم العثور على الرحلة المطلوبة',
+                    'orderNumber' => null
+                ]);
+            }
+
+            $user = auth()->user();
+            if (!$user) {
+                return view('mobile.auth.done', [
+                    'error' => 'المستخدم غير مسجل الدخول',
+                    'orderNumber' => null
+                ]);
             }
 
             $ziinaHandler = new ZiinaPaymentHandler();
             $paymentIntent = $ziinaHandler->getPaymentIntent($paymentIntentId);
 
-            Log::info('Payment intent response', [
+            Log::info('Payment intent fetched', [
                 'payment_intent' => $paymentIntent
             ]);
 
-            if ($paymentIntent['status'] === 'completed') {
-                return DB::transaction(function () use ($tripId, $paymentIntentId, $paymentIntent) {
-                    $trip = Trip::findOrFail($tripId);
-                    $user = auth()->user();
-
-                    if (!$user) {
-                        Log::error('User not authenticated', [
-                            'payment_intent_id' => $paymentIntentId,
-                            'trip_id' => $tripId
-                        ]);
-                        return view('mobile.auth.done')
-                            ->with('error', 'المستخدم غير مسجل الدخول')
-                            ->with('orderNumber', null);
-                    }
-
-                    // لو الحجز موجود بالفعل نرجع نفس رقم الطلب
-                    $existingBooking = Booking::where('payment_intent_id', $paymentIntentId)->first();
-                    if ($existingBooking) {
-                        return view('mobile.auth.done')
-                            ->with('success', 'تم تأكيد الحجز مسبقاً، رقم الطلب: ' . $existingBooking->order_number)
-                            ->with('booking', $existingBooking)
-                            ->with('trip', $trip)
-                            ->with('orderNumber', $existingBooking->order_number);
-                    }
-
-                    $pendingBooking = session('pending_booking');
-                    $roomType = $paymentIntent['metadata']['room_type'] ?? $pendingBooking['room_type'] ?? 'shared';
-                    $totalPrice = $pendingBooking['total_price'] ?? $paymentIntent['metadata']['final_price_with_fees'] ?? null;
-
-                    if (!$totalPrice) {
-                        $basePrice = $this->calculateTripPrice($trip, $roomType);
-                        $totalPrice = $this->calculateFinalPriceWithFees($basePrice);
-                    }
-
-                    $orderNumber = 'REF' . mt_rand(10000000, 99999999);
-
-                    $booking = Booking::create([
-                        'trip_id' => $tripId,
-                        'user_id' => $user->id,
-                        'booking_date' => now(),
-                        'order_type' => $roomType === 'shared' ? 'غرفة مشتركة' : 'غرفة خاصة',
-                        'destination' => $trip->title_ar ?? $trip->title ?? 'وجهة الرحلة',
-                        'customer_name' => $user->name,
-                        'status' => 'confirmed',
-                        'amount' => $totalPrice,
-                        'payment_intent_id' => $paymentIntentId,
-                        'payment_status' => 'paid',
-                        'payment_data' => json_encode($paymentIntent),
-                        'order_number' => $orderNumber,
-                    ]);
-
-                    if (isset($trip->current_participants)) {
-                        $trip->increment('current_participants');
-                    }
-
-                    session()->forget(['pending_booking', 'selected_room_type']);
-
-                    return view('mobile.auth.done')
-                        ->with('success', 'تم حجز الرحلة بنجاح! رقم الطلب: ' . $orderNumber)
-                        ->with('booking', $booking)
-                        ->with('trip', $trip)
-                        ->with('orderNumber', $orderNumber);
-                });
+            if (!isset($paymentIntent['status']) || $paymentIntent['status'] !== 'completed') {
+                return view('mobile.auth.done', [
+                    'error' => 'لم يتم تأكيد الدفع بعد، برجاء المحاولة لاحقاً.',
+                    'orderNumber' => null
+                ]);
             }
 
-            // باقي حالات الدفع نفس الكود الموجود عندك..
-        } catch (Exception $e) {
+            return DB::transaction(function () use ($trip, $user, $paymentIntent, $paymentIntentId) {
+                // تحقق لو فيه حجز موجود بالفعل
+                $existingBooking = Booking::where('payment_intent_id', $paymentIntentId)->first();
+                if ($existingBooking) {
+                    return view('mobile.auth.done', [
+                        'success' => 'تم تأكيد الحجز مسبقاً، رقم الطلب: ' . $existingBooking->order_number,
+                        'booking' => $existingBooking,
+                        'trip' => $trip,
+                        'orderNumber' => $existingBooking->order_number
+                    ]);
+                }
+
+                $pendingBooking = session('pending_booking', []);
+                $roomType = $paymentIntent['metadata']['room_type'] ?? $pendingBooking['room_type'] ?? 'shared';
+
+                // ✅ احسب السعر الأساسي
+                $basePrice = $this->calculateTripPrice($trip, $roomType);
+
+                // ✅ احسب رسوم بوابة الدفع
+                $feePercent = 7.9 / 100;
+                $fixedFee = 1;
+                $paymentGatewayFee = ($basePrice * $feePercent) + $fixedFee;
+
+                // ✅ السعر النهائي (شامل الرسوم)
+                $totalPrice = $basePrice + $paymentGatewayFee;
+
+                // ✅ أنشئ رقم طلب فريد
+                $orderNumber = 'REF' . mt_rand(10000000, 99999999);
+
+                // ✅ أنشئ الحجز
+                $booking = Booking::create([
+                    'trip_id' => $trip->id,
+                    'user_id' => $user->id,
+                    'booking_date' => now(),
+                    'order_type' => $roomType === 'shared' ? 'غرفة مشتركة' : 'غرفة خاصة',
+                    'destination' => $trip->title_ar ?? $trip->title ?? 'وجهة الرحلة',
+                    'customer_name' => $user->name,
+                    'status' => 'confirmed',
+                    'amount' => $totalPrice, // شامل الرسوم
+                    'payment_gateway_fee' => $paymentGatewayFee, // ✅ خزّن الرسوم هنا
+                    'payment_intent_id' => $paymentIntentId,
+                    'payment_status' => 'paid',
+                    'payment_data' => json_encode($paymentIntent),
+                    'order_number' => $orderNumber,
+                ]);
+
+                if (isset($trip->current_participants)) {
+                    $trip->increment('current_participants');
+                }
+
+                try {
+                    Mail::send('emails.success', [
+                        'booking' => $booking,
+                        'trip' => $trip,
+                        'user' => $user
+                    ], function ($message) use ($user, $orderNumber) {
+                        $message->to($user->email)
+                            ->subject("عمدة الصين - فاتورة رقم {$orderNumber}");
+                    });
+                } catch (\Exception $mailException) {
+                    Log::error('Failed to send booking email', [
+                        'order_number' => $orderNumber,
+                        'error' => $mailException->getMessage()
+                    ]);
+                }
+
+                session()->forget(['pending_booking', 'selected_room_type']);
+
+                return view('mobile.auth.done', [
+                    'success' => 'تم حجز الرحلة بنجاح! رقم الطلب: ' . $orderNumber,
+                    'booking' => $booking,
+                    'trip' => $trip,
+                    'orderNumber' => $orderNumber
+                ]);
+            });
+        } catch (\Exception $e) {
             Log::error('Payment success handling failed', [
                 'payment_intent_id' => $request->get('payment_intent_id'),
                 'trip_id' => $request->get('trip_id'),
                 'error' => $e->getMessage()
             ]);
-            return view('mobile.auth.done')
-                ->with('error', 'حدث خطأ في التحقق من الدفع: ' . $e->getMessage())
-                ->with('orderNumber', null);
+
+            return view('mobile.auth.done', [
+                'error' => 'حدث خطأ في التحقق من الدفع: ' . $e->getMessage(),
+                'orderNumber' => null
+            ]);
         }
     }
+
 
 
 

@@ -12,16 +12,16 @@
                     @method('PUT')
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<img src="{{ asset('images/trips/' . $trip->image) }}" alt="">
-
-<div class="mb-4 text-right">
-        <label for="image" class="block text-gray-700 font-bold mb-2">البانر *</label>
-        <input type="file" name="image" id="image" value="{{ old('image', $trip->image) }}"
-            class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
-        @error('image')
-        <span class="text-red-500 text-sm">{{ $message }}</span>
-        @enderror
-    </div>
+                        <img src="{{ asset('images/trips/' . $trip->image) }}" alt="">
+                        {{-- <input type="hidden" name="old_image" value="{{ $trip->image }}"> --}}
+                        <div class="mb-4 text-right">
+                            <label for="image" class="block text-gray-700 font-bold mb-2">البانر *</label>
+                            <input type="file" name="image" id="image" value="{{ old('image', $trip->image) }}"
+                                class="w-full border-gray-300 rounded-md shadow-sm text-right" >
+                            @error('image')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
 
                         <div class="mb-4 text-right">
                             <label for="title_ar" class="block text-gray-700 font-bold mb-2">العنوان بالعربي *</label>
@@ -210,8 +210,8 @@
                                 @enderror
                             </div>
                         </div>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
     const roomType = document.getElementById('room_type');
     const priceField = document.getElementById('price_field');
     const roomPricesFields = document.getElementById('room_prices_fields');
@@ -229,7 +229,7 @@
     roomType.addEventListener('change', toggleFields);
     toggleFields(); // استدعاء أول مرة عند تحميل الصفحة
 });
-</script>
+                        </script>
                         <div class="mb-4 text-right">
                             <label for="translators" class="block text-gray-700 font-bold mb-2">المترجمين *</label>
                             <select name="translators" id="translators"
