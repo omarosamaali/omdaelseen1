@@ -1171,7 +1171,9 @@
     <x-china-header :title="__('messages.تفاصيل الرحلة')" :route="route('mobile.welcome')" />
 
     <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white -z-10 dark:bg-color1">
-        <img class="main-image" src="{{ asset('storage/' . $banner->avatar) }}" max-height="300px" alt="">
+        {{-- @if ($banner?->image) --}}
+        <img class="main-image" src="{{ asset('images/trips/' . $trip->image) }}" max-height="300px" alt="">
+        {{-- @endif --}}
         <div class="relative z-10">
             <div class="main-image-container">
                 <div>
@@ -1271,7 +1273,7 @@
                         @endif
                     </div>
 
-                    <a href="{{ route('mobile.auth.step2', ['trip_id' => $trip->id]) }}" class="trip-button">الاشتراك</a>
+                    {{-- <a href="{{ route('mobile.auth.step2', ['trip_id' => $trip->id]) }}" class="trip-button">الاشتراك</a> --}}
                 </div>
             </div>
             <div class="tabs-container">

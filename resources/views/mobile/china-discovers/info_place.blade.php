@@ -209,7 +209,7 @@
     @endphp
 
     @if (auth()->check() && auth()->id() != $place->user_id)
-    <div style="top: 58px; left: 38px; right: unset;" class="heart-icon @if ($isFavorited) favorited @endif"
+    <div style="top: 15px; left: 38px; right: unset; box-shadow: 0px 0px 4px 1px #bcafafc4;" class="heart-icon @if ($isFavorited) favorited @endif"
         data-place-id="{{ $place->id }}">
         <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
             style="font-size: 18px;"></i>
@@ -329,7 +329,7 @@
 
             <div class="reviews-section">
                 <div id="successMessage" class="success-message"></div>
-                <div id="errorMessage" class="error-message"></div>
+                {{-- <div id="errorMessage" class="error-message"></div> --}}
                 <h4 class="reviews-title">{{ __('messages.visitor_reviews') }}</h4>
                 <div id="reviewsList" class="reviews-list"></div>
             </div>

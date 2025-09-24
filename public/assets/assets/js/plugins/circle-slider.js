@@ -116,7 +116,7 @@ circleSliders.addEventListener("mouseup", handleEnd);
 circleSliders.addEventListener("mouseleave", handleEnd);
 
 // Touch event listeners
-circleSliders.addEventListener("touchstart", handleStart, { passive: false });
-circleSliders.addEventListener("touchmove", handleMove, { passive: false });
+circleSliders.addEventListener("touchstart", handleStart, { passive: true });
+circleSliders.addEventListener("touchmove", handleMove, { passive: true });
 circleSliders.addEventListener("touchend", handleEnd);
 circleSliders.addEventListener("touchcancel", handleEnd);

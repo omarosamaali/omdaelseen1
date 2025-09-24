@@ -129,7 +129,7 @@
                 @foreach ($reports as $report)
                     <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
                         data-id="report-{{ $report->id }}">
-                        <p>{{ __('messages.place_reported_by_user', ['name' => $report->place->{'name_' . App::getLocale()} ?? __('messages.place_name')]) }}
+                        <p> أبلغت عن {{ $report->place->{'name_' . App::getLocale()} ?? __('messages.place_name') }}
                         </p>
                         <i class="ph ph-x"></i>
                     </div>

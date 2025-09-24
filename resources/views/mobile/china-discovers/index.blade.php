@@ -54,12 +54,12 @@
         </div>
     </div>
 
-    <a href="{{ route('mobile.china-discovers.create') }}" class="add-place-button">{{ __('messages.add_new_place') }}
+    <a href="{{ route('mobile.create') }}" class="add-place-button">{{ __('messages.add_new_place') }}
         </h2>
     </a>
 
     @if (session('success'))
-    <div id="success-alert" style="background: #85d185; color: green; margin: 20px 20px 4px;"
+    <div id="success-alert" style="background: #282b28; color: green; margin: 20px 20px 4px;"
         class="bg-green-500 text-white p-4 rounded-xl my-4 text-center">
         {{ session('success') }}
     </div>

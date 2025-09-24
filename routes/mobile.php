@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\Admin\FavForPlacesController;
 use App\Http\Controllers\Mobile\NotificationController;
 use App\Models\Rating;
+use App\Models\Regions;
 use App\Models\Banner;
 use App\Models\Privacy;
 use App\Models\Terms;
@@ -451,8 +452,8 @@ Route::middleware('mobile_auth')->group(function () {
     })->name('mobile.profile.my-interests');
     Route::post('/mobile/china-discovers/filter', [ChinaDiscoverController::class, 'filterPlaces'])
         ->name('mobile.china-discovers.filter');
+    Route::get('mobile.create', [ChinaDiscoverController::class, 'create'])->name('mobile.create');
 
-    Route::get('mobile/china-discovers/create', [ChinaDiscoverController::class, 'create'])->name('mobile.china-discovers.create');
     Route::post('mobile/china-discovers', [ChinaDiscoverController::class, 'store'])->name('mobile.china-discovers.store');
     Route::get('mobile/china-discovers/edit/{id}', [ChinaDiscoverController::class, 'edit'])->name('mobile.china-discovers.edit');
     Route::put('mobile/china-discovers/{id}', [ChinaDiscoverController::class, 'update'])->name('mobile.china-discovers.update');

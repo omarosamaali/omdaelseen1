@@ -238,6 +238,7 @@ class AppServiceProvider extends ServiceProvider
             $finalCount = max(0, $totalCount - $hiddenNotificationsCount);
             $view->with('countNotifications', $finalCount);
         });
+        
         View::composer(['mobile.profile.profile', 'mobile.welcome'], function ($view) {
             $userId = Auth::user()?->id;
             $placesCount = Places::where('user_id', $userId)->count();
