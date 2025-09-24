@@ -47,14 +47,6 @@ use App\Models\Note;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\TripRegistrationController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-
-Route::get('/send-test-notification', [App\Http\Controllers\FCMController::class, 'sendTestNotification']);
-
-Route::post('/save-fcm-token', [AuthenticatedSessionController::class, 'saveFcmToken'])
-    ->name('save-fcm-token')
-    ->middleware('auth'); // لازم المستخدم يكون مسجل دخول
-
 
 Route::get('/emails/success-preview', function () {
     $booking = \App\Models\Booking::latest()->first();
