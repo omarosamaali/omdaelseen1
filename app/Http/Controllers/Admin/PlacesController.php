@@ -129,11 +129,9 @@ class PlacesController extends Controller
             'email' => 'nullable|email|max:255',
             'status' => 'required|in:نشط,غير نشط,محظور',
         ]);
-
         if ($request->hasFile('avatar')) {
             $data['avatar'] = $request->file('avatar')->store('places', 'public');
         }
-
         $additionalImages = [];
         if ($request->hasFile('additional_images')) {
             foreach ($request->file('additional_images') as $image) {
@@ -141,12 +139,9 @@ class PlacesController extends Controller
             }
             $data['additional_images'] = json_encode($additionalImages);
         }
-
         $data['status'] = $this->normalizeStatus($data['status']);
         $data['user_id'] = Auth::id();
-
         Places::create($data);
-
         return redirect()->route('admin.places.index')->with('success', 'تم إضافة المكان بنجاح');
     }
 

@@ -58,4 +58,43 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
+
+    public function saveFcmToken(Request $request)
+    {
+        $request->validate(['token' => 'required|string']);
+
+        $user = auth()->user();
+        $user->fcm_token = $request->token;
+        $user->save();
+
+        // الاشتراك في Topic يجب أن يتم هنا فقط
+        $this->subscribeToTopic($user->fcm_token, 'all_users');
+
+        return response()->json(['status' => 'success']);
+    }
+
+    private function subscribeToTopic($token, $topic = "all_users")
+    {
+        $serverKey = env('FIREBASE_SERVER_KEY'); // server key فقط
+        $url = "https://iid.googleapis.com/iid/v1:batchAdd";
+
+        $payload = [
+            "to" => "/topics/{$topic}",
+            "registration_tokens" => [$token],
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: key={$serverKey}",
+            "Content-Type: application/json",
+        ]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        return $response;
+    }
 }

@@ -7,6 +7,9 @@ use App\Models\Rating;
 use App\Models\Places;
 use App\Models\ReviewReport;
 use Illuminate\Support\Facades\Auth;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
 
 class RatingController extends Controller
 {
@@ -16,15 +19,18 @@ class RatingController extends Controller
             return response()->json(['error' => 'يجب تسجيل الدخول لتقييم المكان.'], 401);
         }
 
+        // ✅ التحقق من القيم المدخلة
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string|max:1000',
         ]);
 
+        // ✅ منع التقييم المكرر
         if (Rating::where('user_id', Auth::id())->where('place_id', $place->id)->exists()) {
             return response()->json(['error' => 'لقد قيّمت هذا المكان بالفعل.'], 422);
         }
 
+        // ✅ إنشاء التقييم
         $rating = Rating::create([
             'user_id' => Auth::id(),
             'place_id' => $place->id,
@@ -32,8 +38,38 @@ class RatingController extends Controller
             'comment' => $request->comment,
         ]);
 
-        return response()->json(['message' => 'تم حفظ تقييمك بنجاح!', 'rating' => $rating], 201);
+        // ✅ إرسال إشعار لصاحب المكان (لو عنده FCM Token)
+        try {
+            $owner = $place->user; // صاحب المكان
+            if ($owner && $owner->fcm_token) {
+                $factory = (new Factory)->withServiceAccount(storage_path('firebase/service-account.json'));
+                $messaging = $factory->createMessaging();
+
+                $message = [
+                    'token' => $owner->fcm_token,
+                    'notification' => [
+                        'title' => 'تقييم جديد لمكانك',
+                        'body'  => 'قام ' . Auth::user()->name . ' بتقييم ' . $place->name_ar . ' بـ ' . $request->rating . ' نجوم',
+                    ],
+                    'data' => [
+                        'type' => 'rating',
+                        'id'   => (string)$rating->id,
+                        'place_id' => (string)$place->id,
+                    ],
+                ];
+
+                $messaging->send($message);
+            }
+        } catch (\Throwable $e) {
+            \Log::error('فشل إرسال إشعار التقييم: ' . $e->getMessage());
+        }
+
+        return response()->json([
+            'message' => 'تم حفظ تقييمك بنجاح!',
+            'rating'  => $rating
+        ], 201);
     }
+
 
     public function updateRating(Request $request, Places $place, Rating $rating)
     {
@@ -71,10 +107,13 @@ class RatingController extends Controller
         if (!Auth::check()) {
             return response()->json(['error' => 'يجب تسجيل الدخول للإبلاغ عن المحتوى.'], 401);
         }
+
         $request->validate([
             'report_type' => 'required|string|in:review_report',
             'review_id' => 'required|exists:ratings,id',
         ]);
+
+        // تحقق إن نفس المستخدم لم يبلغ عن نفس التقييم من قبل
         if (ReviewReport::where('user_id', Auth::id())
             ->where('place_id', $place->id)
             ->where('review_id', $request->review_id)
@@ -82,14 +121,54 @@ class RatingController extends Controller
         ) {
             return response()->json(['error' => 'لقد قمت بالإبلاغ عن هذا التقييم بالفعل.'], 422);
         }
-        ReviewReport::create([
+
+        // سجل البلاغ
+        $report = ReviewReport::create([
             'user_id' => Auth::id(),
             'place_id' => $place->id,
             'review_id' => $request->review_id,
             'report_type' => $request->report_type,
         ]);
+
+        try {
+            // جلب صاحب المكان
+            $placeOwner = $place->user ?? null;
+
+            if ($placeOwner && $placeOwner->fcm_token) {
+                $this->sendFCMNotification(
+                    $placeOwner->fcm_token,
+                    'تم الإبلاغ عن تقييم جديد',
+                    'تم الإبلاغ عن أحد التقييمات في مكانك: ' . ($place->name_ar ?? $place->name_en)
+                );
+            }
+        } catch (\Exception $e) {
+            Log::error('فشل إرسال إشعار FCM لصاحب المكان', [
+                'error' => $e->getMessage(),
+                'place_id' => $place->id
+            ]);
+        }
+
         return response()->json(['success' => true, 'message' => 'تم تسجيل البلاغ بنجاح!'], 201);
     }
+
+    private function sendFCMNotification($token, $title, $body)
+    {
+        try {
+            $factory = (new Factory)->withServiceAccount(storage_path('firebase/service-account.json'));
+            $messaging = $factory->createMessaging();
+
+            $message = CloudMessage::withTarget('token', $token)
+                ->withNotification(Notification::create($title, $body));
+
+            $messaging->send($message);
+        } catch (\Exception $e) {
+            Log::error('FCM Notification Error:', [
+                'token' => $token,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
     public function getReviews(Places $place)
     {
         try {

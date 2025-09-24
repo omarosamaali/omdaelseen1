@@ -305,8 +305,47 @@ class ChinaDiscoverController extends Controller
         }
 
         $data['user_id'] = Auth::id();
-        Places::create($data);
-        return redirect()->route('mobile.china-discovers.index')->with('success', 'تم إضافة المكان بنجاح!');
+        $place = Places::create($data);
+
+        // ✅ جيب كل الـ FCM Tokens
+        $tokens = \App\Models\User::whereNotNull('fcm_token')->pluck('fcm_token')->toArray();
+
+        if (count($tokens) > 0) {
+            $this->sendFirebaseNotification($tokens, [
+                'title' => '🎉 مكان جديد تم إضافته',
+                'body'  => $place->name_ar,
+            ]);
+        }
+
+        return redirect()->route('mobile.china-discovers.index')
+            ->with('success', 'تم إضافة المكان بنجاح!');
+    }
+    private function sendFirebaseNotification(array $tokens, array $data)
+    {
+        $serverKey = env('FIREBASE_SERVER_KEY');
+
+        $payload = [
+            "registration_ids" => $tokens,
+            "notification" => [
+                "title" => $data['title'],
+                "body"  => $data['body'],
+                "sound" => "default"
+            ]
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/fcm/send");
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: key={$serverKey}",
+            "Content-Type: application/json",
+        ]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        return $response;
     }
 
     /**

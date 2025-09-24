@@ -8,6 +8,9 @@ use App\Models\Places;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
 
 class ReportController extends Controller
 {
@@ -52,7 +55,6 @@ class ReportController extends Controller
         return view('mobile.admin.reports.review_show', compact('report'))
             ->with('layout', 'layouts.mobile');
     }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -61,24 +63,75 @@ class ReportController extends Controller
             'place_id' => 'required|exists:places,id',
         ]);
 
-        $report = Report::create([
-            'user_id' => $request->user_id,
-            'place_id' => $request->place_id,
-            'report_type' => $request->report_type,
-        ]);
+        try {
+            // إنشاء البلاغ
+            $report = Report::create([
+                'user_id' => $request->user_id,
+                'place_id' => $request->place_id,
+                'report_type' => $request->report_type,
+            ]);
 
-        if ($report) {
+            if (!$report) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'فشل تسجيل البلاغ'
+                ], 500);
+            }
+
+            // جلب صاحب المكان
+            $placeOwner = $report->place->user ?? null;
+
+            if ($placeOwner && $placeOwner->fcm_token) {
+                try {
+                    // إرسال الإشعار الفوري لصاحب المكان
+                    $this->sendFCMNotification(
+                        $placeOwner->fcm_token,
+                        'تم الإبلاغ عن مكانك',
+                        'تم الإبلاغ عن المكان: ' . ($report->place->name_ar ?? $report->place->name_en)
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('فشل إرسال إشعار FCM لصاحب المكان', [
+                        'error' => $e->getMessage(),
+                        'owner_id' => $placeOwner->id
+                    ]);
+                }
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'تم تسجيل البلاغ بنجاح'
             ]);
-        }
+        } catch (\Exception $e) {
+            \Log::error('Report Store Error:', [
+                'message' => $e->getMessage(),
+                'user_id' => $request->user_id,
+                'place_id' => $request->place_id,
+            ]);
 
-        return response()->json([
-            'success' => false,
-            'message' => 'فشل تسجيل البلاغ'
-        ], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء تسجيل البلاغ'
+            ], 500);
+        }
     }
+    public function sendFCMNotification($token, $title, $body)
+    {
+        try {
+            $factory = (new Factory)->withServiceAccount(storage_path('firebase/service-account.json'));
+            $messaging = $factory->createMessaging();
+
+            $message = CloudMessage::withTarget('token', $token)
+                ->withNotification(Notification::create($title, $body));
+
+            $messaging->send($message);
+        } catch (\Exception $e) {
+            \Log::error('FCM Notification Error:', [
+                'token' => $token,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
 
     public function reportPlace(Request $request, $placeId)
     {
@@ -93,10 +146,31 @@ class ReportController extends Controller
                     'error' => 'لقد أبلغت عن هذا المكان من قبل'
                 ]);
             }
+
             $report = Report::create([
                 'user_id' => Auth::id(),
                 'place_id' => $placeId,
             ]);
+
+            // ✅ إرسال إشعار لصاحب المكان لو عنده FCM Token
+            if ($report && $place->user && $place->user->fcm_token) {
+                try {
+                    $messaging = app('firebase.messaging');
+                    $message = \Kreait\Firebase\Messaging\CloudMessage::new()
+                        ->withNotification(
+                            \Kreait\Firebase\Messaging\Notification::create(
+                                '🚨 تم الإبلاغ عن مكانك',
+                                Auth::user()->name . ' أبلغ عن المكان: ' . $place->name_ar
+                            )
+                        )
+                        ->withChangedTarget('token', $place->user->fcm_token);
+
+                    $messaging->send($message);
+                } catch (\Exception $e) {
+                    \Log::error('FCM Error: ' . $e->getMessage());
+                }
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'تم تسجيل البلاغ بنجاح'
@@ -114,6 +188,7 @@ class ReportController extends Controller
             ], 500);
         }
     }
+
 
     public function acceptMobile($id)
     {

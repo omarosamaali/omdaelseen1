@@ -442,6 +442,7 @@
 </div>
 
 <script>
+    
     document.addEventListener("DOMContentLoaded", function() {
             let seconds = 3;
             let countdown = document.getElementById("seconds");
