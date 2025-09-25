@@ -10,6 +10,11 @@
     <title>الإشعارات | Notifications</title>
     <link href="{{ asset('assets/assets/css/style.css') }}" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const USER_ID = {{ auth()->id() ?? 'null' }};
+    </script>
+    @vite('resources/js/app.js')
     <style>
         .ph.ph-x {
             cursor: pointer;
@@ -97,106 +102,99 @@
             <div id="notifications-container" class="flex flex-col gap-4 pt-5">
                 {{-- الأماكن اللي ضفتها --}}
                 @foreach ($places as $place)
-                    <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
-                        data-id="place-{{ $place->id }}">
-                        <p>{{ __('messages.place_added', ['name' => $place->{'name_' . App::getLocale()} ?? __('messages.place_name')]) }}
-                            {{ $place->name_ar }}</p>
-                        <i class="ph ph-x"></i>
-                    </div>
+                <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
+                    data-id="place-{{ $place->id }}">
+                    <p>{{ __('messages.place_added', ['name' => $place->{'name_' . App::getLocale()} ??
+                        __('messages.place_name')]) }}
+                        {{ $place->name_ar }}</p>
+                    <i class="ph ph-x"></i>
+                </div>
+                @endforeach
+
+                {{-- البلاغات ضد اماكني --}}
+                @foreach ($reportsAgainstMe as $report)
+                <div class="flex justify-between items-center pb-4 border-b border-dashed border-red-400 dark:border-red-600 notification-item"
+                    data-id="report-against-{{ $report->id }}">
+                    @if ($report->status == 'pending')
+                    <p>
+                        {{ __('messages.place_reported_against_you_anonymous', [
+                        'place' => optional($report->place)->{'name_' . App::getLocale()} ?? __('messages.place_name'),
+                        ]) }}
+                    </p>
+                    @elseif($report->status == 'resolved')
+                    <p>{{ __('messages.report_accepted_place_disabled', ['place' => optional($report->place)->{'name_' .
+                        App::getLocale()} ?? __('messages.place_name')]) }}</p>
+                    @elseif($report->status == 'dismissed')
+                    <p>{{ __('messages.report_cancelled', ['place' => optional($report->place)->{'name_' .
+                        App::getLocale()} ??
+                        __('messages.place_name')]) }}</p>
+                    @endif
+                    <i class="ph ph-warning text-red-500"></i>
+                </div>
+                @endforeach
+
+                {{-- البلاغات ضد تقييماتك --}}
+                @foreach ($reviewReportsAgainstMe as $reviewReport)
+                <div class="flex justify-between items-center pb-4 border-b border-dashed border-red-400 dark:border-red-600 notification-item"
+                    data-id="review-report-against-{{ $reviewReport->id }}">
+                    @if ($reviewReport->status == 1)
+                    <p>
+                        {{ __('messages.review_reported_against_anonymous', [
+                        'place' => optional($reviewReport->place)->{'name_' . App::getLocale()} ??
+                        __('messages.place_name'),
+                        ]) }}
+                    </p>
+                    @elseif($reviewReport->status == 0)
+                    <p>
+                        {{ __('messages.done', [
+                        'place' => optional($reviewReport->place)->{'name_' . App::getLocale()} ??
+                        __('messages.place_name'),
+                        ]) }}
+                    </p>
+                    @elseif($reviewReport->status == 2)
+                    <p>
+                        {{ __('messages.cancel', [
+                        'place' => optional($reviewReport->place)->{'name_' . App::getLocale()} ??
+                        __('messages.place_name'),
+                        ]) }}
+                    </p>
+                    @endif
+                    <i class="ph ph-warning text-red-500"></i>
+                </div>
                 @endforeach
 
                 {{-- المفضلات --}}
                 @foreach ($favorites as $favorite)
-                    <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
-                        data-id="favorite-{{ $favorite->id }}">
-                        <p>{{ __('messages.favorite_added_by_user', ['place' => $favorite->place->{'name_' . App::getLocale()} ?? __('messages.place_name')]) }}
-                        </p>
-                        <i class="ph ph-x"></i>
-                    </div>
+                <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
+                    data-id="favorite-{{ $favorite->id }}">
+                    <p>{{ __('messages.favorite_added_by_user', ['place' => $favorite->place->{'name_' .
+                        App::getLocale()} ?? __('messages.place_name')]) }}
+                    </p>
+                    <i class="ph ph-x"></i>
+                </div>
                 @endforeach
 
                 {{-- التقييمات --}}
                 @foreach ($ratings as $rating)
-                    <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
-                        data-id="rating-{{ $rating->id }}">
-                        <p>{{ __('messages.place_rated_by_user', ['place' => $rating->place->{'name_' . App::getLocale()} ?? __('messages.place_name')]) }}
-                        </p>
-                        <i class="ph ph-x"></i>
-                    </div>
+                <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
+                    data-id="rating-{{ $rating->id }}">
+                    <p>{{ __('messages.place_rated_by_user', ['place' => $rating->place->{'name_' . App::getLocale()} ??
+                        __('messages.place_name')]) }}
+                    </p>
+                    <i class="ph ph-x"></i>
+                </div>
                 @endforeach
 
                 {{-- البلاغات اللي انت عملتها --}}
                 @foreach ($reports as $report)
-                    <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
-                        data-id="report-{{ $report->id }}">
-                        <p> أبلغت عن {{ $report->place->{'name_' . App::getLocale()} ?? __('messages.place_name') }}
-                        </p>
-                        <i class="ph ph-x"></i>
-                    </div>
+                <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
+                    data-id="report-{{ $report->id }}">
+                    <p> أبلغت عن {{ $report->place->{'name_' . App::getLocale()} ?? __('messages.place_name') }}
+                    </p>
+                    <i class="ph ph-x"></i>
+                </div>
                 @endforeach
 
-                {{-- البلاغات اللي اتعملت ضد أماكنك --}}
-                @foreach ($reportsAgainstMe as $report)
-                    <div class="flex justify-between items-center pb-4 border-b border-dashed border-red-400 dark:border-red-600 notification-item"
-                        data-id="report-against-{{ $report->id }}">
-                        @if ($report->status == 'pending')
-                            <p>
-                                {{ __('messages.place_reported_against_you_anonymous', [
-                                    'place' => optional($report->place)->{'name_' . App::getLocale()} ?? __('messages.place_name'),
-                                ]) }}
-                            </p>
-                        @elseif($report->status == 'resolved')
-                            <p>{{ __('messages.report_accepted_place_disabled', ['place' => optional($report->place)->{'name_' . App::getLocale()} ?? __('messages.place_name')]) }}
-                            </p>
-                        @elseif($report->status == 'dismissed')
-                            <p>{{ __('messages.report_cancelled', ['place' => optional($report->place)->{'name_' . App::getLocale()} ?? __('messages.place_name')]) }}
-                            </p>
-                        @endif
-                        <i class="ph ph-warning text-red-500"></i>
-                    </div>
-                @endforeach
-
-                {{-- البلاغات ضد التقييمات على الأماكن اللي قيمتها --}}
-                {{-- @if (isset($reportsOnPlacesIRated))
-                    @foreach ($reportsOnPlacesIRated as $report)
-                        <div class="flex justify-between items-center pb-4 border-b border-dashed border-yellow-400 dark:border-yellow-600 notification-item"
-                            data-id="report-place-rated-{{ $report->id }}">
-                            <p>
-                                {{ __('messages.place_you_rated_reported_anonymous', [
-                                    'place' => optional($report->place)->{'name_' . App::getLocale()} ?? __('messages.place_name'),
-                                ]) }}
-                            </p>
-                            <i class="ph ph-info text-yellow-500"></i>
-                        </div>
-                    @endforeach
-                @endif --}}
-
-                {{-- البلاغات ضد تقييماتك --}}
-                @foreach ($reviewReportsAgainstMe as $reviewReport)
-                    <div class="flex justify-between items-center pb-4 border-b border-dashed border-red-400 dark:border-red-600 notification-item"
-                        data-id="review-report-against-{{ $reviewReport->id }}">
-                        @if ($reviewReport->status == 1)
-                            <p>
-                                {{ __('messages.review_reported_against_anonymous', [
-                                    'place' => optional($reviewReport->place)->{'name_' . App::getLocale()} ?? __('messages.place_name'),
-                                ]) }}
-                            </p>
-                        @elseif($reviewReport->status == 0)
-                            <p>
-                                {{ __('messages.done', [
-                                    'place' => optional($reviewReport->place)->{'name_' . App::getLocale()} ?? __('messages.place_name'),
-                                ]) }}
-                            </p>
-                        @elseif($reviewReport->status == 2)
-                            <p>
-                                {{ __('messages.cancel', [
-                                    'place' => optional($reviewReport->place)->{'name_' . App::getLocale()} ?? __('messages.place_name'),
-                                ]) }}
-                            </p>
-                        @endif
-                        <i class="ph ph-warning text-red-500"></i>
-                    </div>
-                @endforeach
             </div>
         </div>
     </div>
@@ -207,6 +205,38 @@
     <script src="{{ asset('assets/assets/js/plugins/plugin-custom.js') }}"></script>
     <script defer src="{{ asset('assets/assets/js/index.js') }}"></script>
     <script>
+        function updateNotificationUI(payload) {
+const notificationContainer = document.getElementById('notifications-container'); // ✅ بدون نقطة
+if (!notificationContainer) {
+console.error('Container not found!');
+return;
+}
+
+const status = payload.data.status || 'pending';
+let message = '';
+
+if (status === 'pending') {
+message = `تم الإبلاغ عن مكانك: ${payload.data.place_name}`;
+} else if (status === 'resolved') {
+message = `تم تعطيل مكانك: ${payload.data.place_name}`;
+} else if (status === 'dismissed') {
+message = `تم إلغاء البلاغ عن: ${payload.data.place_name}`;
+}
+
+const newNotification = `
+<div class="flex justify-between items-center pb-4 border-b border-dashed border-red-400 dark:border-red-600 notification-item"
+    data-id="report-against-${payload.data.report_id}">
+    <p>${message}</p>
+    <i class="ph ph-warning text-red-500"></i>
+</div>
+`;
+
+notificationContainer.insertAdjacentHTML('afterbegin', newNotification);
+
+// عشان زرار الـ x يشتغل حتى على العناصر الجديدة
+addNotificationListeners();
+}
+        
         document.addEventListener('DOMContentLoaded', function() {
 
             function hideNotification(element) {

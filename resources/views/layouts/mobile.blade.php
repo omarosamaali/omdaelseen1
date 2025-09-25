@@ -18,7 +18,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Cairo:wght@200..1000&display=swap"
         rel="stylesheet">
-        <script src="https://js.ziina.com/v1/ziina.js"></script>
+    @vite('resources/js/app.js')
+    <script src="https://js.ziina.com/v1/ziina.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="-z-20" style="overflow-x: hidden;">

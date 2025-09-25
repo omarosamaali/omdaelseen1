@@ -24,6 +24,7 @@ class User extends Authenticatable
         'avatar',
         'explorer_name',
         'otp',
+        'fcm_token',
     ];
 
     public function tripRequests()

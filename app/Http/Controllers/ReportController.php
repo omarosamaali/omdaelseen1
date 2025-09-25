@@ -8,6 +8,7 @@ use App\Models\Places;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;  // ضيف السطر ده
 
 class ReportController extends Controller
 {
@@ -84,36 +85,141 @@ class ReportController extends Controller
     {
         try {
             $place = Places::findOrFail($placeId);
+
             $existingReport = Report::where('user_id', Auth::id())
                 ->where('place_id', $placeId)
                 ->first();
+
             if ($existingReport) {
                 return response()->json([
                     'success' => false,
                     'error' => 'لقد أبلغت عن هذا المكان من قبل'
-                ]);
+                ], 400);
             }
+
             $report = Report::create([
                 'user_id' => Auth::id(),
                 'place_id' => $placeId,
             ]);
+
+            // 📢 إشعار لصاحب المكان
+            $owner = $place->user;
+            if ($owner && $owner->fcm_token) {
+                $this->sendNotificationToOwner($owner, $place, $report);
+            }
+
+            // 📢 إشعار لكل الأدمنز
+            $admins = \App\Models\User::where('role', 'admin')
+                ->whereNotNull('fcm_token')
+                ->pluck('fcm_token');
+
+            foreach ($admins as $token) {
+                $this->sendNotificationToAdmin($token, $place, $report);
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'تم تسجيل البلاغ بنجاح'
             ]);
         } catch (\Exception $e) {
-            Log::error('Report Place Error:', [
-                'message' => $e->getMessage(),
-                'user_id' => Auth::id(),
-                'place_id' => $placeId
-            ]);
-
+            \Log::error('Report Place Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'error' => 'حدث خطأ أثناء تسجيل البلاغ'
             ], 500);
         }
     }
+    private function sendNotificationToAdmin($token, $place, $report)
+    {
+        try {
+            $accessToken = $this->getAccessToken();
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $accessToken,
+                'Content-Type' => 'application/json',
+            ])->post('https://fcm.googleapis.com/v1/projects/omdachina25/messages:send', [
+                'message' => [
+                    'token' => $token,
+                    'notification' => [
+                        'title' => '🚨 بلاغ جديد ضد مكان',
+                        'body'  => 'تم الإبلاغ عن: ' . ($place->name_ar ?? 'مكان غير معروف'),
+                    ],
+                    'data' => [
+                        'type'      => 'admin_place_report',
+                        'place_id'  => (string)$place->id,
+                        'place_name' => $place->name_ar ?? 'مكان غير معروف',
+                        'report_id' => (string)$report->id,
+                    ],
+                    'webpush' => [
+                        'fcm_options' => [
+                            // لو عندك صفحة للإدارة تعرض البلاغات
+                            'link' => url('/admin/reports/places/' . $report->id)
+                        ]
+                    ]
+                ]
+            ]);
+
+            if ($response->failed()) {
+                \Log::error('FCM Admin Send Failed: ' . $response->body());
+            }
+        } catch (\Exception $e) {
+            \Log::error('Notification Admin Send Error: ' . $e->getMessage());
+        }
+    }
+
+
+    private function sendNotificationToOwner($owner, $place, $report)
+    {
+        try {
+            // الحصول على access token من Google
+            $accessToken = $this->getAccessToken();
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $accessToken,
+                'Content-Type' => 'application/json',
+            ])->post('https://fcm.googleapis.com/v1/projects/omdachina25/messages:send', [
+                'message' => [
+                    'token' => $owner->fcm_token,
+                    'notification' => [
+                        'title' => 'تم الإبلاغ عن مكانك',
+                        'body'  => 'تم تلقي بلاغ جديد عن مكانك: ' . ($place->name_ar ?? 'مكان غير معروف'),
+                    ],
+                    'data' => [
+                        'type'      => 'place_report',
+                        'place_id'  => (string)$place->id,
+                        'place_name' => $place->name_ar ?? 'مكان غير معروف',
+                        'report_id' => (string)$report->id,
+                        'status'    => $report->status ?? 'pending', // مهم عشان UI يعرف نوع الرسالة
+                    ],
+                    'webpush' => [
+                        'fcm_options' => [
+                            'link' => url('/mobile/info_place/' . $place->id)
+                        ]
+                    ]
+                ]
+            ]);
+
+            if ($response->failed()) {
+                \Log::error('FCM Send Failed: ' . $response->body());
+            }
+        } catch (\Exception $e) {
+            \Log::error('Notification Send Error: ' . $e->getMessage());
+        }
+    }
+
+    private function getAccessToken()
+    {
+        // ضع ملف service account key في storage/app/firebase/
+        $credentialsFilePath = storage_path('app/firebase/omdachina25-firebase-adminsdk.json');
+
+        $client = new \Google_Client();
+        $client->setAuthConfig($credentialsFilePath);
+        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+        $client->refreshTokenWithAssertion();
+
+        return $client->getAccessToken()['access_token'];
+    }
+
 
     public function acceptMobile($id)
     {

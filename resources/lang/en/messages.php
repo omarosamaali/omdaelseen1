@@ -62,7 +62,7 @@ return [
     'favorite_added' => '{{user}} added :place to favorites',
     'place_rated' => '{{user}} rated :place',
     'place_reported' => '{{name}} has been reported',
-    'review_reported' => 'A review for {{name}} has been reported',
+    'review_reported' => 'A review for has been reported',
     'favorite_added_by_user' => 'You added :place to favorites',
     'place_rated_by_user' => 'You rated :place',
     'place_reported_by_user' => 'You reported {{name}}',

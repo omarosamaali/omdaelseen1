@@ -62,7 +62,7 @@ return [
     'favorite_added' => 'أضاف {{user}} :place إلي المفضلة',
     'place_rated' => 'قيم {{user}} :place',
     'place_reported' => 'تم الإبلاغ عن {{name}}',
-    'review_reported' => 'تم الإبلاغ عن تقييم يخص {{name}}',
+    'review_reported' => 'تم الإبلاغ عن تقييم يخص',
     'favorite_added_by_user' => 'أضفت :place إلى المفضلة',
     'place_rated_by_user' => 'قيّمت :place',
     'place_reported_by_user' => 'أبلغت عن {{name}}',

@@ -392,7 +392,7 @@
                 </script>
 
             </div>
-            <div>
+            <div style="margin-top: 20px;">
                 @if ($events?->type == 'مناسبة')
                 <span style="color: #800000"> المناسبة القادمة </span> <br />{{ $events?->title_ar }}
                 @elseif($events?->type == 'معرض')
@@ -407,7 +407,7 @@
 
         <div class="container-btns">
             {{-- @auth --}}
-            <a style="position: fixed;
+            <a style="position: fixed; z-index: 999;
     bottom: 27%;
     left: 31%;" href="{{ route('mobile.trip') }}">{{ __('messages.business_tourist_trips') }}</a>
             {{-- @else

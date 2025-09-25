@@ -48,6 +48,30 @@ use App\Http\Controllers\TripController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\TripRegistrationController;
 
+Route::post('/save-fcm-token', function (\Illuminate\Http\Request $request) {
+    try {
+        if (!auth()->check()) {
+            return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
+        }
+
+        $user = auth()->user();
+        $updated = $user->update(['fcm_token' => $request->token]);
+
+        if ($updated) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Token saved successfully'
+            ]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Failed to update token'], 500);
+    } catch (\Exception $e) {
+        \Log::error('FCM Token Save Error: ' . $e->getMessage());
+        return response()->json(['success' => false, 'message' => 'Server error'], 500);
+    }
+});
+
+
 Route::get('/emails/success-preview', function () {
     $booking = \App\Models\Booking::latest()->first();
     $trip = $booking->trip;
@@ -55,9 +79,7 @@ Route::get('/emails/success-preview', function () {
     return view('emails.success', compact('booking', 'trip', 'user'));
 });
 
-
 Route::get('/trip/{id}/payment', [TripController::class, 'initiatePayment'])->name('trip.payment');
-
 
 Route::get('/payment/success', function (Request $request) {
     return view('payment.success', [

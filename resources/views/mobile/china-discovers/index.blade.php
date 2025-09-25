@@ -253,14 +253,11 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            // استمع للنقرات على جميع أيقونات القلب
             document.querySelectorAll('.heart-icon').forEach(icon => {
                 icon.addEventListener('click', function() {
                     const placeId = this.getAttribute('data-place-id');
                     const iconElement = this;
                     const heartSvg = iconElement.querySelector('i');
-
                     fetch('{{ route('favorites.toggle') }}', {
                             method: 'POST',
                             headers: {
@@ -280,12 +277,10 @@
                         .then(data => {
                             if (data.status === 'added') {
                                 iconElement.classList.add('favorited');
-                                // تبديل كلاسات Font Awesome
                                 heartSvg.classList.remove('fa-regular');
                                 heartSvg.classList.add('fa-solid');
                             } else if (data.status === 'removed') {
                                 iconElement.classList.remove('favorited');
-                                // تبديل كلاسات Font Awesome
                                 heartSvg.classList.remove('fa-solid');
                                 heartSvg.classList.add('fa-regular');
                             }

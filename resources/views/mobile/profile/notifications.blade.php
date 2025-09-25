@@ -10,7 +10,7 @@
     <title>الإشعارات | Notifications</title>
     <link href="{{ asset('assets/assets/css/style.css') }}" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -33,7 +33,7 @@
                 <div
                     class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
                     data-id="place-{{ $place->id }}">
-                    <p>{{ __('messages.place_added', ['name' => $place->{'name_' . App::getLocale()} ?? __('messages.place_name')]) }}</p>
+                    <p>تمت إضافة {{ $place->name_ar }}</p>
                     <i class="ph ph-x"></i>
                 </div>
             @endforeach
@@ -41,10 +41,7 @@
                 <div
                     class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
                     data-id="favorite-{{ $favorite->id }}">
-                    <p>{{ __('messages.favorite_added', [
-                            'user' => $favorite->user->name,
-                            'place' => $favorite->place->{'name_' . App::getLocale()} ?? __('messages.place_name'),
-                        ]) }}</p>
+                    <p>أضاف {{ $favorite->user->name }} {{ $favorite->place->name_ar }} الي المفضلة</p>
                     <i class="ph ph-x"></i>
                 </div>
             @endforeach
@@ -52,10 +49,7 @@
                 <div
                     class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
                     data-id="rating-{{ $rating->id }}">
-                    <p>{{ __('messages.place_rated', [
-                            'user' => $rating->user->name,
-                            'place' => $rating->place->{'name_' . App::getLocale()} ?? __('messages.place_name'),
-                        ]) }}</p>
+                    <p>قيم {{ $rating->user->name }} - {{ $rating->place->name_ar }}</p>
                     <i class="ph ph-x"></i>
                 </div>
             @endforeach
@@ -71,7 +65,9 @@
                 <div
                     class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
                     data-id="review_report-{{ $report->id }}">
-                    <p>{{ __('messages.review_reported', ['name' => $report->place->{'name_' . App::getLocale()} ?? __('messages.place_name')]) }}</p>
+                    <p>{{ __('messages.review_reported') }} 
+                        {{ $report->place->name_ar }}
+                    </p>
                     <i class="ph ph-x"></i>
                 </div>
             @endforeach

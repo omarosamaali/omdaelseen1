@@ -16,6 +16,85 @@ use Stichoza\GoogleTranslate\GoogleTranslate;
 
 class ChinaDiscoverController extends Controller
 {
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name_ar' => 'required|string|max:255',
+            'name_en' => 'required|string|max:255',
+            'name_ch' => 'required|string|max:255',
+            'details_ar' => 'nullable|string',
+            'details_en' => 'nullable|string',
+            'details_ch' => 'nullable|string',
+            'website' => 'nullable|url|max:255',
+            'main_category_id' => 'required|exists:explorers,id',
+            'sub_category_id' => 'nullable|exists:branches,id',
+            'region_id' => 'required|exists:regions,id',
+            'link' => 'required|url',
+            'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'additional_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $data['avatar'] = $request->file('avatar')->store('places/avatars', 'public');
+        }
+
+        $additionalImages = [];
+        if ($request->hasFile('additional_images')) {
+            foreach ($request->file('additional_images') as $image) {
+                $additionalImages[] = $image->store('places/additional', 'public');
+            }
+            $data['additional_images'] = json_encode($additionalImages);
+        }
+
+        $data['user_id'] = Auth::id();
+        $place = Places::create($data);
+
+        // 🔍 تشخيص شامل
+        \Log::info('=== FCM Debug Info ===');
+
+        // فحص الـ Server Key
+        $serverKey = env('FIREBASE_SERVER_KEY');
+        \Log::info('Server Key exists: ' . ($serverKey ? 'YES' : 'NO'));
+
+        // فحص الأدمن tokens
+        $adminTokens = \App\Models\User::where('role', 'admin')
+            ->whereNotNull('fcm_token')
+            ->get(['id', 'name', 'fcm_token']);
+
+        \Log::info('Admin users with FCM tokens: ' . $adminTokens->count());
+        \Log::info('Admin tokens:', $adminTokens->toArray());
+
+        // فحص كل المستخدمين الـ FCM tokens
+        $allTokens = \App\Models\User::whereNotNull('fcm_token')->count();
+        \Log::info('Total users with FCM tokens: ' . $allTokens);
+
+        if ($adminTokens->count() > 0) {
+            $tokens = $adminTokens->pluck('fcm_token')->toArray();
+
+            \Log::info('Sending notification to tokens:', $tokens);
+
+            $notificationData = [
+                'title' => '🎉 مكان جديد تم إضافته',
+                'body'  => $place->name_ar,
+                'type'  => 'place_added',
+                'place_id' => $place->id,
+                'place_name' => $place->name_ar,
+            ];
+
+            \Log::info('Notification data:', $notificationData);
+
+            $response = $this->sendFirebaseNotification($tokens, $notificationData);
+
+            \Log::info('FCM Send result: ' . ($response ? 'SUCCESS' : 'FAILED'));
+        } else {
+            \Log::warning('No admin users with FCM tokens found!');
+        }
+
+        return redirect()->route('mobile.china-discovers.index')
+            ->with('success', 'تم إضافة المكان بنجاح!');
+    }
     /**
      * Display the main discovery page.
      *
@@ -272,81 +351,140 @@ class ChinaDiscoverController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    
+
+
+    private function createJWTToken($serviceAccount)
     {
-        $data = $request->validate([
-            'name_ar' => 'required|string|max:255',
-            'name_en' => 'required|string|max:255',
-            'name_ch' => 'required|string|max:255',
-            'details_ar' => 'nullable|string',
-            'details_en' => 'nullable|string',
-            'details_ch' => 'nullable|string',
-            'website' => 'nullable|url|max:255',
-            'main_category_id' => 'required|exists:explorers,id',
-            'sub_category_id' => 'nullable|exists:branches,id',
-            'region_id' => 'required|exists:regions,id',
-            'link' => 'required|url',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'additional_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        try {
+            // استخدام Firebase REST API مع OAuth 2.0
+            $tokenUrl = 'https://oauth2.googleapis.com/token';
 
-        if ($request->hasFile('avatar')) {
-            $data['avatar'] = $request->file('avatar')->store('places/avatars', 'public');
-        }
+            $postData = [
+                'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                'assertion' => $this->createJWT($serviceAccount)
+            ];
 
-        $additionalImages = [];
-        if ($request->hasFile('additional_images')) {
-            foreach ($request->file('additional_images') as $image) {
-                $additionalImages[] = $image->store('places/additional', 'public');
-            }
-            $data['additional_images'] = json_encode($additionalImages);
-        }
-
-        $data['user_id'] = Auth::id();
-        $place = Places::create($data);
-
-        // ✅ جيب كل الـ FCM Tokens
-        $tokens = \App\Models\User::whereNotNull('fcm_token')->pluck('fcm_token')->toArray();
-
-        if (count($tokens) > 0) {
-            $this->sendFirebaseNotification($tokens, [
-                'title' => '🎉 مكان جديد تم إضافته',
-                'body'  => $place->name_ar,
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $tokenUrl);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/x-www-form-urlencoded'
             ]);
-        }
 
-        return redirect()->route('mobile.china-discovers.index')
-            ->with('success', 'تم إضافة المكان بنجاح!');
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($httpCode === 200) {
+                $tokenData = json_decode($response, true);
+                return $tokenData['access_token'] ?? null;
+            }
+
+            \Log::error('OAuth token error:', ['response' => $response, 'code' => $httpCode]);
+            return null;
+        } catch (\Exception $e) {
+            \Log::error('JWT creation error: ' . $e->getMessage());
+            return null;
+        }
     }
     private function sendFirebaseNotification(array $tokens, array $data)
     {
-        $serverKey = env('FIREBASE_SERVER_KEY');
+        try {
+            $serviceAccountPath = storage_path('app/firebase/omdachina25-firebase-adminsdk.json');
+            if (!file_exists($serviceAccountPath)) {
+                \Log::error('Firebase service account file not found');
+                return false;
+            }
 
-        $payload = [
-            "registration_ids" => $tokens,
-            "notification" => [
-                "title" => $data['title'],
-                "body"  => $data['body'],
-                "sound" => "default"
-            ]
-        ];
+            $serviceAccount = json_decode(file_get_contents($serviceAccountPath), true);
+            $accessToken = $this->createJWTToken($serviceAccount);
+            if (!$accessToken) {
+                \Log::error('Failed to create JWT token');
+                return false;
+            }
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/fcm/send");
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            "Authorization: key={$serverKey}",
-            "Content-Type: application/json",
-        ]);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-        $response = curl_exec($ch);
-        curl_close($ch);
+            $url = "https://fcm.googleapis.com/v1/projects/{$serviceAccount['project_id']}/messages:send";
+            $successCount = 0;
 
-        return $response;
+            foreach ($tokens as $token) {
+                $payload = [
+                    "message" => [
+                        "token" => $token,
+                        "notification" => [
+                            "title" => $data['title'],
+                            "body" => $data['body'],
+                        ],
+                        "data" => [
+                            "type" => $data['type'] ?? '',
+                            "place_id" => (string)($data['place_id'] ?? ''),
+                            "place_name" => $data['place_name'] ?? '',
+                            "click_action" => "FLUTTER_NOTIFICATION_CLICK"
+                        ]
+                    ]
+                ];
+
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $url);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    "Authorization: Bearer {$accessToken}",
+                    "Content-Type: application/json",
+                ]);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+
+                \Log::info("FCM Response for token:", ['http_code' => $httpCode, 'response' => $response]);
+                if ($httpCode === 200) {
+                    $successCount++;
+                }
+            }
+
+            \Log::info("FCM Summary: {$successCount} success, " . (count($tokens) - $successCount) . " failed");
+            return $successCount > 0;
+        } catch (\Exception $e) {
+            \Log::error('FCM Error: ' . $e->getMessage());
+            return false;
+        }
     }
+    private function createJWT($serviceAccount)
+    {
+        $header = json_encode([
+            'alg' => 'RS256',
+            'typ' => 'JWT'
+        ]);
+
+        $now = time();
+        $payload = json_encode([
+            'iss' => $serviceAccount['client_email'],
+            'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
+            'aud' => 'https://oauth2.googleapis.com/token',
+            'exp' => $now + 3600,
+            'iat' => $now
+        ]);
+
+        $base64Header = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
+        $base64Payload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
+
+        $signature = '';
+        openssl_sign(
+            $base64Header . '.' . $base64Payload,
+            $signature,
+            $serviceAccount['private_key'],
+            'SHA256'
+        );
+
+        $base64Signature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
+
+        return $base64Header . '.' . $base64Payload . '.' . $base64Signature;
+    }
+
 
     /**
      * Show the form for editing a place.
