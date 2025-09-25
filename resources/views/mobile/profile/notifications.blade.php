@@ -15,65 +15,62 @@
 
 <body>
     <img src="{{ asset('assets/assets/images/PG-OMDA-1.png') }}" class="image-container" alt="">
-<div class="container bg-white dark:bg-color10 p-6 min-h-screen dark:text-white relative">
-    <div class="flex justify-start items-center gap-3">
-        <div
-            class="flex justify-start items-center gap-3 bg-color14 border border-color16 p-4 rounded-full w-full dark:border-bgColor16 dark:bg-bgColor14">
-            <i class="ph ph-magnifying-glass"></i>
-            <input type="text" id="searchInput" placeholder="{{ __('messages.search_placeholder') }}"
-                class="bg-transparent outline-none placeholder:text-color1 w-full text-xs dark:text-white dark:placeholder:text-white" />
+    <div class="container bg-white dark:bg-color10 p-6 min-h-screen dark:text-white relative">
+        <div class="flex justify-start items-center gap-3">
+            <div
+                class="flex justify-start items-center gap-3 bg-color14 border border-color16 p-4 rounded-full w-full dark:border-bgColor16 dark:bg-bgColor14">
+                <i class="ph ph-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="{{ __('messages.search_placeholder') }}"
+                    class="bg-transparent outline-none placeholder:text-color1 w-full text-xs dark:text-white dark:placeholder:text-white" />
+            </div>
+            <x-back-button href="{{ route('mobile.profile.profile') }}" />
         </div>
-        <x-back-button href="{{ route('mobile.profile.profile') }}" />
-    </div>
 
-    <p class="text-xl font-semibold pt-8">{{ __('messages.notifications_title') }}</p>
-    <div class="flex flex-col gap-4 pt-5">
-        <div id="notifications-container" class="flex flex-col gap-4 pt-5">
-            @foreach ($places as $place)
-                <div
-                    class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
+        <p class="text-xl font-semibold pt-8">{{ __('messages.notifications_title') }}</p>
+        <div class="flex flex-col gap-4 pt-5">
+            <div id="notifications-container" class="flex flex-col gap-4 pt-5">
+                @foreach ($places as $place)
+                <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
                     data-id="place-{{ $place->id }}">
                     <p>تمت إضافة {{ $place->name_ar }}</p>
                     <i class="ph ph-x"></i>
                 </div>
-            @endforeach
-            @foreach ($favorites as $favorite)
-                <div
-                    class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
+                @endforeach
+                @foreach ($favorites as $favorite)
+                <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
                     data-id="favorite-{{ $favorite->id }}">
                     <p>أضاف {{ $favorite->user->name }} {{ $favorite->place->name_ar }} الي المفضلة</p>
                     <i class="ph ph-x"></i>
                 </div>
-            @endforeach
-            @foreach ($ratings as $rating)
-                <div
-                    class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
-                    data-id="rating-{{ $rating->id }}">
-                    <p>قيم {{ $rating->user->name }} - {{ $rating->place->name_ar }}</p>
-                    <i class="ph ph-x"></i>
-                </div>
-            @endforeach
-            @foreach ($reports as $report)
-                <div
-                    class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
+                @endforeach
+                @foreach ($reports as $report)
+                <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
                     data-id="report-{{ $report->id }}">
-                    <p>{{ __('messages.place_reported', ['name' => $report->place->{'name_' . App::getLocale()} ?? __('messages.place_name')]) }}</p>
+                    <p>{{ __('messages.place_reported', ['name' => $report->place->{'name_' . App::getLocale()} ??
+                        __('messages.place_name')]) }}</p>
                     <i class="ph ph-x"></i>
                 </div>
-            @endforeach
-            @foreach ($review_reports as $report)
-                <div
-                    class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
+                @endforeach
+@foreach ($review_reports as $report)
+                <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
                     data-id="review_report-{{ $report->id }}">
-                    <p>{{ __('messages.review_reported') }} 
+                    <p>{{ __('messages.review_reported') }}
                         {{ $report->place->name_ar }}
                     </p>
                     <i class="ph ph-x"></i>
                 </div>
-            @endforeach
+                @endforeach
+                @foreach ($ratings as $rating)
+                <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
+                    data-id="rating-{{ $rating->id }}">
+                    <p>قيم {{ $rating->user->name }} - {{ $rating->place->name_ar }}</p>
+                    <i class="ph ph-x"></i>
+                </div>
+                @endforeach
+
+            </div>
         </div>
     </div>
-</div>
     <script src="{{ asset('assets/assets/js/main.js') }}"></script>
     <script src="{{ asset('assets/assets/js/plugins/apexcharts.min.js') }}"></script>
     <script src="{{ asset('assets/assets/js/plugins/apex-custom.js') }}"></script>
