@@ -218,6 +218,8 @@ class ReportController extends Controller
             'client_email' => env('FIREBASE_CLIENT_EMAIL'),
             'client_id' => env('FIREBASE_CLIENT_ID'),
             'auth_uri' => env('FIREBASE_AUTH_URI'),
+            'client_secret' => '', // هنا أضفناها فاضية عشان تمنع الـ Undefined array key error
+
             'token_uri' => env('FIREBASE_TOKEN_URI'),
             'auth_provider_x509_cert_url' => env('FIREBASE_AUTH_PROVIDER_CERT_URL'),
             'client_x509_cert_url' => env('FIREBASE_CLIENT_CERT_URL'),
