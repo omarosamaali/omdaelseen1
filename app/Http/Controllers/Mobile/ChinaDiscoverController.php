@@ -403,6 +403,8 @@ class ChinaDiscoverController extends Controller
                 'private_key' => str_replace('\\n', "\n", env('FIREBASE_PRIVATE_KEY')),
                 'client_email' => env('FIREBASE_CLIENT_EMAIL'),
                 'client_id' => env('FIREBASE_CLIENT_ID'),
+                'client_secret' => '', // أضف ده
+
                 'auth_uri' => env('FIREBASE_AUTH_URI'),
                 'token_uri' => env('FIREBASE_TOKEN_URI'),
                 'auth_provider_x509_cert_url' => 'https://www.googleapis.com/oauth2/v1/certs',

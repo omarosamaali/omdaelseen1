@@ -69,7 +69,9 @@ $firebaseCredentials = [
     'client_email' => env('FIREBASE_CLIENT_EMAIL'),
     'client_id' => env('FIREBASE_CLIENT_ID'),
     'auth_uri' => env('FIREBASE_AUTH_URI'),
-    'token_uri' => env('FIREBASE_TOKEN_URI'),
+                'client_secret' => '', // أضف ده
+
+                'token_uri' => env('FIREBASE_TOKEN_URI'),
     'auth_provider_x509_cert_url' => 'https://www.googleapis.com/oauth2/v1/certs',
     'client_x509_cert_url' => 'https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40' . env('FIREBASE_PROJECT_ID') . '.iam.gserviceaccount.com',
     'universe_domain' => 'googleapis.com'
