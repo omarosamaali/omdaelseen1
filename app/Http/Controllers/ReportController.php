@@ -209,7 +209,7 @@ class ReportController extends Controller
 
     private function getAccessToken()
     {
-        // تجهيز بيانات Firebase من الـ .env
+        // تجهيز بيانات Firebase من .env بالظبط زي ما بتنزل من Google
         $firebaseCredentials = [
             'type' => env('FIREBASE_TYPE'),
             'project_id' => env('FIREBASE_PROJECT_ID'),
@@ -219,8 +219,9 @@ class ReportController extends Controller
             'client_id' => env('FIREBASE_CLIENT_ID'),
             'auth_uri' => env('FIREBASE_AUTH_URI'),
             'token_uri' => env('FIREBASE_TOKEN_URI'),
-            'auth_provider_x509_cert_url' => env('FIREBASE_AUTH_PROVIDER_CERT_URL', 'https://www.googleapis.com/oauth2/v1/certs'),
+            'auth_provider_x509_cert_url' => env('FIREBASE_AUTH_PROVIDER_CERT_URL'),
             'client_x509_cert_url' => env('FIREBASE_CLIENT_CERT_URL'),
+            'universe_domain' => env('FIREBASE_UNIVERSE_DOMAIN', 'googleapis.com'),
         ];
 
         // إنشاء ملف JSON مؤقت
@@ -229,7 +230,7 @@ class ReportController extends Controller
 
         // تهيئة Google Client باستخدام الملف المؤقت
         $client = new \Google_Client();
-        $client->setAuthConfig($tempPath);
+        $client->setAuthConfig($tempPath); // لازم يكون ملف أو JSON كامل
         $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
         $client->refreshTokenWithAssertion();
 
