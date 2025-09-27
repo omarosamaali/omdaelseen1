@@ -166,6 +166,29 @@ class ReportController extends Controller
             \Log::error('Notification Admin Send Error: ' . $e->getMessage());
         }
     }
+    private function getAccessToken()
+    {
+        try {
+            // ✅ حقن متغير البيئة Runtime لضمان أن Google Client يشوفه
+            putenv('GOOGLE_APPLICATION_CREDENTIALS=' . base_path('storage/app/firebase-adminsdk.json'));
+
+            // ✅ تهيئة Google Client
+            $client = new \Google_Client();
+            $client->useApplicationDefaultCredentials();
+            $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+
+            // ✅ جلب الـ Access Token
+            $accessToken = $client->fetchAccessTokenWithAssertion();
+
+            // لو عايز تتأكد أن كل شيء شغال أول مرة
+            // \Log::info('FCM Access Token Response', $accessToken);
+
+            return $accessToken['access_token'] ?? null;
+        } catch (\Exception $e) {
+            \Log::error('Failed to get Firebase Access Token: ' . $e->getMessage());
+            return null;
+        }
+    }
 
 
     private function sendNotificationToOwner($owner, $place, $report)
@@ -207,37 +230,6 @@ class ReportController extends Controller
         }
     }
 
-    private function getAccessToken()
-    {
-        // تجهيز بيانات Firebase من .env بالظبط زي ما بتنزل من Google
-        $firebaseCredentials = [
-            'type' => env('FIREBASE_TYPE'),
-            'project_id' => env('FIREBASE_PROJECT_ID'),
-            'private_key_id' => env('FIREBASE_PRIVATE_KEY_ID'),
-            'private_key' => str_replace('\\n', "\n", env('FIREBASE_PRIVATE_KEY')),
-            'client_email' => env('FIREBASE_CLIENT_EMAIL'),
-            'client_id' => env('FIREBASE_CLIENT_ID'),
-            'auth_uri' => env('FIREBASE_AUTH_URI'),
-            'client_secret' => '', // هنا أضفناها فاضية عشان تمنع الـ Undefined array key error
-
-            'token_uri' => env('FIREBASE_TOKEN_URI'),
-            'auth_provider_x509_cert_url' => env('FIREBASE_AUTH_PROVIDER_CERT_URL'),
-            'client_x509_cert_url' => env('FIREBASE_CLIENT_CERT_URL'),
-            'universe_domain' => env('FIREBASE_UNIVERSE_DOMAIN', 'googleapis.com'),
-        ];
-
-        // إنشاء ملف JSON مؤقت
-        $tempPath = sys_get_temp_dir() . '/firebase-temp.json';
-        file_put_contents($tempPath, json_encode($firebaseCredentials, JSON_UNESCAPED_SLASHES));
-
-        // تهيئة Google Client باستخدام الملف المؤقت
-        $client = new \Google_Client();
-        $client->setAuthConfig($tempPath); // لازم يكون ملف أو JSON كامل
-        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
-        $client->refreshTokenWithAssertion();
-
-        return $client->getAccessToken()['access_token'];
-    }
 
 
 
