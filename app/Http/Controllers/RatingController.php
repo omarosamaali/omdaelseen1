@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Illuminate\Support\Facades\Http;
-
+use Google\Client as Google_Client;
 use Kreait\Firebase\Messaging\Notification;
 use Google\Client as GoogleClient;
 
@@ -35,6 +35,7 @@ class RatingController extends Controller
                 'client_x509_cert_url' => 'https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40' . env('FIREBASE_PROJECT_ID') . '.iam.gserviceaccount.com',
                 'universe_domain' => 'googleapis.com'
             ];
+            $client = new Google_Client();
             $client->setAuthConfig($firebaseCredentials);
 
             $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
