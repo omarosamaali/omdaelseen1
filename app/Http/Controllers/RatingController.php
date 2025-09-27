@@ -20,7 +20,21 @@ class RatingController extends Controller
     {
         try {
             $client = new GoogleClient();
-            $client->setAuthConfig(storage_path('app/firebase/omdachina25-firebase-adminsdk.json'));
+            $firebaseCredentials = [
+                'type' => env('FIREBASE_TYPE'),
+                'project_id' => env('FIREBASE_PROJECT_ID'),
+                'private_key_id' => env('FIREBASE_PRIVATE_KEY_ID'),
+                'private_key' => str_replace('\\n', "\n", env('FIREBASE_PRIVATE_KEY')),
+                'client_email' => env('FIREBASE_CLIENT_EMAIL'),
+                'client_id' => env('FIREBASE_CLIENT_ID'),
+                'auth_uri' => env('FIREBASE_AUTH_URI'),
+                'token_uri' => env('FIREBASE_TOKEN_URI'),
+                'auth_provider_x509_cert_url' => 'https://www.googleapis.com/oauth2/v1/certs',
+                'client_x509_cert_url' => 'https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40' . env('FIREBASE_PROJECT_ID') . '.iam.gserviceaccount.com',
+                'universe_domain' => 'googleapis.com'
+            ];
+            $client->setAuthConfig($firebaseCredentials);
+
             $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
 
             $token = $client->fetchAccessTokenWithAssertion();
@@ -164,7 +178,27 @@ class RatingController extends Controller
         try {
             $owner = $place->user; // صاحب المكان
             if ($owner && $owner->fcm_token) {
-                $factory = (new Factory)->withServiceAccount(storage_path('app/firebase/omdachina25-firebase-adminsdk.json'));
+                // إنشاء array من بيانات .env
+                $firebaseCredentials = [
+                    'type' => env('FIREBASE_TYPE'),
+                    'project_id' => env('FIREBASE_PROJECT_ID'),
+                    'private_key_id' => env('FIREBASE_PRIVATE_KEY_ID'),
+                    'private_key' => str_replace('\\n', "\n", env('FIREBASE_PRIVATE_KEY')),
+                    'client_email' => env('FIREBASE_CLIENT_EMAIL'),
+                    'client_id' => env('FIREBASE_CLIENT_ID'),
+                    'auth_uri' => env('FIREBASE_AUTH_URI'),
+                    'token_uri' => env('FIREBASE_TOKEN_URI'),
+                    'auth_provider_x509_cert_url' => 'https://www.googleapis.com/oauth2/v1/certs',
+                    'client_x509_cert_url' => 'https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40' . env('FIREBASE_PROJECT_ID') . '.iam.gserviceaccount.com',
+                    'universe_domain' => 'googleapis.com'
+                ];
+
+                // إنشاء ملف مؤقت
+                $tempFile = storage_path('app/temp-firebase.json');
+                file_put_contents($tempFile, json_encode($firebaseCredentials));
+
+                // استخدام نفس الكود القديم
+                $factory = (new Factory)->withServiceAccount($tempFile);
                 $messaging = $factory->createMessaging();
 
                 $message = [

@@ -23,7 +23,7 @@
                 <input type="text" id="searchInput" placeholder="{{ __('messages.search_placeholder') }}"
                     class="bg-transparent outline-none placeholder:text-color1 w-full text-xs dark:text-white dark:placeholder:text-white" />
             </div>
-            <x-back-button href="{{ route('mobile.profile.profile') }}" />
+            <x-back-button href="{{ url()->previous() }}" />
         </div>
 
         <p class="text-xl font-semibold pt-8">{{ __('messages.notifications_title') }}</p>
