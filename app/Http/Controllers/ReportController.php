@@ -233,8 +233,8 @@ class ReportController extends Controller
         $credentialsFilePath = $tempPath;
 
         $client = new \Google_Client();
-        $client->setAuthConfig($credentialsFilePath);
-        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+        $client->setAuthConfig($firebaseCredentials);
+                $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
         $client->refreshTokenWithAssertion();
 
         return $client->getAccessToken()['access_token'];

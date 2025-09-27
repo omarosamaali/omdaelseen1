@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Auth;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Illuminate\Support\Facades\Http;
-use Google\Client as Google_Client;
 use Kreait\Firebase\Messaging\Notification;
 use Google\Client as GoogleClient;
 
