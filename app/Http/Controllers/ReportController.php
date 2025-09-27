@@ -209,6 +209,7 @@ class ReportController extends Controller
 
     private function getAccessToken()
     {
+        // تجهيز بيانات Firebase من الـ .env
         $firebaseCredentials = [
             'type' => env('FIREBASE_TYPE'),
             'project_id' => env('FIREBASE_PROJECT_ID'),
@@ -217,28 +218,24 @@ class ReportController extends Controller
             'client_email' => env('FIREBASE_CLIENT_EMAIL'),
             'client_id' => env('FIREBASE_CLIENT_ID'),
             'auth_uri' => env('FIREBASE_AUTH_URI'),
-            'client_secret' => '', // أضف ده
-
             'token_uri' => env('FIREBASE_TOKEN_URI'),
-            'auth_provider_x509_cert_url' => 'https://www.googleapis.com/oauth2/v1/certs',
-            'client_x509_cert_url' => 'https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40' . env('FIREBASE_PROJECT_ID') . '.iam.gserviceaccount.com',
-            'universe_domain' => 'googleapis.com'
+            'auth_provider_x509_cert_url' => env('FIREBASE_AUTH_PROVIDER_CERT_URL', 'https://www.googleapis.com/oauth2/v1/certs'),
+            'client_x509_cert_url' => env('FIREBASE_CLIENT_CERT_URL'),
         ];
 
-        // إنشاء ملف مؤقت
+        // إنشاء ملف JSON مؤقت
         $tempPath = sys_get_temp_dir() . '/firebase-temp.json';
-        file_put_contents($tempPath, json_encode($firebaseCredentials));
+        file_put_contents($tempPath, json_encode($firebaseCredentials, JSON_UNESCAPED_SLASHES));
 
-        // استخدام نفس الطريقة القديمة
-        $credentialsFilePath = $tempPath;
-
+        // تهيئة Google Client باستخدام الملف المؤقت
         $client = new \Google_Client();
-        $client->setAuthConfig($firebaseCredentials);
-                $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+        $client->setAuthConfig($tempPath);
+        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
         $client->refreshTokenWithAssertion();
 
         return $client->getAccessToken()['access_token'];
     }
+
 
 
     public function acceptMobile($id)
