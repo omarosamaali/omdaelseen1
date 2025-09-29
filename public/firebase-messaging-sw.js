@@ -7,11 +7,9 @@ firebase.initializeApp({
   projectId: "omdachina25",
   storageBucket: "omdachina25.firebasestorage.app",
   messagingSenderId: "1031143486488",
-  appId: "212ca723-6015-43de-8e66-6f24d0defbd9"
+  appId: "1:1031143486488:web:0a662055d970826268bf6d"
 });
-OneSignal.init({
-    appId: "212ca723-6015-43de-8e66-6f24d0defbd9"
-});
+
 const messaging = firebase.messaging();
 
 // استقبال الإشعارات في الخلفية
