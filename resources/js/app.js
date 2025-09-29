@@ -13,10 +13,12 @@ const firebaseConfig = {
     projectId: "omdachina25",
     storageBucket: "omdachina25.firebasestorage.app",
     messagingSenderId: "1031143486488",
-    appId: "1:212ca723-6015-43de-8e66-6f24d0defbd9",
+    appId: "212ca723-6015-43de-8e66-6f24d0defbd9",
     measurementId: "G-G9TLSKJ92H"
 };
-
+OneSignal.init({
+    appId: "212ca723-6015-43de-8e66-6f24d0defbd9"
+});
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
