@@ -48,7 +48,7 @@ use App\Http\Controllers\TripController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\TripRegistrationController;
 
-Route::post('/save-fcm-token', function (\Illuminate\Http\Request $request) {
+Route::post('/save-fcm-token', function (Request $request) {
     try {
         if (!auth()->check()) {
             return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
