@@ -31,6 +31,20 @@
     <script src="{{ asset('assets/assets/js/plugins/circle-slider.js') }}"></script>
     <script src="{{ asset('assets/assets/js/main.js') }}"></script>
     <script defer src="{{ asset('assets/assets/js/index.js') }}"></script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+          window.OneSignalDeferred.push(async function(OneSignal) {
+              await OneSignal.init({
+                  appId: "212ca723-6015-43de-8e66-6f24d0defbd9  ",
+                  notifyButton: {
+                      enable: true
+                  },
+                  serviceWorkerPath: "push/onesignal/OneSignalSDKWorker.js",
+                  serviceWorkerParam: { scope: "/push/onesignal/js/" },
+              });
+          });
+    </script>
 </body>
 
 </html>
