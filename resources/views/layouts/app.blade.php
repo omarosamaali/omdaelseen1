@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,30 +18,28 @@
     </style>
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+                window.OneSignalDeferred.push(async function(OneSignal) {
+                    await OneSignal.init({
+                        appId: "212ca723-6015-43de-8e66-6f24d0defbd9"
+                        , notifyButton: {
+                            enable: true
+                        }
+                        , serviceWorkerPath: "/OneSignalSDKWorker.js"
+                        , serviceWorkerParam: { scope: "/" },
+                    });
+                });
+    </script>
 </head>
+
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100">
         <main>
             @yield('content')
         </main>
     </div>
-
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-              window.OneSignalDeferred.push(async function(OneSignal) {
-                  await OneSignal.init({
-                      appId: "212ca723-6015-43de-8e66-6f24d0defbd9",
-                      notifyButton: {
-                          enable: true
-                      },
-                      serviceWorkerPath: "push/onesignal/OneSignalSDKWorker.js",
-                      serviceWorkerParam: { scope: "/push/onesignal/js/" },
-                  });
-              });
-    </script>
-
 </body>
+
 </html>
-
-

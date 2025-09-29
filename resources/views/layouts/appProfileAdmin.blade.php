@@ -15,7 +15,20 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
-
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+            window.OneSignalDeferred.push(async function(OneSignal) {
+                await OneSignal.init({
+                    appId: "212ca723-6015-43de-8e66-6f24d0defbd9"
+                    , notifyButton: {
+                        enable: true
+                    }
+                    , serviceWorkerPath: "/OneSignalSDKWorker.js"
+                    , serviceWorkerParam: { scope: "/" },
+                });
+            });
+    </script>
     <!-- Styles -->
     <style>
         body {
@@ -866,20 +879,7 @@
             }
         });
     </script>
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-        <script>
-            window.OneSignalDeferred = window.OneSignalDeferred || [];
-                  window.OneSignalDeferred.push(async function(OneSignal) {
-                      await OneSignal.init({
-                          appId: "212ca723-6015-43de-8e66-6f24d0defbd9",
-                          notifyButton: {
-                              enable: true
-                          },
-                          serviceWorkerPath: "push/onesignal/OneSignalSDKWorker.js",
-                          serviceWorkerParam: { scope: "/push/onesignal/js/" },
-                      });
-                  });
-        </script>
+    
 </body>
 
 </html>

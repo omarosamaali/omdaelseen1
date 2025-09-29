@@ -21,6 +21,20 @@
     @vite('resources/js/app.js')
     <script src="https://js.ziina.com/v1/ziina.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+        <script>
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+                window.OneSignalDeferred.push(async function(OneSignal) {
+                    await OneSignal.init({
+                        appId: "212ca723-6015-43de-8e66-6f24d0defbd9"
+                        , notifyButton: {
+                            enable: true
+                        }
+                        , serviceWorkerPath: "/OneSignalSDKWorker.js"
+                        , serviceWorkerParam: { scope: "/" },
+                    });
+                });
+        </script>
 </head>
 
 <body class="-z-20" style="overflow-x: hidden;">
@@ -31,20 +45,6 @@
     <script src="{{ asset('assets/assets/js/plugins/circle-slider.js') }}"></script>
     <script src="{{ asset('assets/assets/js/main.js') }}"></script>
     <script defer src="{{ asset('assets/assets/js/index.js') }}"></script>
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-          window.OneSignalDeferred.push(async function(OneSignal) {
-              await OneSignal.init({
-                  appId: "212ca723-6015-43de-8e66-6f24d0defbd9",
-                  notifyButton: {
-                      enable: true
-                  },
-                  serviceWorkerPath: "push/onesignal/OneSignalSDKWorker.js",
-                  serviceWorkerParam: { scope: "/push/onesignal/js/" },
-              });
-          });
-    </script>
 </body>
 
 </html>
