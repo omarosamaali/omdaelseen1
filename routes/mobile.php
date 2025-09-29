@@ -259,7 +259,7 @@ Route::middleware('auth')->group(function () {
     Route::get('mobile.admin.chat/{chatUser}', [ChatController::class, 'showAdminChat'])->name('mobile.admin.chat');
     Route::post('mobile.chat/send', [ChatController::class, 'sendMessage'])->name('mobile.chat.send');
 });
-
+Route::post('/mobile/chat/send', [ChatController::class, 'sendMessage'])->name('mobile.chat.send');
 Route::post('/followers/toggle/{user}', [FollowersUserController::class, 'toggle'])
     ->name('followers.toggle');
 

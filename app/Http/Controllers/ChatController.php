@@ -54,7 +54,7 @@ class ChatController extends Controller
     }
     public function showAllChats()
     {
-        if (!Auth::user()->role === 'admin') {
+        if (Auth::user()->role !== 'admin') {
             abort(403, 'Unauthorized');
         }
 
