@@ -12,6 +12,14 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+messaging.onBackgroundMessage(function(payload) {
+  console.log("📩 إشعار في الخلفية:", payload);
+  self.registration.showNotification(payload.notification.title, {
+    body: payload.notification.body,
+    icon: "/favicon.ico"
+  });
+});
+
 // استقبال الإشعارات في الخلفية
 messaging.onBackgroundMessage(function(payload) {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
