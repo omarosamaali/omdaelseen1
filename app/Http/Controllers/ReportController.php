@@ -8,7 +8,8 @@ use App\Models\Places;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Http;  // ضيف السطر ده
+use Illuminate\Support\Facades\Http;
+use App\Services\FirebaseService;
 
 class ReportController extends Controller
 {
@@ -81,11 +82,19 @@ class ReportController extends Controller
         ], 500);
     }
 
+    private $firebase;
+
+    public function __construct(FirebaseService $firebase)
+    {
+        $this->firebase = $firebase;
+    }
+
     public function reportPlace(Request $request, $placeId)
     {
         try {
             $place = Places::findOrFail($placeId);
 
+            // التحقق من عدم التبليغ مسبقاً
             $existingReport = Report::where('user_id', Auth::id())
                 ->where('place_id', $placeId)
                 ->first();
@@ -97,38 +106,34 @@ class ReportController extends Controller
                 ], 400);
             }
 
+            // حفظ البلاغ
             $report = Report::create([
                 'user_id' => Auth::id(),
                 'place_id' => $placeId,
             ]);
 
-            // 📢 إشعار لصاحب المكان
-            $owner = $place->user;
-            if ($owner && $owner->fcm_token) {
-                $this->sendNotificationToOwner($owner, $place, $report);
-            }
+            // 🔔 إرسال إشعار للأدمن في Firebase
+            $userName = Auth::user()->name ?? 'مستخدم';
+            $placeName = $place->name ?? "المكان #{$placeId}";
 
-            // 📢 إشعار لكل الأدمنز
-            $admins = \App\Models\User::where('role', 'admin')
-                ->whereNotNull('fcm_token')
-                ->pluck('fcm_token');
+            $message = "⚠️ بلاغ جديد من {$userName} على: {$placeName}";
 
-            foreach ($admins as $token) {
-                $this->sendNotificationToAdmin($token, $place, $report);
-            }
+            $this->firebase->notifyAdmin($message);
 
             return response()->json([
                 'success' => true,
                 'message' => 'تم تسجيل البلاغ بنجاح'
             ]);
         } catch (\Exception $e) {
-            \Log::error('Report Place Error: ' . $e->getMessage());
+            Log::error('Report Place Error: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
                 'error' => 'حدث خطأ أثناء تسجيل البلاغ'
             ], 500);
         }
     }
+
     private function sendNotificationToAdmin($token, $place, $report)
     {
         try {
@@ -166,6 +171,7 @@ class ReportController extends Controller
             \Log::error('Notification Admin Send Error: ' . $e->getMessage());
         }
     }
+
     private function getAccessToken()
     {
         try {
@@ -189,7 +195,6 @@ class ReportController extends Controller
             return null;
         }
     }
-
 
     private function sendNotificationToOwner($owner, $place, $report)
     {
@@ -229,9 +234,6 @@ class ReportController extends Controller
             \Log::error('Notification Send Error: ' . $e->getMessage());
         }
     }
-
-
-
 
     public function acceptMobile($id)
     {

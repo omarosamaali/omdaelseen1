@@ -35,6 +35,16 @@ use App\Http\Controllers\AddsController;
 use App\Http\Controllers\BookingController;
 use Illuminate\Support\Facades\Auth;
 
+Route::get('/test-firebase', function () {
+    try {
+        $firebase = new \App\Services\FirebaseService();
+        $firebase->notifyAdmin('تجربة الإشعار');
+        return 'تم الإرسال بنجاح!';
+    } catch (\Exception $e) {
+        return 'خطأ: ' . $e->getMessage();
+    }
+});
+
 Route::get('booking/{id}/payment', [BookingController::class, 'initiatePayment'])->name('booking.payment');
 Route::get('booking/payment/success', [BookingController::class, 'paymentSuccess'])->name('booking.payment.success');
 Route::get('booking/payment/cancel', [BookingController::class, 'paymentCancel'])->name('booking.payment.cancel');

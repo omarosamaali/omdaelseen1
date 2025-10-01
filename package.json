@@ -18,6 +18,8 @@
         "vite": "^6.2.4"
     },
     "dependencies": {
-        "firebase": "^12.3.0"
+        "firebase": "^12.3.0",
+        "laravel-echo": "^2.2.4",
+        "pusher-js": "^8.4.0"
     }
 }

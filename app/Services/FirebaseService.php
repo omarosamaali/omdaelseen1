@@ -2,42 +2,61 @@
 
 namespace App\Services;
 
-use Google\Client;
-use GuzzleHttp\Client as HttpClient;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Database;
 
 class FirebaseService
 {
-    private function getAccessToken()
+    private $database;
+
+    public function __construct()
     {
-        $client = new Client();
-        $client->setAuthConfig(storage_path('app/firebase-adminsdk.json'));
-        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
-        $token = $client->fetchAccessTokenWithAssertion();
-        return $token['access_token'];
+        $serviceAccountPath = storage_path('app/firebase-adminsdk.json');
+
+        if (!file_exists($serviceAccountPath)) {
+            throw new \Exception('Firebase service account file not found at: ' . $serviceAccountPath);
+        }
+
+        $factory = (new Factory)
+            ->withServiceAccount($serviceAccountPath)
+            ->withDatabaseUri('https://omdachina25-default-rtdb.firebaseio.com');
+
+        $this->database = $factory->createDatabase();
     }
 
-    public function sendNotificationToAll($title, $body)
+    /**
+     * إرسال إشعار للأدمن في Realtime Database
+     */
+    public function notifyAdmin($message)
     {
-        $accessToken = $this->getAccessToken();
+        $notificationData = [
+            'message' => $message,
+            'timestamp' => time(),
+            'read' => false
+        ];
 
-        $http = new HttpClient();
+        // إضافة الإشعار في مسار admin_notifications
+        $this->database
+            ->getReference('notifications/admin')
+            ->push($notificationData);
 
-        $response = $http->post('https://fcm.googleapis.com/v1/projects/omdachina25/messages:send', [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $accessToken,
-                'Content-Type'  => 'application/json',
-            ],
-            'json' => [
-                'message' => [
-                    'topic' => 'all_users', // 🔔 أي حد مشترك في الـ topic ده هيوصله إشعار
-                    'notification' => [
-                        'title' => $title,
-                        'body'  => $body,
-                    ],
-                ],
-            ],
-        ]);
+        return true;
+    }
 
-        return json_decode($response->getBody(), true);
+    /**
+     * إرسال إشعار عام لكل المستخدمين
+     */
+    public function notifyAll($message)
+    {
+        $notificationData = [
+            'message' => $message,
+            'timestamp' => time(),
+        ];
+
+        $this->database
+            ->getReference('notifications/all')
+            ->push($notificationData);
+
+        return true;
     }
 }

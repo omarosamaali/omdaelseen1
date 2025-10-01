@@ -48,6 +48,12 @@ use App\Http\Controllers\TripController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\TripRegistrationController;
 
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/notifications', function () {
+        return view('admin.notifications');
+    })->name('admin.notifications');
+});
+
 Route::post('/save-fcm-token', function (Request $request) {
     try {
         if (!auth()->check()) {
