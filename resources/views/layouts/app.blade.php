@@ -42,9 +42,9 @@
             </div>
             <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
             <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-            
-<script>
-    const firebaseConfig = {
+
+            <script>
+                const firebaseConfig = {
     apiKey: "AIzaSyBQCPTwnybdtLNUwNCzDDA23TLt3pD5zP4",
     authDomain: "omdachina25.firebaseapp.com",
     databaseURL: "https://omdachina25-default-rtdb.firebaseio.com",
@@ -79,7 +79,7 @@
       icon: "/favicon.ico"
     });
   });
-</script>            
+            </script>
             <style>
                 .badge {
                     position: fixed;
@@ -94,35 +94,35 @@
                     z-index: 9999;
                     animation: fadeIn 0.3s;
                 }
-            
+
                 @keyframes shake {
-            
+
                     0%,
                     100% {
                         transform: translateX(0);
                     }
-            
+
                     25% {
                         transform: translateX(-10px);
                     }
-            
+
                     75% {
                         transform: translateX(10px);
                     }
                 }
-            
+
                 @keyframes fadeIn {
                     from {
                         opacity: 0;
                         transform: translateY(-20px);
                     }
-            
+
                     to {
                         opacity: 1;
                         transform: translateY(0);
                     }
                 }
-            
+
                 .shake {
                     animation: shake 0.5s;
                 }

@@ -18,7 +18,12 @@ class LoginController extends Controller
 
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        // نحاول تسجيل الدخول ونجبره على استخدام remember = true
+        if (! Auth::attempt($request->only('email', 'password'), true)) {
+            return back()->withErrors([
+                'email' => 'بيانات الدخول غير صحيحة.',
+            ]);
+        }
 
         $user = Auth::user();
 
@@ -37,6 +42,7 @@ class LoginController extends Controller
         }
 
         $request->session()->regenerate();
+
         return redirect()->intended(route('mobile.welcome', absolute: false));
     }
 
