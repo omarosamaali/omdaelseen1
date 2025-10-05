@@ -14,7 +14,7 @@
         <div class="flex justify-between items-center bg-p2 px-6 py-6"
             style="position: fixed; width: 100%; z-index: 999999999999999;">
             <div class="flex justify-start items-center gap-4">
-                <a href="{{ route('mobile') }}"
+                <a href="{{ route('mobile.welcome') }}"
                     class="border border-color16 p-1.5 rounded-full flex justify-center items-center dark:border-bgColor16 dark:bg-bgColor14 bg-white">
                     <i class="ph ph-caret-left"></i>
                 </a>
