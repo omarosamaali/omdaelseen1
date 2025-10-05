@@ -1170,3 +1170,10 @@
         display: flex;
         margin-top: 10px;
     }
+
+
+    #container-header {
+        position: fixed;
+        width: 100%;
+        z-index: 999999;
+    }

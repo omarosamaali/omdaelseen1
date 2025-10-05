@@ -1168,7 +1168,7 @@
 </style>
 
 <body class="relative -z-20">
-    <x-china-header :title="__('messages.تفاصيل الرحلة')" :route="route('mobile.welcome')" />
+    <x-china-header :title="__('messages.تفاصيل الرحلة')" :route="route('mobile.trip')" />
 
     <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white -z-10 dark:bg-color1">
         {{-- @if ($banner?->image) --}}

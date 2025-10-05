@@ -31,7 +31,7 @@
     <body class="relative -z-20">
         <x-china-header :title="__('messages.special_request')" :route="route('mobile.welcome')" />
 
-        <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white -z-10 dark:bg-color1">
+        <div style="padding-top: 90px;"  class="container min-h-dvh relative overflow-hidden py-8 dark:text-white -z-10 dark:bg-color1">
                 <div class="faqCategory pt-2">
                     <p class="text-center px-2">{{ __('messages.زر طلب خاص') }}</p>
                 </div>

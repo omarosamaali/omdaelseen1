@@ -45,13 +45,14 @@
     </style>
 
     <body>
+        <x-china-header :title="__('messages.المستخدمين')" :route="route('mobile.profile.profileAdmin')" />
         <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white dark:bg-black">
 
             <!-- Page Title Start -->
             <div class="relative z-10">
                 <div class="relative z-10 px-6" style="position: fixed; width: 100%;     width: 96%;
     margin: auto; background-color: white; top: 0px; padding: 10px 0px;">
-                    <div class="flex justify-between items-center gap-4" style="flex-direction: row-reverse;">
+                    <div class="flex justify-between items-center gap-4" style="visibility: hidden; flex-direction: row-reverse;">
                         <div style="position: absolute;" class="flex justify-start items-center gap-4">
                             <a href="{{ route('mobile.profile.profileAdmin') }}"
                                 class="bg-white size-8 rounded-full flex justify-center items-center text-xl dark:bg-color10">

@@ -5,16 +5,16 @@
 <link rel="stylesheet" href="{{ asset('assets/assets/css/china-discover.css') }}">
 
 @section('content')
-
+<x-china-header :title="__('messages.الطلبات')" :route="route('mobile.profile.profile')" />
 <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
 
-    <div class="header-container">
+    {{-- <div class="header-container">
         <img src="{{ asset('assets/assets/images/header-bg.png') }}" alt="">
         <a href="{{ url()->previous() }}" class="profile-link dark:bg-color10">
             <i class="fa-solid fa-chevron-left"></i>
         </a>
         <div class="logo-register">{{ __('messages.الطلبات') }}</div>
-    </div>
+    </div> --}}
 
     <div style="margin-top: 36px;">
         <div class="relative z-20 px-2">

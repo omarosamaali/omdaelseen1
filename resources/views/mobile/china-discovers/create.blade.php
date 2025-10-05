@@ -5,7 +5,7 @@
 
 @section('content')
 <x-china-header :title="__('messages.add_new_place')" :route="route('mobile.china-discovers.index')" />
-<div class="container dark:text-white dark:bg-color1">
+<div class="container dark:text-white dark:bg-color1" style="padding-top: 90px;">
     <div class="relative z-30 px-6">
         <div class="p-6 rounded-xl bg-white dark:bg-color9 border border-color21">
             <form action="{{ route('mobile.china-discovers.store') }}" method="POST" enctype="multipart/form-data">

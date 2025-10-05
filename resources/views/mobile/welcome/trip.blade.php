@@ -34,11 +34,17 @@
         flex-direction: column;
         text-align: center;
     }
+/* 
+    #container-header {
+        position: fixed;
+        width: 100%;
+        z-index: 999999;
+    } */
 </style>
 
 <x-china-header :title="__('messages.الرحلات التجارية والسياحية')" :route="route('mobile.welcome')" />
 
-<div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white -z-10 dark:bg-color1">
+<div style="padding-top: 90px;"  class="container min-h-dvh relative overflow-hidden py-8 dark:text-white -z-10 dark:bg-color1">
     <div class="relative z-10 px-6">
         <div class="faqCategory pt-8">
             <ul class="flex flex-wrap justify-center items-center tab-button gap-4" style="margin: auto;">

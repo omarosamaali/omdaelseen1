@@ -188,6 +188,7 @@ return [
     'الرحلات التجارية والسياحية' => 'Business and tourist trips',
     'للتجارة والسياحة' => 'Business and tourism',
     'للسياحة' => 'Tourism',
+    'المستخدمين' => 'Users',
     'للتجار' => 'Trading',
     'عائلية' => 'Family',
     'جماعية' => 'Group',
@@ -218,4 +219,6 @@ return [
     'تفاصيل الملاحظة' => 'Note Details',
     'login' => 'Login',
     'register' => 'Register',
+    'البلاغات' => 'Reports',
+    'المتابعين' => 'Followers',
 ];

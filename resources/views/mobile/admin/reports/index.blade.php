@@ -343,7 +343,7 @@
             animation-delay: 0.5s;
         }
     </style>
-
+<x-china-header :title="__('messages.البلاغات')" :route="route('mobile.profile.profile')" />
     <div class="min-h-screen">
         <div class="container">
             @if (session('success'))
@@ -356,12 +356,6 @@
                     ❌ {{ session('error') }}
                 </div>
             @endif
-            <div class="flex justify-start items-center relative z-10">
-                <div class="logo-register">
-                    <img src="{{ asset('assets/assets/images/logo-all.png') }}" class="image-regsiter" alt="">
-                </div>
-                <x-back-button href="{{ route('mobile.profile.profile') }}" />
-            </div>
 
             @if ($reports->isEmpty() && $review_reports->isEmpty())
                 <div class="empty-state">

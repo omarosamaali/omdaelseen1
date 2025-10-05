@@ -44,13 +44,13 @@
             margin: auto;
         }
     </style>
-
+<x-china-header :title="__('messages.المستخدمين')" :route="route('mobile.profile.profile')" />
     <body>
         <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white dark:bg-black">
             <!-- Page Title Start -->
             <div class="relative z-10">
                 <div class="relative z-10 px-6">
-                    <div class="flex justify-between items-center gap-4" style="flex-direction: row-reverse;">
+                    {{-- <div class="flex justify-between items-center gap-4" style="flex-direction: row-reverse;">
                         <div style="position: absolute;" class="flex justify-start items-center gap-4">
                             <a href="{{ route('mobile.profile.profile') }}"
                                 class="bg-white size-8 rounded-full flex justify-center items-center text-xl dark:bg-color10">
@@ -58,8 +58,8 @@
                             </a>
                         </div>
                         <img src="{{ asset('assets/assets/images/logo-all.png') }}" class="logo--image" />
-                    </div>
-                    <form action="{{ Auth::user()->role == 'admin' ? route('mobile.admin.users.index') : route('mobile.users.index') }}" method="GET">
+                    </div> --}}
+                    <form style="margin-top: 20px;" action="{{ Auth::user()->role == 'admin' ? route('mobile.admin.users.index') : route('mobile.users.index') }}" method="GET">
                         <div class="flex justify-between items-center gap-3 pt-6">
                             <div style="background-color: white; color: black; border: 1px solid gray;"
                                 class="flex justify-start items-center gap-3 bg-color24 border border-color24 p-4 rounded-full text-white w-full">

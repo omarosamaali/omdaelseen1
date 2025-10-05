@@ -9,15 +9,15 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 @section('content')
-
+<x-china-header :title="__('messages.favorites')" :route="route('mobile.profile.profile')" />
     <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
-        <div class="header-container">
+        {{-- <div class="header-container">
             <img src="{{ asset('assets/assets/images/header-bg.png') }}" alt="">
             <a href="{{ route('mobile.profile.profile') }}" class="profile-link dark:bg-color10">
                 <i class="fa-solid fa-chevron-left"></i>
             </a>
             <div class="logo-register">{{ __('messages.favorites') }}</div>
-        </div>
+        </div> --}}
 
         <div style="margin-top: 90px;">
             @forelse($favoritePlaces as $place)

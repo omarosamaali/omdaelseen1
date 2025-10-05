@@ -235,13 +235,13 @@
                 <p class="text-xs font-semibold">{{ __('messages.reports') }}</p>
                 <p class="font-semibold py-1 px-8 bg-color12 rounded-full">{{ $all_reports }}</p>
             </a>
-            <div
+            <a href="{{ route('mobile.admin.all-chat') }}"
                 class="flex flex-col gap-2 p-4 justify-center items-center border border-color12 rounded-xl dark:border-color24">
                 <p class="text-xs font-semibold">{{ __('messages.conversations') }}</p>
                 <p class="font-semibold py-1 px-8 bg-color14 rounded-full dark:bg-color7">
-                    0
+                    {{ $all_conversations }}
                 </p>
-            </div>
+            </a>
             <a href="{{ route('mobile.profile.my-interests') }}"
                 class="flex flex-col gap-2 p-4 justify-center items-center border border-color12 rounded-xl dark:border-color24">
                 <p class="text-xs font-semibold">{{ __('messages.interests') }}</p>

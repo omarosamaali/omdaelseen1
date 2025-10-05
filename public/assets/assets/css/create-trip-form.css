@@ -112,3 +112,9 @@ body {
     border-radius: 9px;
     margin-top: 7px;
 }
+
+#container-header {
+    position: fixed;
+    width: 100%;
+    z-index: 999999;
+}

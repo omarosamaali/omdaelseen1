@@ -12,6 +12,12 @@
     animation: fadeIn 0.3s;
 }
 
+#container-header {
+    position: fixed;
+    width: 100%;
+    z-index: 999999;
+}
+
 @keyframes shake {
 
     0%,

@@ -19,6 +19,12 @@
     height: 60px;
 }
 
+#container-header {
+    position: fixed;
+    width: 100%;
+    z-index: 999999;
+}
+
 .img-places {
     margin: auto;
     width: 95%;
@@ -236,11 +242,9 @@
 }
 
 .latest-card {
-    background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.1),
-        rgba(255, 181, 49, 0.05)
-    );
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.1),
+            rgba(255, 181, 49, 0.05));
     backdrop-filter: blur(10px);
 }
 
@@ -424,11 +428,9 @@
 
 .review-item.new-review {
     border-color: maroon;
-    background: linear-gradient(
-        135deg,
-        rgba(255, 181, 49, 0.05) 0%,
-        rgba(255, 165, 0, 0.05) 100%
-    );
+    background: linear-gradient(135deg,
+            rgba(255, 181, 49, 0.05) 0%,
+            rgba(255, 165, 0, 0.05) 100%);
     animation: newReviewAnimation 1s ease;
 }
 
@@ -561,11 +563,9 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(
-        135deg,
-        transparent 0%,
-        rgba(255, 181, 49, 0.05) 100%
-    );
+    background: linear-gradient(135deg,
+            transparent 0%,
+            rgba(255, 181, 49, 0.05) 100%);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -881,7 +881,7 @@ body {
 }
 
 .container--features {
-    margin-top: 50px;
+    margin-top: 65px;
     direction: rtl;
 }
 
@@ -1002,6 +1002,7 @@ body {
 }
 
 @keyframes shake {
+
     0%,
     100% {
         transform: translateX(0);

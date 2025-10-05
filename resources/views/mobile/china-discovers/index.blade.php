@@ -5,7 +5,13 @@
 @section('title', 'مستكشفي الصين | China Discover')
 
 @section('content')
-
+<style>
+    #container-header {
+        position: fixed;
+        width: 100%;
+        z-index: 999999;
+        }
+</style>
 <x-china-header :title="__('messages.china_explorers')" :route="route('mobile.welcome')" />
 
 <div style="width: 100%; display: block;">
@@ -15,11 +21,11 @@
     @endforeach
     @endif
 </div>
-<div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
+<div style="padding-top: 60px;" class="container min-h-dvh relative overflow-hidden pb-8 text-black dark:bg-black">
 
     <div>
         <div class="continaer--title">
-            <h6 class="categories">{{ __('messages.categories') }}</h6>
+            <h6 class="categories text-black" style="color: black;">{{ __('messages.categories') }}</h6>
             <a href={{ route('mobile.china-discovers.all-places') }} class="show--all">{{
                 __('messages.search_for_place') }}</a>
         </div>

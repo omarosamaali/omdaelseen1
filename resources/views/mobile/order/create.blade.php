@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{{ asset('assets/assets/css/create-trip-form.css') }}">
 @section('content')
 
-<div class="container dark:text-white dark:bg-color1">
+<div class="container dark:text-white dark:bg-color1" style="padding-top: 90px;">
     <img src="{{ asset('assets/images/header-bg-2.png') }}" class="absolute header-bg" alt="" />
     <div class="absolute top-0 left-0 bg-p3 bg-blur-145"></div>
     <div class="absolute top-40 right-0 bg-[#0ABAC9] bg-blur-150"></div>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Mobile\ProfileController;
 use App\Http\Controllers\Mobile\ChinaDiscoverController;
 use App\Models\Places;
 use App\Models\Favorites;
+use App\Models\Message;
 use App\Models\Followers;
 use App\Models\Report;
 use App\Models\TripActivity;
@@ -573,7 +574,8 @@ Route::middleware('mobile_auth')->group(function () {
         $reports = Report::all();
         $review_reports = ReviewReport::all();
         $all_orders = Product::count() + TripRequest::count();
-        return view('mobile.profile.profileAdmin', compact('all_orders', 'review_reports', 'reports', 'all_reports', 'all_users', 'all_places', 'count', 'countInterests', 'myFollowers', 'iFollow'));
+        $all_conversations = Message::count();
+        return view('mobile.profile.profileAdmin', compact('all_conversations','all_orders', 'review_reports', 'reports', 'all_reports', 'all_users', 'all_places', 'count', 'countInterests', 'myFollowers', 'iFollow'));
     })->name('mobile.profile.profileAdmin');
 
     // Admin-specific routes

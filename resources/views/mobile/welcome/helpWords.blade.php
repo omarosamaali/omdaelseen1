@@ -27,7 +27,7 @@
 
 <body class="relative -z-20">
     <x-china-header :title="__('messages.الكلمات')" :route="route('mobile.welcome')" />
-    <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white -z-10 dark:bg-color1">
+    <div style="padding-top: 90px;"  class="container min-h-dvh relative overflow-hidden py-8 dark:text-white -z-10 dark:bg-color1">
         <p class="text-2xl font-semibold text-center pt-18">{{ __('messages.اضغط لسماع الكلمة') }}</p>
         <div class="faqCategory pt-20">
             <ul class="flex justify-center items-center tab-button gap-2">
