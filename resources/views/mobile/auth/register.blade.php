@@ -13,6 +13,9 @@
         width: 100%;
         z-index: 9999;
     }
+    .iti--fullscreen-popup.iti--container {
+    background-color: rgba(0, 0, 0, 0.5);
+    top: 52px; }
 </style>
 
 @section('content')
