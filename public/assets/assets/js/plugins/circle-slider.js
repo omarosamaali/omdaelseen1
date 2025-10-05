@@ -55,7 +55,7 @@ function handleEnd(e) {
 
 function rotateLeft() {
   if (currentRotation === 0) {
-    circleSliders.style.transform = "rotate(-58deg)";
+    circleSliders.style.transform = "rotate(0deg)";
     updatePaths("left");
     currentRotation = -1;
   } else if (currentRotation === 1) {

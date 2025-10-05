@@ -221,37 +221,39 @@
                             class="" />
                         <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;"">
                                 {{ __('messages.special_request') }}</p>
-                        </a>
-                        <a href=" {{ route('mobile.terms') }}" style="right: 17.5%; bottom: 7.5%;"
+                    </a>
+                    <a href=" {{ route('mobile.terms') }}" style="right: 17.5%; bottom: 7.5%;"
                             class="flex flex-col justify-center items-center text-center gap-3 absolute right-[16.5%] bottom-[6.5%] rotate-[-58deg]">
                             <img src="{{ asset('assets/assets/images/logo-5.png') }}" style="width: 50px;" alt=""
                                 class="" />
                             <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;"">
                                 {{ __('messages.terms_conditions') }}</p>
-                        </a>
-                        <a href=" {{ route('mobile.privacy') }}" style="right: 8%; bottom: 17%;"
+                    </a>
+                    <a href=" {{ route('mobile.privacy') }}" style="right: 8%; bottom: 17%;"
                                 class="flex flex-col justify-center items-center text-center gap-3 absolute right-[8%] bottom-[13%] rotate-[-58deg]">
                                 <img src="{{ asset('assets/assets/images/logo-6.png') }}" style="width: 50px;" alt=""
                                     class="" />
                             <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;"">
                                 {{ __('messages.privacy_policy') }}</p>
-                        </a>
-                        <a href=" {{ route('mobile.about') }}" style="right: 5%; bottom: 25.5%;"
+                    </a>
+                    <a href=" {{ route('mobile.about') }}" style="right: 5%; bottom: 25.5%;"
                                 class="flex flex-col justify-center items-center text-center gap-3 absolute right-[2%] bottom-[23.5%] rotate-[-58deg]">
                                 <img src="{{ asset('assets/assets/images/logo-3.png') }}" style="width: 50px;" alt=""
                                     class="" />
                             <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;"">
                                 {{ __('messages.about_us') }}</p>
-                        </a>
-                        <a href=" {{ route('mobile.faq') }}" style="bottom: 36%;"
+                    </a>
+                    <a href=" {{ route('mobile.faq') }}" style="bottom: 36%;"
                                 class="flex flex-col justify-center items-center text-center gap-3 absolute right-0 bottom-[34%] rotate-[-58deg]">
                                 <img src="{{ asset('assets/assets/images/faq.png') }}" style="width: 50px;" alt="" />
                             <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;"">
                                 {{ __('messages.faqs') }}</p>
-                        </a>
+                    </a>
                     </div>
                 </div>
+<script>
 
+</script>
                 <div class=" flex justify-start items-center gap-1 flex-col pt-3" style="display: none;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="202" height="202">
                                     <path style="display: none"
@@ -532,6 +534,7 @@
                     console.error('Error:', error);
                 });
         }
+        
         document.addEventListener('DOMContentLoaded', function() {
             const slides = document.querySelectorAll('.slide');
             let currentSlide = 0;
