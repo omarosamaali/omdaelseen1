@@ -13,15 +13,17 @@
         width: 100%;
         z-index: 9999;
     }
+
     .iti--fullscreen-popup.iti--container {
-    background-color: rgba(0, 0, 0, 0.5);
-    top: 52px; }
+        top: 52px !important;
+    }
 </style>
 
 @section('content')
 <x-china-header :title="__('messages.login')" :route="route('mobile.welcome')" />
 
-<div style="margin-top: 50px;" class="container min-h-dvh relative overflow-hidden py-8 px-6 dark:text-white dark:bg-color1">
+<div style="margin-top: 50px;"
+    class="container min-h-dvh relative overflow-hidden py-8 px-6 dark:text-white dark:bg-color1">
     <form action="{{ route('mobile.auth.sign-up') }}" method="POST" class="relative z-20">
         @csrf
 
