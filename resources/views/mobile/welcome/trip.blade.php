@@ -112,8 +112,8 @@
                                     <div class="flex justify-start items-center gap-2">
                                         <div>
                                             <p style="display: flex; align-items: center;" class="font-semibold">
-                                                {{ $trip->price }}
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                {{ $trip->price ?? $trip->shared_room_price }} <svg
+                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     viewBox="0 0 24 24" fill="none">
                                                     <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z"
                                                         stroke="#000" stroke-width="1.5" stroke-miterlimit="10"
