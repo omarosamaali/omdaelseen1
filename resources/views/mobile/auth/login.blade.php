@@ -26,10 +26,10 @@
             @csrf
             <div class="bg-white py-8 px-6 rounded-xl dark:bg-color10">
                 <div class="flex justify-between items-center">
-                    <a href="{{ route('mobile.auth.login') }}"
+                    <a href="{{ route('mobile.auth.login') }}" style="font-size: 18px;"
                         class="text-center text-xl font-semibold text-p2 border-b-2 pb-2 border-p2 w-full dark:text-p1 dark:border-p1">
                         تسجيل الدخول</a>
-                    <a href="{{ route('mobile.auth.register') }}"
+                    <a href="{{ route('mobile.auth.register') }}" style="font-size: 18px;"
                         class="text-center text-xl font-semibold text-bgColor18 border-b-2 pb-2 border-bgColor18 w-full dark:text-color18 dark:border-color18">
                         تسجيل حساب</a>
                 </div>
