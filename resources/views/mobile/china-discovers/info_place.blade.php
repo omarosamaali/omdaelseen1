@@ -120,32 +120,32 @@
 </style>
 
 @section('content')
-    <x-china-header :title="__('messages.place_details')" :route="route('mobile.china-discovers.index')" />
-    <div class="container--header">
-        @if (auth()->check() && Auth::user()->id == $place->user_id)
-            <a class="report-button" href="{{ route('mobile.china-discovers.edit', $place->id) }}"
-                style="min-width: fit-content; left: 82%;">
-                {{ __('messages.update_button') }}
-            </a>
-        @elseif(auth()->check())
-            @php
-                $hasReported = App\Models\Report::where('user_id', Auth::user()->id)
-                    ->where('place_id', $place->id)
-                    ->exists();
-            @endphp
-            @if (!$hasReported)
-                <button class="report-button" onclick="openReportModal()" style="min-width: fit-content; left: 82%;">
-                    {{ __('messages.report') }}
-                </button>
-            @else
-                <div class="report-button" style="min-width: fit-content; left: 82%; background: gray; cursor: default;">
-                    {{ __('messages.already_reported') }}
-                </div>
-            @endif
-        @endif
+<x-china-header :title="__('messages.place_details')" :route="route('mobile.china-discovers.index')" />
+<div class="container--header">
+    @if (auth()->check() && Auth::user()->id == $place->user_id)
+    <a class="report-button" href="{{ route('mobile.china-discovers.edit', $place->id) }}"
+        style="min-width: fit-content; left: 82%;">
+        {{ __('messages.update_button') }}
+    </a>
+    @elseif(auth()->check())
+    @php
+    $hasReported = App\Models\Report::where('user_id', Auth::user()->id)
+    ->where('place_id', $place->id)
+    ->exists();
+    @endphp
+    @if (!$hasReported)
+    <button class="report-button" onclick="openReportModal()" style="min-width: fit-content; left: 82%;">
+        {{ __('messages.report') }}
+    </button>
+    @else
+    <div class="report-button" style="min-width: fit-content; left: 82%; background: gray; cursor: default;">
+        {{ __('messages.already_reported') }}
     </div>
-    <script>
-        function openReportModal() {
+    @endif
+    @endif
+</div>
+<script>
+    function openReportModal() {
             Swal.fire({
                 title: "إبلاغ عن مخالفة",
                 text: 'هل تريد الإبلاغ عن هذا المكان؟',
@@ -194,187 +194,186 @@
                     showErrorMessage('فشل في التواصل مع الخادم.');
                 });
         }
-    </script>
-    <div class="container dark:text-white dark:bg-black">
+</script>
+<div class="container dark:text-white dark:bg-black">
 
-        <!-- Favorite heart icon -->
-        @php
-            $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
-        @endphp
+    <!-- Favorite heart icon -->
+    @php
+    $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
+    @endphp
 
-        @if (auth()->check() && auth()->id() != $place->user_id)
-            <div style="top: 15px; left: 38px; right: unset; box-shadow: 0px 0px 4px 1px #bcafafc4;"
-                class="heart-icon @if ($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
-                <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
-                    style="font-size: 18px;"></i>
-            </div>
-        @endif
+    @if (auth()->check() && auth()->id() != $place->user_id)
+    <div style="top: 15px; left: 38px; right: unset; box-shadow: 0px 0px 4px 1px #bcafafc4;"
+        class="heart-icon @if ($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
+        <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
+            style="font-size: 18px;"></i>
+    </div>
+    @endif
 
-        <div class="rating-icon">
-            <i class="fa-solid fa-star" style="font-size: 18px;"></i>
-            <span style="font-size: 14px; font-weight: bold; color: #000000;">
-                {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
-            </span>
-        </div>
+    <div class="rating-icon">
+        <i class="fa-solid fa-star" style="font-size: 18px;"></i>
+        <span style="font-size: 14px; font-weight: bold; color: #000000;">
+            {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
+        </span>
+    </div>
 
-        <div class="container--features">
-            <div>
-                <img src="{{ asset('storage/' . $place->region->avatar) }}" alt="">
-                <p>
-                    @if (app()->getLocale() == 'ar')
-                        {{ $place->region->name_ar }}
-                    @elseif (app()->getLocale() == 'en')
-                        {{ $place->region->name_en }}
-                    @elseif (app()->getLocale() == 'zh')
-                        {{ $place->region->name_ch }}
-                    @endif
-                </p>
-            </div>
-            <div>
-                <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}" alt="">
-                <p>
-                    @if (app()->getLocale() == 'ar')
-                        {{ $place->mainCategory->name_ar }}
-                    @elseif (app()->getLocale() == 'en')
-                        {{ $place->mainCategory->name_en }}
-                    @elseif (app()->getLocale() == 'zh')
-                        {{ $place->mainCategory->name_ch }}
-                    @endif
-                </p>
-            </div>
-            <div>
-                <img src="{{ asset('storage/' . $place->subCategory->avatar) }}" alt="">
-                <p>
-                    @if (app()->getLocale() == 'ar')
-                        {{ $place->subCategory->name_ar }}
-                    @elseif (app()->getLocale() == 'en')
-                        {{ $place->subCategory->name_en }}
-                    @elseif (app()->getLocale() == 'zh')
-                        {{ $place->subCategory->name_ch }}
-                    @endif
-                </p>
-            </div>
-        </div>
-
-        <div class="main-image-container">
-            <div>
-                <img class="main-image" src="{{ asset('storage/' . $place->avatar) }}" alt="">
-                <p class="place-name-cn">{{ $place->name_ch }}</p>
-                <p class="place-name-ar">{{ $place->name_ar }}</p>
-                <p class="place-name-en">{{ $place->name_en }}</p>
-            </div>
-        </div>
-
-        <div class="tabs-container">
-            <div class="tab-buttons">
-                <button class="tab-button active details" onclick="showTab('tab1')">{{ __('messages.details') }}</button>
-                <button class="tab-button" onclick="showTab('tab2')">{{ __('messages.gallery') }}</button>
-                <button class="tab-button rating" onclick="showTab('tab3')">{{ __('messages.rating') }}</button>
-            </div>
-            <div id="tab3" class="tab-content">
-                <div class="overall-rating">
-                    <div class="rating-summary">
-                        <div class="average-rating">
-                            <span class="avg-number" id="avgRating">0</span>
-                            <div class="avg-stars" id="avgStars">
-                                <i class="fa-regular fa-star"></i>
-                                <i class="fa-regular fa-star"></i>
-                                <i class="fa-regular fa-star"></i>
-                                <i class="fa-regular fa-star"></i>
-                                <i class="fa-regular fa-star"></i>
-                            </div>
-                            <span class="total-reviews" id="totalReviews">(0 {{ __('messages.rating') }})</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Check if user can add a rating -->
-                @if (auth()->check() &&
-                        !App\Models\Rating::where('user_id', Auth::user()->id)->where('place_id', $place->id)->exists())
-                    <div class="add-rating-section">
-                        <h4 class="add-rating-title">{{ __('messages.add_your_rating') }}</h4>
-                        <div class="rating-boxes">
-                            <div class="rating-box" onclick="openRatingModal(1)" data-rating="1">
-                                <i class="fa-regular fa-star rating-star"></i>
-                                <span class="rating-number">1</span>
-                            </div>
-                            <div class="rating-box" onclick="openRatingModal(2)" data-rating="2">
-                                <i class="fa-regular fa-star rating-star"></i>
-                                <span class="rating-number">2</span>
-                            </div>
-                            <div class="rating-box" onclick="openRatingModal(3)" data-rating="3">
-                                <i class="fa-regular fa-star rating-star"></i>
-                                <span class="rating-number">3</span>
-                            </div>
-                            <div class="rating-box" onclick="openRatingModal(4)" data-rating="4">
-                                <i class="fa-regular fa-star rating-star"></i>
-                                <span class="rating-number">4</span>
-                            </div>
-                            <div class="rating-box" onclick="openRatingModal(5)" data-rating="5">
-                                <i class="fa-regular fa-star rating-star"></i>
-                                <span class="rating-number">5</span>
-                            </div>
-                        </div>
-                    </div>
-                @else
-                    <div class="already-rated-message">
-                        <p>{{ __('messages.already_rated') }}!</p>
-                    </div>
+    <div class="container--features">
+        <div>
+            <img src="{{ asset('storage/' . $place->region->avatar) }}" alt="">
+            <p>
+                @if (app()->getLocale() == 'ar')
+                {{ $place->region->name_ar }}
+                @elseif (app()->getLocale() == 'en')
+                {{ $place->region->name_en }}
+                @elseif (app()->getLocale() == 'zh')
+                {{ $place->region->name_ch }}
                 @endif
+            </p>
+        </div>
+        <div>
+            <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}" alt="">
+            <p>
+                @if (app()->getLocale() == 'ar')
+                {{ $place->mainCategory->name_ar }}
+                @elseif (app()->getLocale() == 'en')
+                {{ $place->mainCategory->name_en }}
+                @elseif (app()->getLocale() == 'zh')
+                {{ $place->mainCategory->name_ch }}
+                @endif
+            </p>
+        </div>
+        <div>
+            <img src="{{ asset('storage/' . $place->subCategory->avatar) }}" alt="">
+            <p>
+                @if (app()->getLocale() == 'ar')
+                {{ $place->subCategory->name_ar }}
+                @elseif (app()->getLocale() == 'en')
+                {{ $place->subCategory->name_en }}
+                @elseif (app()->getLocale() == 'zh')
+                {{ $place->subCategory->name_ch }}
+                @endif
+            </p>
+        </div>
+    </div>
 
-                <div class="reviews-section">
-                    <div id="successMessage" class="success-message"></div>
-                    {{-- <div id="errorMessage" class="error-message"></div> --}}
-                    <h4 class="reviews-title">{{ __('messages.visitor_reviews') }}</h4>
-                    <div id="reviewsList" class="reviews-list"></div>
-                </div>
-            </div>
-            <div id="tab2" class="tab-content" style="display: none;">
-                <div class="gallery-images">
-                    @php
-                    $images = json_decode($place->additional_images, true) ?? []; @endphp
-                    @foreach ($images as $image)
-                        <img src="{{ asset('storage/' . $image) }}" alt="Additional Image"
-                            onclick="openImageModal(this.src)">
-                    @endforeach
-                </div>
-            </div>
-            <div id="tab1" class="tab-content">
-                <div>
-                    <h6>{{ __('messages.explorer_data') }}</h6>
-                </div>
-                <div style="justify-content: space-between;" class="tab-details-content">
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <img src="{{ asset('storage/' . $place->user->avatar) }}" alt="">
-                        <div>
-                            <h3>{{ $place->user->explorer_name }}</h3>
+    <div class="main-image-container">
+        <div>
+            <img class="main-image" src="{{ asset('storage/' . $place->avatar) }}" alt="">
+            <p class="place-name-cn">{{ $place->name_ch }}</p>
+            <p class="place-name-ar">{{ $place->name_ar }}</p>
+            <p class="place-name-en">{{ $place->name_en }}</p>
+        </div>
+    </div>
+
+    <div class="tabs-container">
+        <div class="tab-buttons">
+            <button class="tab-button active details" onclick="showTab('tab1')">{{ __('messages.details') }}</button>
+            <button class="tab-button" onclick="showTab('tab2')">{{ __('messages.gallery') }}</button>
+            <button class="tab-button rating" onclick="showTab('tab3')">{{ __('messages.rating') }}</button>
+        </div>
+        <div id="tab3" class="tab-content">
+            <div class="overall-rating">
+                <div class="rating-summary">
+                    <div class="average-rating">
+                        <span class="avg-number" id="avgRating">0</span>
+                        <div class="avg-stars" id="avgStars">
+                            <i class="fa-regular fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
                         </div>
+                        <span class="total-reviews" id="totalReviews">(0 {{ __('messages.rating') }})</span>
                     </div>
-                    @if (auth()->check() && Auth::user()->id != $place->user_id)
-                        <div class="tab-details-content-headpone">
-                            <i class="follow-icon fa-solid {{ Auth::user()->isFollowing($place->user) ? 'fa-user-check' : 'fa-user-plus' }}"
-                                data-user-id="{{ $place->user_id }}">
-                            </i>
-                        </div>
-                    @endif
                 </div>
-
-                <div class="analysis-contianer">
-                    <p class="analysis-item">
-                        <span class="value">{{ $ratingCount }}</span>
-                        <i class="fa-solid fa-star" style="color: #ffd700;"></i>
-                    </p>
-                    <p class="analysis-item">
-                        <span class="value">{{ $placesCount }}</span>
-                        <i class="fa-solid fa-location-dot" style="color: #4CAF50;"></i>
-                    </p>
-                    <p class="analysis-item">
-                        <span class="value">{{ $followersCount }}</span>
-                        <i class="fa-solid fa-heart" style="color: #f44336;"></i>
-                    </p>
+            </div>
+            <!-- Check if user can add a rating -->
+            @if (auth()->check() &&
+            !App\Models\Rating::where('user_id', Auth::user()->id)->where('place_id', $place->id)->exists())
+            <div class="add-rating-section">
+                <h4 class="add-rating-title">{{ __('messages.add_your_rating') }}</h4>
+                <div class="rating-boxes">
+                    <div class="rating-box" onclick="openRatingModal(1)" data-rating="1">
+                        <i class="fa-regular fa-star rating-star"></i>
+                        <span class="rating-number">1</span>
+                    </div>
+                    <div class="rating-box" onclick="openRatingModal(2)" data-rating="2">
+                        <i class="fa-regular fa-star rating-star"></i>
+                        <span class="rating-number">2</span>
+                    </div>
+                    <div class="rating-box" onclick="openRatingModal(3)" data-rating="3">
+                        <i class="fa-regular fa-star rating-star"></i>
+                        <span class="rating-number">3</span>
+                    </div>
+                    <div class="rating-box" onclick="openRatingModal(4)" data-rating="4">
+                        <i class="fa-regular fa-star rating-star"></i>
+                        <span class="rating-number">4</span>
+                    </div>
+                    <div class="rating-box" onclick="openRatingModal(5)" data-rating="5">
+                        <i class="fa-regular fa-star rating-star"></i>
+                        <span class="rating-number">5</span>
+                    </div>
                 </div>
+            </div>
+            @else
+            <div class="already-rated-message">
+                <p>{{ __('messages.already_rated') }}!</p>
+            </div>
+            @endif
 
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
+            <div class="reviews-section">
+                <div id="successMessage" class="success-message"></div>
+                {{-- <div id="errorMessage" class="error-message"></div> --}}
+                <h4 class="reviews-title">{{ __('messages.visitor_reviews') }}</h4>
+                <div id="reviewsList" class="reviews-list"></div>
+            </div>
+        </div>
+        <div id="tab2" class="tab-content" style="display: none;">
+            <div class="gallery-images">
+                @php
+                $images = json_decode($place->additional_images, true) ?? []; @endphp
+                @foreach ($images as $image)
+                <img src="{{ asset('storage/' . $image) }}" alt="Additional Image" onclick="openImageModal(this.src)">
+                @endforeach
+            </div>
+        </div>
+        <div id="tab1" class="tab-content">
+            <div>
+                <h6>{{ __('messages.explorer_data') }}</h6>
+            </div>
+            <div style="justify-content: space-between;" class="tab-details-content">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <img src="{{ asset('storage/' . $place->user->avatar) }}" alt="">
+                    <div>
+                        <h3>{{ $place->user->explorer_name }}</h3>
+                    </div>
+                </div>
+                @if (auth()->check() && Auth::user()->id != $place->user_id)
+                <div class="tab-details-content-headpone">
+                    <i class="follow-icon fa-solid {{ Auth::user()->isFollowing($place->user) ? 'fa-user-check' : 'fa-user-plus' }}"
+                        data-user-id="{{ $place->user_id }}">
+                    </i>
+                </div>
+                @endif
+            </div>
+
+            <div class="analysis-contianer">
+                <p class="analysis-item">
+                    <span class="value">{{ $ratingCount }}</span>
+                    <i class="fa-solid fa-star" style="color: #ffd700;"></i>
+                </p>
+                <p class="analysis-item">
+                    <span class="value">{{ $placesCount }}</span>
+                    <i class="fa-solid fa-location-dot" style="color: #4CAF50;"></i>
+                </p>
+                <p class="analysis-item">
+                    <span class="value">{{ $followersCount }}</span>
+                    <i class="fa-solid fa-heart" style="color: #f44336;"></i>
+                </p>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
                         const followIcon = document.querySelector('.follow-icon');
                         if (followIcon) {
                             followIcon.addEventListener('click', function() {
@@ -386,11 +385,8 @@
 
                     function toggleFollow(userId, iconElement) {
                         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-                        // إضافة visual feedback أثناء التحميل
                         iconElement.style.opacity = '0.5';
                         iconElement.style.pointerEvents = 'none';
-
                         fetch('/users/toggle-follow', {
                                 method: 'POST',
                                 headers: {
@@ -436,70 +432,70 @@
                                 showErrorMessage('فشل في التواصل مع الخادم');
                             });
                     }
-                </script>
+            </script>
 
-                <p class="tab-details-content"><i class="fa-solid fa-id-card" style="color: #3b3129;"></i>
-                    @if (app()->getLocale() == 'ar')
-                        {{ $place->details_ar }}
-                    @elseif(app()->getLocale() == 'en')
-                        {{ $place->details_en }}
-                    @elseif(app()->getLocale() == 'zh')
-                        {{ $place->details_ch }}
-                    @endif
-                </p>
-                @if ($place->phone)
-                    <p class="tab-details-content"><i class="fa-solid fa-phone" style="color: #3b3129;"></i>
-                        {{ $place->phone }}</p>
+            <p class="tab-details-content"><i class="fa-solid fa-id-card" style="color: #3b3129;"></i>
+                @if (app()->getLocale() == 'ar')
+                {{ $place->details_ar }}
+                @elseif(app()->getLocale() == 'en')
+                {{ $place->details_en }}
+                @elseif(app()->getLocale() == 'zh')
+                {{ $place->details_ch }}
                 @endif
-                @if ($place->email)
-                    <p class="tab-details-content"><i class="fa-solid fa-envelope" style="color: #3b3129;"></i>
-                        {{ $place->email }}</p>
-                @endif
-                <p class="tab-details-link">
-                    <a href="{{ $place->link }}">
-                        <i class="fa-solid fa-location-dot"></i>
-                        {{ __('messages.place_link') }}
-                    </a>
-                </p>
-            </div>
+            </p>
+            @if ($place->phone)
+            <p class="tab-details-content"><i class="fa-solid fa-phone" style="color: #3b3129;"></i>
+                {{ $place->phone }}</p>
+            @endif
+            @if ($place->email)
+            <p class="tab-details-content"><i class="fa-solid fa-envelope" style="color: #3b3129;"></i>
+                {{ $place->email }}</p>
+            @endif
+            <p class="tab-details-link">
+                <a href="{{ $place->link }}">
+                    <i class="fa-solid fa-location-dot"></i>
+                    {{ __('messages.place_link') }}
+                </a>
+            </p>
         </div>
-        <div id="ratingModal" class="modal-overlay" onclick="closeModalOnOverlay(event)">
-            <div class="modal">
-                <button class="modal-close" onclick="closeRatingModal()">
-                    <i class="fa fa-x"></i>
-                </button>
-                <h3 class="modal-title">
-                    <i class="fa fa-chat-circle-text" style="color: maroon;"></i>
-                    ما رأيك في هذا المكان؟
-                </h3>
-                <div class="modal-rating-display" id="modalStars">
-                    <i class="fa-regular fa-star modal-star"></i>
-                    <i class="fa-regular fa-star modal-star"></i>
-                    <i class="fa-regular fa-star modal-star"></i>
-                    <i class="fa-regular fa-star modal-star"></i>
-                    <i class="fa-regular fa-star modal-star"></i>
-                </div>
-                <textarea id="commentInput" class="modal-comment" placeholder="شاركنا تجربتك وانطباعك عن هذا المكان... (اختياري)"></textarea>
-                <div class="modal-actions">
-                    <button class="modal-button cancel-button" onclick="closeRatingModal()">إلغاء</button>
-                    <button class="modal-button confirm-button" onclick="confirmRating()">تأكيد التقييم</button>
-                </div>
+    </div>
+    <div id="ratingModal" class="modal-overlay" onclick="closeModalOnOverlay(event)">
+        <div class="modal">
+            <button class="modal-close" onclick="closeRatingModal()">
+                <i class="fa fa-x"></i>
+            </button>
+            <h3 class="modal-title">
+                <i class="fa fa-chat-circle-text" style="color: maroon;"></i>
+                ما رأيك في هذا المكان؟
+            </h3>
+            <div class="modal-rating-display" id="modalStars">
+                <i class="fa-regular fa-star modal-star"></i>
+                <i class="fa-regular fa-star modal-star"></i>
+                <i class="fa-regular fa-star modal-star"></i>
+                <i class="fa-regular fa-star modal-star"></i>
+                <i class="fa-regular fa-star modal-star"></i>
             </div>
-        </div>
-        <div id="imageModal" class="modal-overlay" onclick="closeImageModalOnOverlay(event)">
-            <div class="image-modal">
-                <button class="modal-close" onclick="closeImageModal()">
-                    <i class="fa fa-x"></i>
-                </button>
-                <img id="modalImage" src="" alt="">
+            <textarea id="commentInput" class="modal-comment"
+                placeholder="شاركنا تجربتك وانطباعك عن هذا المكان... (اختياري)"></textarea>
+            <div class="modal-actions">
+                <button class="modal-button cancel-button" onclick="closeRatingModal()">إلغاء</button>
+                <button class="modal-button confirm-button" onclick="confirmRating()">تأكيد التقييم</button>
             </div>
         </div>
     </div>
-    <input type="hidden" id="user-id" value="{{ auth()->check() ? Auth::user()->id : '' }}">
-    <input type="hidden" id="place-id" value="{{ $place->id }}">
-
-    <script>
-        let allReviews = [];
+    <div id="imageModal" class="modal-overlay" onclick="closeImageModalOnOverlay(event)">
+        <div class="image-modal">
+            <button class="modal-close" onclick="closeImageModal()">
+                <i class="fa fa-x"></i>
+            </button>
+            <img id="modalImage" src="" alt="">
+        </div>
+    </div>
+</div>
+<input type="hidden" id="user-id" value="{{ auth()->check() ? Auth::user()->id : '' }}">
+<input type="hidden" id="place-id" value="{{ $place->id }}">
+<script>
+    let allReviews = [];
         let currentRating = 0;
         let isEditing = false;
         let editingReviewId = null;
@@ -974,5 +970,5 @@
         window.onload = function() {
             showTab('tab1');
         };
-    </script>
+</script>
 @endsection

@@ -7,6 +7,9 @@ use App\Models\OrderProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewProductOrder;
+
 
 class ProductController extends Controller
 {
@@ -17,7 +20,6 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        \Log::info('Store Input:', $request->all());
         $validatedData = $request->validate([
             'reference_number' => 'required|string|unique:products,reference_number',
             'number_of_products' => 'required|integer|min:1|max:5',
@@ -31,10 +33,8 @@ class ProductController extends Controller
             'user_id' => 'required',
         ]);
 
-        \Log::info('Validated Data:', $validatedData);
         $request->session()->put('product_order_data', $validatedData);
-        \Log::info('Session Data Stored:', $request->session()->all());
-
+        
         return redirect()->route('mobile.order.product.createProducts');
     }
 
@@ -105,7 +105,6 @@ class ProductController extends Controller
                 'batteries' => $orderData['batteries'], // Add this
                 'see_product' => $orderData['see_product'], // Add this
             ]);
-            \Log::info('Product Created', $productOrder->toArray());
 
             $productsData = $request->input('products');
             $productFiles = $request->file('products');
@@ -134,6 +133,8 @@ class ProductController extends Controller
 
             DB::commit();
             $request->session()->forget('product_order_data');
+            $admins = \App\Models\User::where('role', 'admin')->pluck('email')->toArray();
+            Mail::to($admins)->send(new NewProductOrder($productOrder));
 
             return redirect()->route('mobile.order.product.success', ['product' => $productOrder->id])
                 ->with('success', 'تم إرسال طلب المنتجات بنجاح!');

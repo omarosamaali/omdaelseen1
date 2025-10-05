@@ -17,6 +17,8 @@ class Invoice extends Model
         'invoice_date',
         'title',
         'amount',
+        'payment_intent_id',
+        'paid_at',
         'status',
     ];
 
@@ -28,5 +30,10 @@ class Invoice extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function payer()
+    {
+        return $this->belongsTo(User::class, 'paid_by');
     }
 }

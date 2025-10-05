@@ -129,7 +129,8 @@
             </div>
         </div>
         <img src="{{ asset('assets/assets/images/logo-all.png') }}" alt=""
-            class="top-0 left-0 right-0 custom-img header-logo" />
+            class="top-0 left-0 right-0 custom-img header-logo"
+            style="position: fixed !important; margin-top: 0rem !important; top: 10px !important;" />
         <div class="flex justify-start items-center gap-2 header-more-options">
             <div class="relative">
                 <button

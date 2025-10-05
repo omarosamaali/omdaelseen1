@@ -9,7 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-use App\Services\FirebaseService;
+use Illuminate\Support\Facades\Mail;
+use Kreait\Firebase\Factory;
+use App\Mail\ReportAdminMail;
+use App\Mail\ReportUserMail;
 
 class ReportController extends Controller
 {
@@ -82,43 +85,28 @@ class ReportController extends Controller
         ], 500);
     }
 
-    private $firebase;
-
-    public function __construct(FirebaseService $firebase)
-    {
-        $this->firebase = $firebase;
-    }
-
     public function reportPlace(Request $request, $placeId)
     {
         try {
             $place = Places::findOrFail($placeId);
-
-            // التحقق من عدم التبليغ مسبقاً
             $existingReport = Report::where('user_id', Auth::id())
                 ->where('place_id', $placeId)
                 ->first();
-
             if ($existingReport) {
                 return response()->json([
                     'success' => false,
                     'error' => 'لقد أبلغت عن هذا المكان من قبل'
                 ], 400);
             }
-
-            // حفظ البلاغ
             $report = Report::create([
                 'user_id' => Auth::id(),
                 'place_id' => $placeId,
             ]);
 
-            // 🔔 إرسال إشعار للأدمن في Firebase
-            $userName = Auth::user()->name ?? 'مستخدم';
-            $placeName = $place->name ?? "المكان #{$placeId}";
-
-            $message = "⚠️ بلاغ جديد من {$userName} على: {$placeName}";
-
-            $this->firebase->notifyAdmin($message);
+            $userName = Auth::user()->name;
+            $placeName = $place->name_ar;
+            Mail::to('chinaomda@gmail.com')->send(new ReportAdminMail($userName, $placeName));
+            Mail::to(Auth::user()->email)->send(new ReportUserMail($userName, $placeName));
 
             return response()->json([
                 'success' => true,
@@ -126,112 +114,10 @@ class ReportController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Report Place Error: ' . $e->getMessage());
-
             return response()->json([
                 'success' => false,
                 'error' => 'حدث خطأ أثناء تسجيل البلاغ'
             ], 500);
-        }
-    }
-
-    private function sendNotificationToAdmin($token, $place, $report)
-    {
-        try {
-            $accessToken = $this->getAccessToken();
-
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $accessToken,
-                'Content-Type' => 'application/json',
-            ])->post('https://fcm.googleapis.com/v1/projects/omdachina25/messages:send', [
-                'message' => [
-                    'token' => $token,
-                    'notification' => [
-                        'title' => '🚨 بلاغ جديد ضد مكان',
-                        'body'  => 'تم الإبلاغ عن: ' . ($place->name_ar ?? 'مكان غير معروف'),
-                    ],
-                    'data' => [
-                        'type'      => 'admin_place_report',
-                        'place_id'  => (string)$place->id,
-                        'place_name' => $place->name_ar ?? 'مكان غير معروف',
-                        'report_id' => (string)$report->id,
-                    ],
-                    'webpush' => [
-                        'fcm_options' => [
-                            // لو عندك صفحة للإدارة تعرض البلاغات
-                            'link' => url('/admin/reports/places/' . $report->id)
-                        ]
-                    ]
-                ]
-            ]);
-
-            if ($response->failed()) {
-                \Log::error('FCM Admin Send Failed: ' . $response->body());
-            }
-        } catch (\Exception $e) {
-            \Log::error('Notification Admin Send Error: ' . $e->getMessage());
-        }
-    }
-
-    private function getAccessToken()
-    {
-        try {
-            // ✅ حقن متغير البيئة Runtime لضمان أن Google Client يشوفه
-            putenv('GOOGLE_APPLICATION_CREDENTIALS=' . base_path('storage/app/firebase-adminsdk.json'));
-
-            // ✅ تهيئة Google Client
-            $client = new \Google_Client();
-            $client->useApplicationDefaultCredentials();
-            $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
-
-            // ✅ جلب الـ Access Token
-            $accessToken = $client->fetchAccessTokenWithAssertion();
-
-            // لو عايز تتأكد أن كل شيء شغال أول مرة
-            // \Log::info('FCM Access Token Response', $accessToken);
-
-            return $accessToken['access_token'] ?? null;
-        } catch (\Exception $e) {
-            \Log::error('Failed to get Firebase Access Token: ' . $e->getMessage());
-            return null;
-        }
-    }
-
-    private function sendNotificationToOwner($owner, $place, $report)
-    {
-        try {
-            // الحصول على access token من Google
-            $accessToken = $this->getAccessToken();
-
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $accessToken,
-                'Content-Type' => 'application/json',
-            ])->post('https://fcm.googleapis.com/v1/projects/omdachina25/messages:send', [
-                'message' => [
-                    'token' => $owner->fcm_token,
-                    'notification' => [
-                        'title' => 'تم الإبلاغ عن مكانك',
-                        'body'  => 'تم تلقي بلاغ جديد عن مكانك: ' . ($place->name_ar ?? 'مكان غير معروف'),
-                    ],
-                    'data' => [
-                        'type'      => 'place_report',
-                        'place_id'  => (string)$place->id,
-                        'place_name' => $place->name_ar ?? 'مكان غير معروف',
-                        'report_id' => (string)$report->id,
-                        'status'    => $report->status ?? 'pending', // مهم عشان UI يعرف نوع الرسالة
-                    ],
-                    'webpush' => [
-                        'fcm_options' => [
-                            'link' => url('/mobile/info_place/' . $place->id)
-                        ]
-                    ]
-                ]
-            ]);
-
-            if ($response->failed()) {
-                \Log::error('FCM Send Failed: ' . $response->body());
-            }
-        } catch (\Exception $e) {
-            \Log::error('Notification Send Error: ' . $e->getMessage());
         }
     }
 

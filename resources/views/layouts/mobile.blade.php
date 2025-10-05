@@ -28,7 +28,7 @@
 <div class="badge" id="unreadBadge" style="display: none;">
     <span id="unreadCount">0</span> إشعار جديد
 </div>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+{{-- <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
 <script>
@@ -156,55 +156,8 @@
             }
         });
     });
-</script>
+</script> --}}
 
-<style>
-    .badge {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        background: #f44336;
-        color: white;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-weight: bold;
-        box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
-        z-index: 9999;
-        animation: fadeIn 0.3s;
-    }
-
-    @keyframes shake {
-
-        0%,
-        100% {
-            transform: translateX(0);
-        }
-
-        25% {
-            transform: translateX(-10px);
-        }
-
-        75% {
-            transform: translateX(10px);
-        }
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .shake {
-        animation: shake 0.5s;
-    }
-</style>
     {{-- <img src="{{ asset('assets/assets/images/PG-OMDA-1.png') }}" class="image-container" alt=""> --}}
     @yield('content')
     <script src="{{ asset('assets/assets/js/plugins/plugins.js') }}"></script>
@@ -213,7 +166,7 @@
     <script src="{{ asset('assets/assets/js/main.js') }}"></script>
     <script defer src="{{ asset('assets/assets/js/index.js') }}"></script>
 
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    {{-- <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
     const firebaseConfig = {
@@ -251,7 +204,7 @@
       icon: "/favicon.ico"
     });
   });
-</script>
+</script> --}}
 
 </body>
 

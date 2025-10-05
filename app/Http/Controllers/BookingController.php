@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Trip;
+use App\Models\User;
 use App\Services\ZiinaPaymentHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Exception;
 
@@ -156,6 +158,12 @@ class BookingController extends Controller
                         $trip->increment('current_participants');
                     }
 
+                    // إرسال إيميل للأدمن
+                    $this->sendAdminNotification($booking, $trip, $user);
+
+                    // إرسال إيميل للمستخدم
+                    $this->sendUserConfirmation($booking, $trip, $user);
+
                     session()->forget(['pending_booking', 'selected_room_type']);
 
                     Log::info('Booking created successfully', [
@@ -201,6 +209,84 @@ class BookingController extends Controller
             ]);
             return redirect()->route('mobile.auth.done')
                 ->with('error', 'حدث خطأ في التحقق من الدفع: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * إرسال إشعار للأدمن بحجز جديد
+     */
+    private function sendAdminNotification($booking, $trip, $user)
+    {
+        try {
+            // جلب إيميلات الأدمن (يمكن تعديلها حسب احتياجك)
+            $adminEmails = User::where('role', 'admin')->pluck('email')->toArray();
+
+            // إذا لم يكن هناك أدمن، استخدم إيميل افتراضي
+            if (empty($adminEmails)) {
+                $adminEmails = [config('mail.admin_email', 'admin@chinaomda.com')];
+            }
+
+            $roomTypeText = $booking->order_type;
+
+            foreach ($adminEmails as $adminEmail) {
+                Mail::send('emails.admin_new_booking', [
+                    'orderNumber' => $booking->order_number,
+                    'customerName' => $user->name,
+                    'customerEmail' => $user->email,
+                    'customerPhone' => $user->phone ?? $user->mobile ?? 'غير متوفر',
+                    'tripTitle' => $trip->title_ar ?? $trip->title,
+                    'roomType' => $roomTypeText,
+                    'amount' => $booking->amount,
+                    'bookingDate' => $booking->booking_date->format('Y-m-d H:i'),
+                    'bookingUrl' => url('/admin/bookings/' . $booking->id)
+                ], function ($message) use ($adminEmail, $booking) {
+                    $message->to($adminEmail)
+                        ->subject('🎉 مشترك جديد - طلب رقم: ' . $booking->order_number);
+                });
+            }
+
+            Log::info('Admin notification sent', [
+                'booking_id' => $booking->id,
+                'admin_emails' => $adminEmails
+            ]);
+        } catch (Exception $e) {
+            Log::error('Failed to send admin notification', [
+                'booking_id' => $booking->id,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * إرسال تأكيد الحجز للمستخدم
+     */
+    private function sendUserConfirmation($booking, $trip, $user)
+    {
+        try {
+            $roomTypeText = $booking->order_type;
+
+            Mail::send('emails.user_booking_confirmation', [
+                'customerName' => $user->name,
+                'orderNumber' => $booking->order_number,
+                'tripTitle' => $trip->title_ar ?? $trip->title,
+                'roomType' => $roomTypeText,
+                'amount' => $booking->amount,
+                'bookingDate' => $booking->booking_date->format('Y-m-d H:i'),
+                'tripUrl' => url('mobile/info_place/' . $trip->id)
+            ], function ($message) use ($user, $booking) {
+                $message->to($user->email)
+                    ->subject('✅ تأكيد حجز الرحلة - طلب رقم: ' . $booking->order_number);
+            });
+
+            Log::info('User confirmation sent', [
+                'booking_id' => $booking->id,
+                'user_email' => $user->email
+            ]);
+        } catch (Exception $e) {
+            Log::error('Failed to send user confirmation', [
+                'booking_id' => $booking->id,
+                'error' => $e->getMessage()
+            ]);
         }
     }
 

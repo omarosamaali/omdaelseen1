@@ -11,21 +11,6 @@
     {{-- Add Favicon --}}
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/fav.png') }}">
 
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-            window.OneSignalDeferred.push(async function(OneSignal) {
-                await OneSignal.init({
-                    appId: "212ca723-6015-43de-8e66-6f24d0defbd9"
-                    , notifyButton: {
-                        enable: true
-                    }
-                    , serviceWorkerPath: "/OneSignalSDKWorker.js"
-                    , serviceWorkerParam: { scope: "/" },
-                });
-            });
-    </script>
-
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />

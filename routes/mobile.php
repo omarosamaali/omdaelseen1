@@ -47,6 +47,15 @@ use App\Models\Note;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\TripRegistrationController;
+use App\Http\Controllers\InvoiceController;
+
+Route::post('mobile/invoice/{invoiceId}/pay', [InvoiceController::class, 'initiatePayment'])
+    ->name('mobile.invoice.pay');
+
+Route::get('mobile/invoice/payment/success', [InvoiceController::class, 'paymentSuccess'])
+    ->name('mobile.invoice.payment.success');
+Route::get('mobile/invoice/payment/cancel', [InvoiceController::class, 'paymentCancel'])
+    ->name('mobile.invoice.payment.cancel');
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/notifications', function () {
@@ -149,6 +158,12 @@ Route::get('/logout-and-register/{trip}', function ($tripId) {
 Route::get('/mobile/orders/trip-invoice/{id}', function ($id) {
     $product = Product::findOrFail($id)->load('invoices', 'notes');
     return view('mobile.profile.actions.trip-invoice', compact('product'));
+})->name('mobile.profile.actions.trip-invoice');
+
+Route::get('/mobile/orders/trip-invoice/{id}', function ($id) {
+    // جلب TripRequest مش Product
+    $trip = TripRequest::findOrFail($id)->load('invoices', 'notes');
+    return view('mobile.profile.actions.trip-invoice', compact('trip'));
 })->name('mobile.profile.actions.trip-invoice');
 
 Route::get('mobile/china-discovers/{id?}', [ChinaDiscoverController::class, 'index'])->name('mobile.china-discovers.index');
@@ -259,6 +274,20 @@ Route::get('/mobile/orders/orders-user/{product}', function (App\Models\Product 
     return view('mobile.profile.order-display', compact('product'));
 })->name('mobile.orders.show');
 
+Route::middleware(['auth'])->group(function () {
+    Route::post('/mobile/chat/send', [ChatController::class, 'sendMessage'])->name('mobile.chat.send');
+});
+Route::middleware(['auth'])->group(function () {
+    Route::get('/mobile/chat', [ChatController::class, 'showUserChat'])->name('mobile.user.chat');
+    Route::post('/mobile/chat/send', [ChatController::class, 'sendMessage'])->name('mobile.chat.send');
+});
+
+// للأدمن
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/mobile/admin/chat/{chatUser}', [ChatController::class, 'showAdminChat'])->name('mobile.admin.chat');
+    Route::get('/mobile/admin/all-chat', [ChatController::class, 'showAllChats'])->name('mobile.admin.all-chat');
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('mobile.chat', [ChatController::class, 'showUserChat'])->name('mobile.chat');
     Route::get('mobile.admin.all-chat', [ChatController::class, 'showAllChats'])->name('mobile.admin.all-chat');
@@ -354,11 +383,17 @@ Route::get('/mobile/order', function () {
     return view('mobile.welcome.order', compact('orders'));
 })->name('mobile.order');
 
-Route::get('/mobile/helpWords/{word_type?}', function ($word_type = 'الطلب') {
-    $helpWords = HelpWord::where('status', 'نشط')
-        ->where('word_type', $word_type)
-        ->orderBy('order', 'asc')
-        ->get();
+Route::get('/mobile/helpWords/{word_type?}', function ($word_type = null) {
+
+    if($word_type) {
+        $helpWords = HelpWord::where('status', 'نشط')
+            ->where('word_type', $word_type)
+            ->orderBy('order', 'asc')
+            ->get();
+    } else {
+        $helpWords = HelpWord::where('status', 'نشط')->get();
+    };
+
     return view('mobile.welcome.helpWords', compact('helpWords', 'word_type'));
 })->name('mobile.helpWords');
 

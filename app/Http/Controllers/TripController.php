@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Exception;
+use App\Models\User;
+
 use Illuminate\Support\Facades\Mail;
 
 class TripController extends Controller
@@ -187,6 +189,33 @@ class TripController extends Controller
                 }
 
                 try {
+                    $adminEmails = User::where('role', 'admin')->pluck('email')->toArray();
+
+                    // إذا لم يكن هناك أدمن، استخدم إيميل افتراضي
+                    if (empty($adminEmails)) {
+                        $adminEmails = [config('mail.admin_email', 'admin@chinaomda.com')];
+                    }
+
+
+                    $roomTypeText = $booking->order_type;
+
+                    foreach ($adminEmails as $adminEmail) {
+                        Mail::send('emails.admin_new_booking', [
+                            'orderNumber' => $booking->order_number,
+                            'customerName' => $user->name,
+                            'customerEmail' => $user->email,
+                            'customerPhone' => $user->phone ?? $user->mobile ?? 'غير متوفر',
+                            'tripTitle' => $trip->title_ar ?? $trip->title,
+                            'roomType' => $roomTypeText,
+                            'amount' => $booking->amount,
+                            'bookingDate' => $booking->booking_date->format('Y-m-d H:i'),
+                            'bookingUrl' => url('/admin/bookings/' . $booking->id)
+                        ], function ($message) use ($adminEmail, $booking) {
+                            $message->to($adminEmail)
+                                ->subject('🎉 مشترك جديد - طلب رقم: ' . $booking->order_number);
+                        });
+                    }
+
                     Mail::send('emails.success', [
                         'booking' => $booking,
                         'trip' => $trip,

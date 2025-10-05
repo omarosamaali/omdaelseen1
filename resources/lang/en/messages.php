@@ -216,4 +216,6 @@ return [
     'تفاصيل الموافقة' => 'Approval Details',
     'notes' => 'Notes',
     'تفاصيل الملاحظة' => 'Note Details',
+    'login' => 'Login',
+    'register' => 'Register',
 ];

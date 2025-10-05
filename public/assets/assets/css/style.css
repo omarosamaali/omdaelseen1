@@ -3195,13 +3195,14 @@ path {
     align-items: center;
     justify-content: center;
     margin: auto;
-    left: 11%;
+    left: 8%;
     transform: translate(-50%, 1%);
 }
 
 .image-container {
     position: fixed;
     height: 100%;
+    width: 100%;
     object-fit: cover;
 }
 
@@ -3211,7 +3212,7 @@ path {
 }
 
 .footer-image {
-    width: 100%;
+    width: auto;
     height: 191px;
     position: fixed;
     bottom: 0;

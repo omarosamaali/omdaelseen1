@@ -2,6 +2,8 @@
 
 @section('title', 'عمدة الصين | China Omda')
 <link href="{{ asset('assets/assets/css/welcome-style.css') }}" rel="stylesheet">
+<link href="{{ asset('assets/assets/css/notifications.css') }}" rel="stylesheet">
+
 <style>
     @media (min-width: 376px) {
         .container-time {
@@ -9,6 +11,7 @@
         }
     }
 </style>
+
 @section('content')
 {{-- <div id="ad-banner"
     class="fixed inset-0 w-full h-full bg-black bg-opacity-90 flex items-center justify-center z-50">
@@ -25,94 +28,6 @@
 <div class="badge" id="unreadBadge" style="display: none;">
     <span id="unreadCount">0</span> إشعار جديد
 </div>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
-
-<script>
-    const firebaseConfig = {
-    apiKey: "AIzaSyBQCPTwnybdtLNUwNCzDDA23TLt3pD5zP4",
-    authDomain: "omdachina25.firebaseapp.com",
-    databaseURL: "https://omdachina25-default-rtdb.firebaseio.com",
-    projectId: "omdachina25",
-    storageBucket: "omdachina25.firebasestorage.app",
-    messagingSenderId: "1031143486488",
-    appId: "1:1031143486488:web:0a662055d970826268bf6d",
-  };
-
-  firebase.initializeApp(firebaseConfig);
-
-  const messaging = firebase.messaging();
-
-  // طلب إذن الإشعارات
-  Notification.requestPermission().then(permission => {
-    if (permission === "granted") {
-      messaging.getToken({ vapidKey: "BB168ueRnlIhDY0r5lrLD7pvQydPk467794F97CWizmwnvzxAWtlx3fuZ9NQtxc0QeokXdnBjiYoiINBIRvCQiY" })
-        .then((currentToken) => {
-          if (currentToken) {
-            console.log("✅ FCM Token:", currentToken);
-            // هنا بقى تبعته للباك اند Laravel واحفظه في DB
-          }
-        });
-    }
-  });
-
-  // استقبال إشعار لو المتصفح مفتوح
-  messaging.onMessage((payload) => {
-    console.log("📩 إشعار مستلم:", payload);
-    new Notification(payload.notification.title, {
-      body: payload.notification.body,
-      icon: "/favicon.ico"
-    });
-  });
-</script>
-
-<style>
-    .badge {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        background: #f44336;
-        color: white;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-weight: bold;
-        box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
-        z-index: 9999;
-        animation: fadeIn 0.3s;
-    }
-
-    @keyframes shake {
-
-        0%,
-        100% {
-            transform: translateX(0);
-        }
-
-        25% {
-            transform: translateX(-10px);
-        }
-
-        75% {
-            transform: translateX(10px);
-        }
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .shake {
-        animation: shake 0.5s;
-    }
-</style>
 <img src="{{ asset('assets/assets/images/pg3.png') }}" class="image-container" alt="">
 <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white dark:bg-black">
     <img id="logo-img" src="{{ asset('assets/assets/images/sgin-logo.png') }}" alt=""
@@ -120,7 +35,6 @@
     <div class="relative z-10 pb-20" style="direction: ltr;">
         <div class="flex justify-between items-center gap-4 px-6 relative z-20">
             <div class="flex justify-start items-center gap-2">
-                {{-- Add English Language --}}
                 <div class="pie pie1 {{ session('locale') == 'en' ? 'active' : '' }}" onclick="setLanguage('en')">
                     <div class="pie-color pie-color1">
                         <svg class="card" xmlns="http://www.w3.org/2000/svg" width="100" height="100"
@@ -187,7 +101,7 @@
                 </div>
             </div>
             <div class="flex justify-start items-center gap-2">
-                @if(Auth::user() && Auth::user()->role == 'admin')
+                @if (Auth::user() && Auth::user()->role == 'admin')
                 <a href="{{ route('mobile.admin.all-chat') }}"
                     class="text-black border border-black p-2 rounded-full flex justify-center items-center bg-color24">
                     <i class="ph ph-chat"></i>
@@ -274,96 +188,104 @@
             </p>
             <div
                 class="absolute -left-[53%] -top-[620px] min-[370px]:-top-[650px] min-[380px]:-top-[680px] min-[400px]:-top-[720px] min-[420px]:-top-[750px]">
-                <div
+                <div style="top: 25px;"
                     class="flex justify-around items-center rounded-full relative rotate-0 circleSliders duration-700 max-[430px]:size-[209vw] size-[900px]">
                     <a href="{{ route('mobile.event') }}"
                         class="flex flex-col justify-center items-center text-center gap-3 absolute left-[29%]"
                         style="bottom: 15px;">
                         <img src="{{ asset('assets/assets/images/event3.png') }}" style="width: 50px;" alt=""
                             class="" />
-                        <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;">{{ __('messages.exhibitions_events') }}</p>
+                        <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;">
+                            {{ __('messages.exhibitions_events') }}</p>
                     </a>
                     <a href={{ route('mobile.helpWords') }}
                         class="flex flex-col justify-center items-center text-center gap-3 absolute"
                         style="left: 41.5%; bottom: -4px;">
                         <img src="{{ asset('assets/assets/images/logo-2.png') }}" style="width: 50px;" alt=""
                             class="" />
-                        <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;">{{ __('messages.help_words') }}</p>
+                        <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;">
+                            {{ __('messages.help_words') }}</p>
                     </a>
                     <a href="{{ route('mobile.howWeWork') }}"
                         class="flex flex-col justify-center items-center text-center gap-3 absolute"
                         style="bottom: -4px; right: 41.5%;" style="right: 43.5%;">
                         <img src="{{ asset('assets/assets/images/how-we-work.png') }}" style="width: 50px;" alt=""
                             class="" />
-                        <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;">{{ __('messages.how_we_work') }}</p>
+                        <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;">
+                            {{ __('messages.how_we_work') }}</p>
                     </a>
                     <a href="{{ route('mobile.order') }}"
                         class="flex flex-col justify-center items-center text-center gap-3 absolute right-[31%]"
                         style="bottom: 15px;">
                         <img src="{{ asset('assets/assets/images/logo-4.png') }}" style="width: 50px;" alt=""
                             class="" />
-                        <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;"">{{ __('messages.special_request') }}</p>
-                    </a>
-                    <a href="{{ route('mobile.terms') }}" style="right: 17.5%; bottom: 7.5%;"
-                        class="flex flex-col justify-center items-center text-center gap-3 absolute right-[16.5%] bottom-[6.5%] rotate-[-58deg]">
-                        <img src="{{ asset('assets/assets/images/logo-5.png') }}" style="width: 50px;" alt=""
-                            class="" />
-                        <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;"">{{ __('messages.terms_conditions') }}</p>
-                    </a>
-                    <a href="{{ route('mobile.privacy') }}" style="right: 8%; bottom: 17%;"
-                        class="flex flex-col justify-center items-center text-center gap-3 absolute right-[8%] bottom-[13%] rotate-[-58deg]">
-                        <img src="{{ asset('assets/assets/images/logo-6.png') }}" style="width: 50px;" alt=""
-                            class="" />
-                        <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;"">{{ __('messages.privacy_policy') }}</p>
-                    </a>
-                    <a href="{{ route('mobile.about') }}" style="right: 5%; bottom: 25.5%;"
-                        class="flex flex-col justify-center items-center text-center gap-3 absolute right-[2%] bottom-[23.5%] rotate-[-58deg]">
-                        <img src="{{ asset('assets/assets/images/logo-3.png') }}" style="width: 50px;" alt=""
-                            class="" />
-                        <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;"">{{ __('messages.about_us') }}</p>
-                    </a>
-                    <a href="{{ route('mobile.faq') }}" style="bottom: 36%;"
-                        class="flex flex-col justify-center items-center text-center gap-3 absolute right-0 bottom-[34%] rotate-[-58deg]">
-                        <img src="{{ asset('assets/assets/images/faq.png') }}" style="width: 50px;" alt="" />
-                        <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;"">{{ __('messages.faqs') }}</p>
-                    </a>
+                        <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;"">
+                                {{ __('messages.special_request') }}</p>
+                        </a>
+                        <a href=" {{ route('mobile.terms') }}" style="right: 17.5%; bottom: 7.5%;"
+                            class="flex flex-col justify-center items-center text-center gap-3 absolute right-[16.5%] bottom-[6.5%] rotate-[-58deg]">
+                            <img src="{{ asset('assets/assets/images/logo-5.png') }}" style="width: 50px;" alt=""
+                                class="" />
+                            <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;"">
+                                {{ __('messages.terms_conditions') }}</p>
+                        </a>
+                        <a href=" {{ route('mobile.privacy') }}" style="right: 8%; bottom: 17%;"
+                                class="flex flex-col justify-center items-center text-center gap-3 absolute right-[8%] bottom-[13%] rotate-[-58deg]">
+                                <img src="{{ asset('assets/assets/images/logo-6.png') }}" style="width: 50px;" alt=""
+                                    class="" />
+                            <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;"">
+                                {{ __('messages.privacy_policy') }}</p>
+                        </a>
+                        <a href=" {{ route('mobile.about') }}" style="right: 5%; bottom: 25.5%;"
+                                class="flex flex-col justify-center items-center text-center gap-3 absolute right-[2%] bottom-[23.5%] rotate-[-58deg]">
+                                <img src="{{ asset('assets/assets/images/logo-3.png') }}" style="width: 50px;" alt=""
+                                    class="" />
+                            <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;"">
+                                {{ __('messages.about_us') }}</p>
+                        </a>
+                        <a href=" {{ route('mobile.faq') }}" style="bottom: 36%;"
+                                class="flex flex-col justify-center items-center text-center gap-3 absolute right-0 bottom-[34%] rotate-[-58deg]">
+                                <img src="{{ asset('assets/assets/images/faq.png') }}" style="width: 50px;" alt="" />
+                            <p class="font-semibold dark:text-white" style="font-size: 0.65rem !important;"">
+                                {{ __('messages.faqs') }}</p>
+                        </a>
+                    </div>
+                </div>
+
+                <div class=" flex justify-start items-center gap-1 flex-col pt-3" style="display: none;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="202" height="202">
+                                    <path style="display: none"
+                                        d="M76.388 165.94C75.9671 167.043 74.7305 167.599 73.6407 167.145C70.8225 165.972 68.0826 164.618 65.4379 163.094C64.4153 162.504 64.1052 161.184 64.7252 160.18V160.18C65.3453 159.175 66.6606 158.867 67.6844 159.454C70.0989 160.84 72.5974 162.074 75.1655 163.149C76.2544 163.605 76.8088 164.837 76.388 165.94V165.94Z"
+                                        fill="#141414" fill-opacity="0.16" id="itemLeft" />
+                                    <path
+                                        d="M124.225 166.48C124.629 167.59 124.057 168.82 122.936 169.19C110.033 173.452 96.1783 173.936 83.0093 170.584C81.8653 170.293 81.2096 169.106 81.535 167.971V167.971C81.8604 166.836 83.0434 166.184 84.1878 166.473C96.4884 169.579 109.42 169.127 121.474 165.171C122.595 164.803 123.821 165.371 124.225 166.48V166.48Z"
+                                        fill="#FF710F" id="itemCenter" />
+                                    <path
+                                        d="M141.502 157.326C142.203 158.276 142.002 159.617 141.031 160.288C138.52 162.024 135.9 163.597 133.187 164.996C132.138 165.537 130.86 165.084 130.35 164.02V164.02C129.84 162.955 130.291 161.682 131.339 161.139C133.811 159.858 136.2 158.424 138.493 156.845C139.465 156.176 140.802 156.376 141.502 157.326V157.326Z"
+                                        fill="#141414" fill-opacity="0.16" id="itemRight" />
+                                </svg>
                 </div>
             </div>
 
-            <div class="flex justify-start items-center gap-1 flex-col pt-3" style="display: none;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="202" height="202">
-                    <path style="display: none"
-                        d="M76.388 165.94C75.9671 167.043 74.7305 167.599 73.6407 167.145C70.8225 165.972 68.0826 164.618 65.4379 163.094C64.4153 162.504 64.1052 161.184 64.7252 160.18V160.18C65.3453 159.175 66.6606 158.867 67.6844 159.454C70.0989 160.84 72.5974 162.074 75.1655 163.149C76.2544 163.605 76.8088 164.837 76.388 165.94V165.94Z"
-                        fill="#141414" fill-opacity="0.16" id="itemLeft" />
-                    <path
-                        d="M124.225 166.48C124.629 167.59 124.057 168.82 122.936 169.19C110.033 173.452 96.1783 173.936 83.0093 170.584C81.8653 170.293 81.2096 169.106 81.535 167.971V167.971C81.8604 166.836 83.0434 166.184 84.1878 166.473C96.4884 169.579 109.42 169.127 121.474 165.171C122.595 164.803 123.821 165.371 124.225 166.48V166.48Z"
-                        fill="#FF710F" id="itemCenter" />
-                    <path
-                        d="M141.502 157.326C142.203 158.276 142.002 159.617 141.031 160.288C138.52 162.024 135.9 163.597 133.187 164.996C132.138 165.537 130.86 165.084 130.35 164.02V164.02C129.84 162.955 130.291 161.682 131.339 161.139C133.811 159.858 136.2 158.424 138.493 156.845C139.465 156.176 140.802 156.376 141.502 157.326V157.326Z"
-                        fill="#141414" fill-opacity="0.16" id="itemRight" />
-                </svg>
-            </div>
-        </div>
-
-        <div class="container-time" style="margin-top: 125px; text-align: center;">
-            <div>
-                <p style="color: #800000">الوقت والطقس في الصين الان</p>
-                <div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
-                    <span id="weather"></span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path
-                            d="M22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12Z"
-                            stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <path
-                            d="M15.7099 15.1798L12.6099 13.3298C12.0699 13.0098 11.6299 12.2398 11.6299 11.6098V7.50977"
-                            stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                    <span>
-                        {{ \Carbon\Carbon::now('Asia/Shanghai')->format('h:iA') }}
-                    </span>
-                </div>
-                <script>
-                    const apiKey = '90454fa9d977f98eccd6e84b61b8e358';
+            <div class="container-time" style="margin-top: 125px; text-align: center;">
+                <div>
+                    <p style="color: #800000">الوقت والطقس في الصين الان</p>
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
+                        <span id="weather"></span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path
+                                d="M22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12Z"
+                                stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            <path
+                                d="M15.7099 15.1798L12.6099 13.3298C12.0699 13.0098 11.6299 12.2398 11.6299 11.6098V7.50977"
+                                stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <span>
+                            {{ \Carbon\Carbon::now('Asia/Shanghai')->format('h:iA') }}
+                        </span>
+                    </div>
+                    <script>
+                        const apiKey = '90454fa9d977f98eccd6e84b61b8e358';
                         const city = 'China';
                         const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
                         fetch(apiUrl)
@@ -479,61 +401,90 @@
                                 const weatherElement = document.getElementById('weather');
                                 weatherElement.innerHTML = 'Could not fetch the weather data. Please try again later.';
                             });
-                </script>
+                    </script>
 
+                </div>
+                <div style="margin-top: 20px;">
+                    @if ($events?->type == 'مناسبة')
+                    <span style="color: #800000"> المناسبة القادمة </span> <br />{{ $events?->title_ar }}
+                    @elseif($events?->type == 'معرض')
+                    <span style="color: #800000"> المعرض القادم </span> <br />{{ $events?->title_ar }}
+                    @else
+                    <span style="color: #800000">
+                        لا يوجد عطلة ولا مناسبة قادمة
+                    </span>
+                    @endif
+                </div>
             </div>
-            <div style="margin-top: 20px;">
-                @if ($events?->type == 'مناسبة')
-                <span style="color: #800000"> المناسبة القادمة </span> <br />{{ $events?->title_ar }}
-                @elseif($events?->type == 'معرض')
-                <span style="color: #800000"> المعرض القادم </span> <br />{{ $events?->title_ar }}
-                @else
-                <span style="color: #800000">
-                    لا يوجد عطلة ولا مناسبة قادمة
-                </span>
-                @endif
-            </div>
-        </div>
 
-        <div class="container-btns">
-            {{-- @auth --}}
-            <a style="position: fixed; z-index: 999;
-    bottom: 27%;
-    left: 31%;" href="{{ route('mobile.trip') }}">{{ __('messages.business_tourist_trips') }}</a>
-            {{-- @else
-            <a style="position: fixed;
+            <div class="container-btns">
+                {{-- @auth --}}
+                <a class="china-explorers2" href="{{ route('mobile.trip') }}">{{ __('messages.business_tourist_trips')
+                    }}</a>
+                {{-- @else
+                <a style="position: fixed;
     bottom: 27%;
     left: 31%;" href="{{ route('mobile.auth.login') }}">{{ __('messages.business_tourist_trips') }}</a>
-            @endauth
-            @auth --}}
-            <a style="position: fixed;
- bottom: 14%;
-    left: 13%;
-    z-index: 9999;" href="{{ route('mobile.china-discovers.index') }}">{{ __('messages.china_explorers') }}</a>
-            {{-- @else
-            <a style="position: fixed;
+                @endauth
+                @auth --}}
+                <style>
+                    @media (min-width: 500px) {
+                        .china-explorers {
+                            position: fixed;
+                            bottom: 15%;
+                            left: 6%;
+                            z-index: 9999;
+                        }
+
+                        .china-explorers2 {
+                            position: fixed;
+                            z-index: 999;
+                            bottom: 27%;
+                            left: 18%;
+                        }
+                    }
+
+                    @media (max-width: 500px) {
+                        .china-explorers {
+                            position: fixed;
+                            bottom: 15%;
+                            left: 16%;
+                            z-index: 9999;
+                        }
+
+                        .china-explorers2 {
+                            position: fixed;
+                            z-index: 999;
+                            bottom: 27%;
+                            left: 31%;
+                        }
+                    }
+                </style>
+                <a class="china-explorers" href="{{ route('mobile.china-discovers.index') }}">{{
+                    __('messages.china_explorers') }}</a>
+                {{-- @else
+                <a style="position: fixed;
     bottom: 37%;
     left: 31%;" href="{{ route('mobile.auth.login') }}">{{ __('messages.china_explorers') }}</a>
-            @endauth --}}
-        </div>
-        <div>
-            <img src="{{ asset('assets/assets/images/tree3.png') }}" style="bottom: 30% !important;" class="china-omda"
-                alt="">
-        </div>
-        <div>
-            <img src="{{ asset('assets/assets/images/tree2.png') }}" style="left: -4%; bottom: 18%;" class="china-omda"
-                alt="">
-        </div>
-        <div>
-            <img src="{{ asset('assets/assets/images/pg4.png') }}" class="footer-image" alt="">
-        </div>
+                @endauth --}}
+            </div>
+            <div>
+                <img src="{{ asset('assets/assets/images/tree3.png') }}" style="bottom: 30% !important;"
+                    class="china-omda" alt="">
+            </div>
+            <div>
+                <img src="{{ asset('assets/assets/images/tree2.png') }}" style="left: -4%; bottom: 18%;"
+                    class="china-omda" alt="">
+            </div>
+            <div>
+                <img src="{{ asset('assets/assets/images/pg4.png') }}" class="footer-image" alt="">
+            </div>
 
+        </div>
     </div>
-</div>
 
-<script>
-    
-    document.addEventListener("DOMContentLoaded", function() {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
             let seconds = 3;
             let countdown = document.getElementById("seconds");
             let skipButton = document.getElementById("skip-button");
@@ -555,10 +506,10 @@
                 banner.style.display = "none";
             });
         });
-</script>
+    </script>
 
-<script>
-    function changeLanguage(locale) {
+    <script>
+        function changeLanguage(locale) {
             fetch('/set-language', {
                     method: 'POST',
                     headers: {
@@ -624,6 +575,6 @@
                     }
                 });
         }
-</script>
+    </script>
 
-@endsection
+    @endsection

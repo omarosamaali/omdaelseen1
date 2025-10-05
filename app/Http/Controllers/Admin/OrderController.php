@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\OrderMessage;
 use App\Models\Trip;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -224,6 +225,10 @@ class OrderController extends Controller
             'amount' => $request->amount,
             'status' => $request->status,
         ]);
+
+        Mail::raw('تم إضافة فاتورة جديدة علي الطلب الذي قمت بتقديمه', function ($mail) use ($order) {
+            $mail->to($order->user->email)->subject('تم إنشاء الفاتورة');
+        });
 
         return redirect()->route('admin.orders.invoice', $id)->with('success', 'تم إنشاء الفاتورة بنجاح');
     }

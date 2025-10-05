@@ -65,7 +65,7 @@
                     <td class="th">{{ $invoice->title }}</td>
                     <td class="th">{{ $invoice->amount }}</td>
                     <td class="th">{{ $invoice->created_at }}</td>
-                    <td class="th">{{ $invoice->status }}</td>
+                    <td class="th">{{ $invoice->status == 'paid' ? 'مدفوعة' : $invoice->status }}</td>
                     <td class="th" style="display: flex; gap: 8px;">
                         <!-- View Invoice -->
                         <a href="{{ route('admin.orders.showInvoice', $invoice->id) }}"

@@ -11,7 +11,9 @@ use App\Models\Favorites;
 use App\Models\Rating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
 
 class PlacesController extends Controller
 {
@@ -141,7 +143,21 @@ class PlacesController extends Controller
         }
         $data['status'] = $this->normalizeStatus($data['status']);
         $data['user_id'] = Auth::id();
-        Places::create($data);
+        $place = Places::create($data);
+        $users = User::all();
+
+        // foreach ($users as $user) {
+        //     Mail::send('emails.new_place', [
+        //         'userName' => $user->name,
+        //         'placeName' => $place->name_ar,
+        //         'placeDescription' => $place->description ?? 'اكتشف هذا المكان الرائع!',
+        //         'placeUrl' => url('mobile/info_place/' . $place->id)
+        //     ], function ($message) use ($user) {
+        //         $message->to($user->email)
+        //             ->subject('🎉 تم إضافة مكان جديد');
+        //     });
+        // }
+
         return redirect()->route('admin.places.index')->with('success', 'تم إضافة المكان بنجاح');
     }
 

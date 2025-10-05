@@ -225,7 +225,7 @@ class AppServiceProvider extends ServiceProvider
         View::share('countries', $countries);
 
         View::composer(['mobile.profile.profileAdmin', 'mobile.welcome'], function ($view) {
-            $totalCount = Places::count() + Report::count() + Favorites::count() + Rating::count() + ReviewReport::count();
+            $totalCount = Report::count() + Favorites::count() + Rating::count() + ReviewReport::count();
             $hiddenNotificationsCount = 0;
             $hiddenNotificationsJson = Cookie::get('hidden_notifications');
             if ($hiddenNotificationsJson) {
@@ -241,7 +241,6 @@ class AppServiceProvider extends ServiceProvider
         
         View::composer(['mobile.profile.profile', 'mobile.welcome'], function ($view) {
             $userId = Auth::user()?->id;
-            $placesCount = Places::where('user_id', $userId)->count();
             $userReportsCount = Report::where('user_id', $userId)->count();
             $reportsAgainstUserPlacesCount = Report::whereIn('place_id', function ($query) use ($userId) {
                 $query->select('id')
@@ -251,7 +250,7 @@ class AppServiceProvider extends ServiceProvider
             $favoritesCount = Favorites::where('user_id', $userId)->count();
             $ratingsCount = Rating::where('user_id', $userId)->count();
             $reviewReportsCount = ReviewReport::where('user_id', $userId)->count();
-            $totalCount = $placesCount +
+            $totalCount = +
                 $userReportsCount +
                 $reportsAgainstUserPlacesCount +
                 $favoritesCount +

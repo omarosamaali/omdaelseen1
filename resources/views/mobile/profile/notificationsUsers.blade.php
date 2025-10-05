@@ -100,17 +100,6 @@
         <p class="text-xl font-semibold pt-8">{{ __('messages.notifications_title') }}</p>
         <div class="flex flex-col gap-4 pt-5">
             <div id="notifications-container" class="flex flex-col gap-4 pt-5">
-                {{-- الأماكن اللي ضفتها --}}
-                @foreach ($places as $place)
-                <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
-                    data-id="place-{{ $place->id }}">
-                    <p>{{ __('messages.place_added', ['name' => $place->{'name_' . App::getLocale()} ??
-                        __('messages.place_name')]) }}
-                        {{ $place->name_ar }}</p>
-                    <i class="ph ph-x"></i>
-                </div>
-                @endforeach
-
                 {{-- البلاغات ضد اماكني --}}
                 @foreach ($reportsAgainstMe as $report)
                 <div class="flex justify-between items-center pb-4 border-b border-dashed border-red-400 dark:border-red-600 notification-item"

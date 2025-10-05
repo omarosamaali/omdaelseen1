@@ -184,11 +184,9 @@
 
 /* Latest Places Styling */
 .latest-card {
-    background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.1),
-        rgba(255, 181, 49, 0.05)
-    );
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.1),
+            rgba(255, 181, 49, 0.05));
     backdrop-filter: blur(10px);
 }
 
@@ -291,9 +289,8 @@
 /* public/assets/css/all-places.css */
 
 .image-container {
+    width: 100%;
     height: 100px;
-    /* يمكنك تعديل هذا حسب التصميم */
-    /* ... أي أنماط أخرى تخص هذه الفئة */
 }
 
 .container {
