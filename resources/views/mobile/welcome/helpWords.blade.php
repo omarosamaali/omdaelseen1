@@ -22,6 +22,43 @@
     .empty-img {
         height: 374px;
         width: 100%;
+    }.audio-player {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 9999px;
+    padding: 6px 12px;
+    cursor: pointer;
+    width: 100px;
+    transition: background 0.2s;
+    }
+    
+    .audio-player:hover {
+    background: #eaeaea;
+    }
+    
+    .audio-player .play-icon {
+    font-size: 16px;
+    }
+    
+    .audio-player .progress-bar {
+    flex-grow: 1;
+    height: 4px;
+    background: #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    }
+    
+    .audio-player .progress-bar span {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: #000;
+    border-radius: 4px;
+    transition: width 0.2s linear;
     }
 </style>
 
@@ -68,11 +105,11 @@
                         @endif
                         <p class="font-semibold text-sm">{{ $word->word_zh }}</p>
                     </div>
-                    <button onclick="speakWord('{{ $word->word_zh }}')" style="background-color: black; height: 38px;"
-                        class="flex justify-center items-center p-2 rounded-full border border-color16 !leading-none text-white text-p2 speak-button"
-                        data-speak-text="{{ $word->word_zh }}">
-                        <i class="fa-solid fa-head-side-cough"></i>
-                    </button>
+                <!-- Player Tool -->
+                <div class="audio-player" onclick="toggleSpeak(this, '{{ $word->word_zh }}')">
+                    <i class="fa-solid fa-play play-icon text-gray-700"></i>
+                    <div class="progress-bar"><span></span></div>
+                </div>
                 </div>
                 @endforeach
                 @endif
@@ -83,7 +120,10 @@
 
     <script>
         let voicesReady = false;
-        
+        if (!('speechSynthesis' in window)) {
+        alert('النطق غير مدعوم في هذا المتصفح 😔');
+        return;
+        }
         // تحميل الأصوات أول ما الصفحة تفتح
         function loadVoices() {
             const voices = speechSynthesis.getVoices();
@@ -174,7 +214,66 @@
             }
         });
     </script>
+<script>
+    let speaking = false;
+let currentEl = null;
 
+function toggleSpeak(el, text) {
+    // لو في صوت شغال حالياً
+    if (speaking) {
+        speechSynthesis.cancel();
+        speaking = false;
+        if (currentEl) {
+            resetPlayer(currentEl);
+        }
+        return;
+    }
+
+    // شغل الصوت الجديد
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'zh-CN';
+    utter.rate = 1;
+    utter.volume = 1;
+    speaking = true;
+    currentEl = el;
+
+    // غيّر شكل الزر
+    el.querySelector('.play-icon').className = 'fa-solid fa-pause play-icon text-green-600';
+    animateProgress(el);
+
+    utter.onend = () => {
+        speaking = false;
+        resetPlayer(el);
+    };
+
+    utter.onerror = () => {
+        speaking = false;
+        resetPlayer(el);
+    };
+
+    speechSynthesis.speak(utter);
+}
+
+function resetPlayer(el) {
+    if (!el) return;
+    el.querySelector('.play-icon').className = 'fa-solid fa-play play-icon text-gray-700';
+    el.querySelector('.progress-bar span').style.width = '0%';
+}
+
+function animateProgress(el) {
+    const bar = el.querySelector('.progress-bar span');
+    let width = 0;
+    const interval = setInterval(() => {
+        if (!speaking || width >= 100) {
+            clearInterval(interval);
+            bar.style.width = '0%';
+            return;
+        }
+        width += 3;
+        bar.style.width = width + '%';
+    }, 200);
+}
+</script>
     <script src="{{ asset('assets/assets/js/faq.js') }}"></script>
     <script defer src="{{ asset('assets/assets/js/index.js') }}"></script>
 </body>
