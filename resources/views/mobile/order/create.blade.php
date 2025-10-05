@@ -29,7 +29,7 @@
             </div>
         </div>
     </div>
-    <x-china-header :title="'طلب جديد'" :route="route('mobile.order')" />
+    {{-- <x-china-header :title="'طلب جديد'" :route="route('mobile.order')" /> --}}
     <div class="relative z-30 px-6">
         <div id="productForm" class="p-6 rounded-xl bg-white dark:bg-color9 mt-12 border border-color21 hidden">
             <div id="successMessage" class="success-message" style="display: none;">
