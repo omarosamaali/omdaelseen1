@@ -49,7 +49,6 @@
                 </li>
             </ul>
         </div>
-        <!-- Search Box End -->
 
         <!-- Words Start -->
         <div class="pt-6 px-2">
@@ -81,36 +80,66 @@
         </div>
         <!-- Words End -->
     </div>
-    </div>
+
     <script>
-        function speakWord(text) {
-        if (!text) return;
-
-        // وقف أي صوت شغال قبل ما يبدأ الجديد
-        speechSynthesis.cancel();
-
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'zh-CN';
-        utterance.rate = 1.0;
-
-        // اختيار صوت صيني لو متاح
-        const voices = speechSynthesis.getVoices();
-        const chineseVoice = voices.find(voice => voice.lang === 'zh-CN');
-        if (chineseVoice) {
-            utterance.voice = chineseVoice;
+        let voicesReady = false;
+        
+        // تحميل الأصوات أول ما الصفحة تفتح
+        function loadVoices() {
+            const voices = speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                voicesReady = true;
+                console.log('Available voices:', voices.map(v => v.name + ' (' + v.lang + ')'));
+            }
         }
-
-        speechSynthesis.speak(utterance);
-    }
+        
+        // Firefox محتاج الـ event ده
+        speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+        
+        function speakWord(text) {
+            if (!text) return;
+            
+            // Firefox بيحتاج نوقف الكلام بطريقة مختلفة
+            if (speechSynthesis.speaking || speechSynthesis.pending) {
+                speechSynthesis.cancel();
+                // Firefox محتاج delay أكبر بعد cancel
+                setTimeout(() => doSpeak(text), 300);
+            } else {
+                doSpeak(text);
+            }
+        }
+        
+        function doSpeak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-CN';
+            utterance.rate = 1;
+            utterance.volume = 1;
+            
+            const voices = speechSynthesis.getVoices();
+            // Firefox بياخد أول صوت متاح لو مفيش صيني
+            const zhVoice = voices.find(v => v.lang.includes('zh')) || voices[0];
+            if (zhVoice) {
+                utterance.voice = zhVoice;
+                console.log('Using:', zhVoice.name);
+            }
+            
+            utterance.onstart = () => console.log('Started speaking');
+            utterance.onend = () => console.log('Finished speaking');
+            utterance.onerror = (e) => console.error('Speech error:', e);
+            
+            speechSynthesis.speak(utterance);
+        }
     </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-                // Search functionality
-                const searchInput = document.getElementById('word-search');
-                const wordContainer = document.getElementById('word-container');
-                const noResultsMessage =
-                    '<p class="text-center text-sm text-gray-500"><x-empty /></p>';
+            // Search functionality
+            const searchInput = document.getElementById('word-search');
+            const wordContainer = document.getElementById('word-container');
+            const noResultsMessage = `<p class="text-center text-sm text-gray-500"><x-empty /></p>`;
 
+            if (searchInput) {
                 searchInput.addEventListener('input', function() {
                     const searchTerm = this.value.trim().toLowerCase();
                     const wordItems = wordContainer.querySelectorAll('.flex.justify-between.items-center');
@@ -121,8 +150,7 @@
                         const wordEn = item.getAttribute('data-word-en').toLowerCase();
                         const wordZh = item.getAttribute('data-word-zh').toLowerCase();
 
-                        if (wordAr.includes(searchTerm) || wordEn.includes(searchTerm) || wordZh
-                            .includes(searchTerm)) {
+                        if (wordAr.includes(searchTerm) || wordEn.includes(searchTerm) || wordZh.includes(searchTerm)) {
                             item.style.display = 'flex';
                             hasVisibleItems = true;
                         } else {
@@ -143,27 +171,10 @@
                         existingNoResults.remove();
                     }
                 });
-
-                // Text-to-Speech functionality
-                const speakButtons = document.querySelectorAll('.speak-button');
-                speakButtons.forEach(button => {
-                    button.addEventListener('click', function() {
-                        const text = this.getAttribute('data-speak-text');
-                        if (text) {
-const utterance = new SpeechSynthesisUtterance(text);
-utterance.lang = 'zh-CN';
-
-const voices = speechSynthesis.getVoices();
-const chineseVoice = voices.find(voice => voice.lang === 'zh-CN');
-if (chineseVoice) {
-utterance.voice = chineseVoice;
-}
-
-speechSynthesis.speak(utterance);                        }
-                    });
-                });
-            });
+            }
+        });
     </script>
+
     <script src="{{ asset('assets/assets/js/faq.js') }}"></script>
     <script defer src="{{ asset('assets/assets/js/index.js') }}"></script>
 </body>

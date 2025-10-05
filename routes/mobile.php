@@ -383,11 +383,17 @@ Route::get('/mobile/order', function () {
     return view('mobile.welcome.order', compact('orders'));
 })->name('mobile.order');
 
-Route::get('/mobile/helpWords/{word_type?}', function ($word_type = 'الطلب') {
-    $helpWords = HelpWord::where('status', 'نشط')
-        ->where('word_type', $word_type)
-        ->orderBy('order', 'asc')
-        ->get();
+Route::get('/mobile/helpWords/{word_type?}', function ($word_type = null) {
+
+    if($word_type) {
+        $helpWords = HelpWord::where('status', 'نشط')
+            ->where('word_type', $word_type)
+            ->orderBy('order', 'asc')
+            ->get();
+    } else {
+        $helpWords = HelpWord::where('status', 'نشط')->get();
+    };
+
     return view('mobile.welcome.helpWords', compact('helpWords', 'word_type'));
 })->name('mobile.helpWords');
 
