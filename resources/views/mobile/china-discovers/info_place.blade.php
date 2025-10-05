@@ -117,6 +117,14 @@
         font-weight: bold;
         color: #333;
     }
+
+    .home-icon {
+        display: none !important;
+    }
+
+    #container-header {
+        justify-content: end !important;
+    }
 </style>
 
 @section('content')

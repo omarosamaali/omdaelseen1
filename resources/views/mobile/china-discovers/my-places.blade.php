@@ -18,7 +18,7 @@
 
     <div style="margin-top: 90px; margin-bottom: 90px;">
         @foreach ($myPlaces as $place)
-        <div class="container---features">
+        <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="container---features">
             <div style="width: 100%; height: 183px;">
                 @if ($place->status == 'inactive' || $place->status == 'banned')
                 <div class="bg-opacity">
@@ -76,7 +76,7 @@
                     </p>
                 </div>
             </div>
-        </div>
+        </a>
         @endforeach
     </div>
 </div>
