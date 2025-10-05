@@ -49,7 +49,7 @@ class RatingController extends Controller
             . "المكان : {$place->name_ar}<br>"
             . "التقييم : {$report->rating->comment}<br>";
         Mail::send([], [], function ($message) use ($reviewMessage, $place) {
-            $message->to('987omar123osama456@gmail.com')
+            $message->to('chinaomda@gmail.com')
                 ->subject('عمدة الصين | بلاغ عن' . $place->name_ar)
                 ->html('
             <div dir="rtl" style="text-align: right; font-family: Arial, sans-serif; line-height: 1.6;">
