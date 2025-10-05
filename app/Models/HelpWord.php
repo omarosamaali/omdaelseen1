@@ -13,10 +13,10 @@ class HelpWord extends Model
         'word_ar',
         'word_en',
         'word_zh',
+        'audio_zh',
         'status',
         'order',
         'word_type',
-        'word_type'
     ];
 
     public function getTranslatedWordAttribute()

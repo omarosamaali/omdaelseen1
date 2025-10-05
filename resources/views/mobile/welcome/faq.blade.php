@@ -23,7 +23,7 @@
 <x-china-header :title="__('messages.الأسئلة الشائعة')" :route="route('mobile.welcome')" />
 
 <body class="relative -z-20">
-    <div style="padding-top: 90px;"  class="container min-h-dvh relative overflow-hidden py-8 dark:text-white -z-10 dark:bg-color1">
+    <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white -z-10 dark:bg-color1">
         <div class="relative z-10 px-6">
             {{-- <div class="flex justify-between items-center gap-3 pt-16">
                 <div

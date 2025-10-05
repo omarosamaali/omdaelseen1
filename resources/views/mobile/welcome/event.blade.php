@@ -61,7 +61,7 @@
 
 <body class="relative -z-20">
     <x-china-header :title="__('messages.exhibitions_events')" :route="route('mobile.welcome')" />
-    <div style="padding-top: 90px;"  class="container min-h-dvh relative overflow-hidden py-8 dark:text-white -z-10 dark:bg-color1">
+    <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white -z-10 dark:bg-color1">
         <div class="relative z-10 px-6">
 
             <div class="p-4 px-6" style="margin-top: 20px;">
