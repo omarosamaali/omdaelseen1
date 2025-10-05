@@ -5,7 +5,7 @@
     </a>
 
     <h2 class="text-md font-semibold"
-        style="color: #000000; position: absolute; left: 50%; transform: translateX(-50%); text-align: center; width: 100%;">
+        style="color: maroon; position: absolute; left: 50%; transform: translateX(-50%); text-align: center; width: 100%;">
         {{ $title }}
     </h2>
 
