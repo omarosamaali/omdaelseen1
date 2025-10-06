@@ -50,7 +50,6 @@
                         <option value="منتهي" {{ request('status')=='منتهي' ? 'selected' : '' }}>منتهي</option>
                         <option value="تحتاج لموافقة" {{ request('status')=='تحتاج لموافقة' ? 'selected' : '' }}>تحتاج
                             لموافقة</option>
-
                         <option value="التجهيز للشحن" {{ old('status')=='التجهيز للشحن' ? 'selected' : '' }}>التجهيز
                             للشحن</option>
                         <option value="تم الشحن" {{ old('status')=='تم الشحن' ? 'selected' : '' }}>تم الشحن</option>

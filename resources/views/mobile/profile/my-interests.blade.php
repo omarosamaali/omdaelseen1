@@ -21,7 +21,7 @@
 
         <div style="margin-top: 90px;">
             @forelse($favoritePlaces as $place)
-                <div class="container---features">
+                <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="container---features">
                     <div style="width: 100%; height: 183px;">
                         <div class="">
                             <div style="border-radius: 20%; width: 43px; gap: 3px;" class="heart-icon favorited"
@@ -56,7 +56,7 @@
                             <p>{{ $place->subCategory?->{'name_' . App::getLocale()} ?? __('messages.sub_category') }}</p>
                         </div>
                     </div>
-                </div>
+                </a>
             @empty
                 <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
                     <p style="color: #6c757d; font-size: 18px;">{{ __('messages.no_favorite_places') }}</p>

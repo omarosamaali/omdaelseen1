@@ -2,7 +2,7 @@
 
 @section('title', 'المتابعين | My Profile')
 <link href="{{ asset('assets/assets/css/followers.css') }}" rel="stylesheet">
-
+<meta name="csrf-token" content="{{ csrf_token() }}">
 @section('content')
 {{-- <img style="height: unset !important;" src="{{ asset('assets/assets/images/header-bg-2.png') }}" class="image-container"
     alt=""> --}}
@@ -138,37 +138,47 @@
 <div class="flex flex-col" style="gap: 16px; padding-top: 20px; direction: rtl;">
 <div class="flex flex-col gap-4" style="padding-top: 30px; direction: rtl;">
 
-        <div class="flex flex-col gap-4" style="padding-top: 310px; direction: rtl;">
-            @foreach ($myFollowers as $myFollower)
-            <div style="box-shadow: 0px 0px 0px 3px #c6c6c6;"
-                class="flex justify-between items-center bg-white dark:bg-color9 py-4 px-5 rounded-2xl">
-                <div class="flex justify-start items-center gap-3">
-                    <p class="font-semibold">{{ $loop->iteration }}</p>
-                    <img src="{{ asset('storage/' . $myFollower->follower->avatar) }}"
-                        alt="{{ $myFollower->follower->explorer_name }}" class="size-10 rounded-full" />
-                    <p class="font-semibold flex justify-start items-center gap-1">
-                        {{ $myFollower->follower->explorer_name }}
-                    </p>
-                </div>
+        <div class="flex flex-col gap-4" style="direction: rtl;">
+<div class="flex flex-col gap-4" style="direction: rtl;">
+    @foreach ($myFollowers as $myFollower)
+    @php
+    $follower = $myFollower->follower; // الشخص اللي بيتابعك
+    // نتأكد ما نعرضش حسابك
+    if ($follower->id == auth()->id()) continue;
+    @endphp
 
-                <form action="{{ route('followers.toggle', $myFollower->follower_id) }}" method="POST">
-                    @csrf
-                    @if ($myFollower->is_following_back)
-                    <button style="position: relative; top: 7px;" type="submit"
-                        class="flex justify-center items-center gap-2 bg-red-100 hover:bg-red-200 text-red-600 py-1.5 px-4 rounded-full">
-                        <i class="fa-solid fa-user-xmark" style="color: red;"></i>
-                    </button>
-                    @else
-                    <button style="position: relative; top: 7px;" type="submit"
-                        class="flex justify-center items-center gap-2 bg-green-100 hover:bg-green-200 text-green-600 py-1.5 px-4 rounded-full">
-                        <i class="fa-solid fa-user-plus" style="color: blue;"></i> 
-                    </button>
-                    @endif
-                </form>
+    <div style="box-shadow: 0px 0px 0px 3px #c6c6c6;"
+        class="flex justify-between items-center bg-white dark:bg-color9 py-4 px-5 rounded-2xl">
 
-            </div>
-            @endforeach
+        <div class="flex justify-start items-center gap-3">
+            <p class="font-semibold">{{ $loop->iteration }}</p>
+            <img src="{{ asset('storage/' . $follower->avatar) }}" alt="{{ $follower->explorer_name }}"
+                class="size-10 rounded-full" />
+            <p class="font-semibold flex justify-start items-center gap-1">
+                {{ $follower->explorer_name }} - {{ $follower->id }}
+            </p>
         </div>
+
+        <form action="{{ route('followers.toggle', $follower->id) }}" method="POST">
+            @csrf
+            @if ($myFollower->is_following_back)
+            <button type="submit"
+                class="flex justify-center items-center gap-2 bg-red-100 hover:bg-red-200 text-red-600 py-1.5 px-4 rounded-full"
+                style="position: relative; top: 7px;">
+                <i class="fa-solid fa-user-xmark" style="color: red;"></i>
+            </button>
+            @else
+            <button type="submit"
+                class="flex justify-center items-center gap-2 bg-green-100 hover:bg-green-200 text-green-600 py-1.5 px-4 rounded-full"
+                style="position: relative; top: 7px;">
+                <i class="fa-solid fa-user-plus" style="color: blue;"></i>
+            </button>
+            @endif
+        </form>
+
+    </div>
+    @endforeach
+</div>        </div>
     </div>
 </div>
 @endsection

@@ -44,7 +44,7 @@
             margin: auto;
         }
     </style>
-<x-china-header :title="__('messages.المستخدمين')" :route="route('mobile.profile.profile')" />
+<x-china-header :title="__('messages.explorers')" :route="route('mobile.profile.profile')" />
     <body>
         <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white dark:bg-black">
             <!-- Page Title Start -->

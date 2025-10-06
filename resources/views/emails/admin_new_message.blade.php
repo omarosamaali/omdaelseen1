@@ -16,7 +16,7 @@
             style="text-align: right; background: #f9f9f9; padding: 20px; border-radius: 8px; max-width: 600px; margin: 0 auto;">
             <h3 style="color: #006400;">💬 رسالة جديدة من مستخدم</h3>
 
-            {{-- <div style="background: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
+            <div style="background: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
                 <p><strong>من:</strong> {{ $senderName }}</p>
                 <p><strong>البريد الإلكتروني:</strong> {{ $senderEmail }}</p>
                 @if($senderPhone)
@@ -41,7 +41,7 @@
                 <p style="margin-top: 15px; font-size: 12px; color: #777;">
                     <strong>التاريخ:</strong> {{ $messageDate }}
                 </p>
-            </div> --}}
+            </div>
 {{-- 
             <div style="text-align: center; margin: 30px 0;">
                 <a href="{{ $chatUrl }}" style="background-color: #006400; 

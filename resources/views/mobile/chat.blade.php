@@ -220,6 +220,10 @@
             div.textContent = text;
             return div.innerHTML;
         }
+
+        setTimeout(() => {
+        window.location.reload();
+        }, 10000);
     </script>
 </body>
 @endsection

@@ -99,6 +99,10 @@ class User extends Authenticatable
         return $this->hasMany(Places::class, 'user_id', 'id');
     }
 
+    public function trips(){
+        return $this->hasMany(Trip::class, 'user_id', 'id');
+    }
+
     /**
      * Get the count of places as an attribute.
      */

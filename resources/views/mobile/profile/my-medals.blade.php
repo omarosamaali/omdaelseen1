@@ -3,20 +3,8 @@
 @section('title', 'أوسمتي | My Medals')
 
 @section('content')
-    <div class="container min-h-dvh relative overflow-hidden py-8 px-6 dark:text-white dark:bg-color1">
-        <img src="assets/images/header-bg-2.png" alt="" style="margin-top: -4rem;"
-            class="absolute top-0 left-0 right-0" />
-        <div class="absolute top-0 left-0 bg-p3 blur-[145px] h-[174px] w-[149px]"></div>
-        <div class="absolute top-40 right-0 bg-[#0ABAC9] blur-[150px] h-[174px] w-[91px]"></div>
-        <div class="absolute top-80 right-40 bg-p2 blur-[235px] h-[205px] w-[176px]"></div>
-        <div class="absolute bottom-0 right-0 bg-p3 blur-[220px] h-[174px] w-[149px]"></div>
-        <div class="flex justify-start items-center relative z-10">
-            <div class="logo-register">
-                <img src="{{ asset('assets/assets/images/logo-all.png') }}" class="image-regsiter" alt="">
-            </div>
-            <x-back-button href="{{ route('mobile.profile.profile') }}" />
-        </div>
-
+<x-china-header :title="__('messages.my_medals')" :route="route('mobile.profile.profile')" />
+    <div style="padding-top: 70px;" class="container min-h-dvh relative overflow-hidden py-8 px-6 dark:text-white dark:bg-color1">
         <div class="relative z-20 pt-3">
             <p class="text-lg font-semibold">{{ __('messages.my_medals') }}</p>
 

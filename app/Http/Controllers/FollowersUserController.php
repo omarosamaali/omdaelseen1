@@ -12,9 +12,11 @@ class FollowersUserController extends Controller
     /**
      * Display a listing of the resource.
      */
+    
     public function index()
     {
-        $topUsers = User::select('id', 'explorer_name', 'avatar', 'country')
+        $topUsers = User::select('id', 'explorer_name', 'avatar', 'country')->where('status', 1)
+        ->where('role', 'user')
             ->withCount('places')
             ->orderBy('places_count', 'DESC')
             ->limit(3)
@@ -30,19 +32,59 @@ class FollowersUserController extends Controller
         $myFollowers = Followers::where('following_id', auth()->id())
             ->with('follower')
             ->get()
-            ->map(function ($follower) {
-                // هل أنا متابع الشخص ده ؟
-                $isFollowing = Followers::where('follower_id', auth()->id())
-                    ->where('following_id', $follower->follower_id)
+            ->map(function ($f) {
+                $f->is_following_back = Followers::where('follower_id', auth()->id())
+                    ->where('following_id', $f->follower_id)
                     ->exists();
+                return $f;
+            });
 
-                $follower->is_following_back = $isFollowing;
-                return $follower;
+        $myFollowings = Followers::where('follower_id', auth()->id())
+            ->with('following')
+            ->get()
+            ->map(function ($f) {
+                $f->is_following_back = Followers::where('follower_id', $f->following_id)
+                    ->where('following_id', auth()->id())
+                    ->exists();
+                return $f;
             });
 
 
 
         return view('mobile.profile.followers', compact('topUsers', 'myFollowers'));
+    }
+    public function following()
+    {
+        $topUsers = User::select('id', 'explorer_name', 'avatar', 'country')
+            ->where('status', 1)
+            ->where('role', 'user')
+            ->withCount('places')
+            ->orderBy('places_count', 'DESC')
+            ->limit(3)
+            ->get()
+            ->map(function ($user, $index) {
+                return [
+                    'user' => $user,
+                    'followers_count' => Followers::where('following_id', $user->id)->count(),
+                    'rank' => $index + 1
+                ];
+            });
+
+        // هنا بنجيب الناس اللي أنا متابعهم
+        $myFollowings = Followers::where('follower_id', auth()->id())
+            ->with('following') // علاقة following في الموديل
+            ->get()
+            ->map(function ($following) {
+                // هل الشخص اللي أنا متابعه بيتابعني كمان؟
+                $isFollowBack = Followers::where('follower_id', $following->following_id)
+                    ->where('following_id', auth()->id())
+                    ->exists();
+
+                $following->is_follow_back = $isFollowBack;
+                return $following;
+            });
+
+        return view('mobile.profile.following', compact('topUsers', 'myFollowings'));
     }
 
 

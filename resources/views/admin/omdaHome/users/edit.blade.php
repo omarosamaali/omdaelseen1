@@ -98,9 +98,9 @@
                         <select name="status" class="input-field @error('status') border-red-500 @enderror rtl-select">
                             <option value="{{ old('status', $usser->status) }}" selected>
                                 <td>
-                                    @if ($usser->status == "active")
+                                    @if ($usser->status == "1")
                                         نشط
-                                    @elseif ($usser->status == "inactive")
+                                    @elseif ($usser->status == "0")
                                         غير نشط
                                     @elseif ($usser->status == "banned")
                                         محظور

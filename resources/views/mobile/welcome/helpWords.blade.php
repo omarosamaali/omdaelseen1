@@ -88,9 +88,45 @@
 
                 <!-- زر التشغيل -->
 
-<audio controls>
-        <source src="{{ asset('storage/' . $word->audio_zh) }}" type="audio/ogg">
-    </audio>
+<button type="button" class="play-audio-button" data-audio-id="audio-{{ $word->id }}">
+            <i class="fas fa-volume-up"></i>
+        </button>
+        
+        <audio id="audio-{{ $word->id }}" hidden>
+            <source src="{{ asset('storage/' . $word->audio_zh) }}" type="audio/ogg">
+            <source src="{{ asset('storage/' . $word->audio_zh) }}" type="audio/mpeg">
+        </audio>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. الحصول على جميع الأزرار التي تحمل الفئة "play-audio-button"
+    var playButtons = document.querySelectorAll('.play-audio-button');
+
+    // 2. المرور على كل زر وربط وظيفة التشغيل به
+    playButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            // أ. الحصول على المعرّف الفريد للملف الصوتي من سمة البيانات
+            var audioId = this.getAttribute('data-audio-id');
+            
+            // ب. الحصول على عنصر مشغل الصوت المخفي باستخدام المعرّف الفريد
+            var audioPlayer = document.getElementById(audioId);
+
+            if (audioPlayer) {
+                // ج. إيقاف وإعادة ضبط التشغيل قبل البدء (لتجنب المشاكل)
+                audioPlayer.pause();
+                audioPlayer.currentTime = 0; 
+                
+                // د. التشغيل
+                audioPlayer.play().catch(error => {
+                    console.error("Audio playback failed:", error);
+                    // رسالة توضيحية للمستخدم في حال فشل التشغيل التلقائي
+                });
+            } else {
+                console.error("Audio player not found with ID:", audioId);
+            }
+        });
+    });
+});
+</script>
             </div>
             @endforeach @endif
         </div>
@@ -206,5 +242,5 @@
             });
         }
     });
-</script>
+</>
 @endsection

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Rating;
+use App\Models\Trip;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -45,7 +46,7 @@ class UserAdminController extends Controller
             }
         }
 
-        $users = $query->withCount('places', 'favorites', 'ratings')->paginate(10);
+        $users = $query->withCount('places', 'favorites', 'ratings', 'trips')->paginate(10);
         $adminsCount = User::where('role', 'admin')->count();
         $usersCount = User::where('role', 'user')->count();
         $activeUsersCount = User::where('status', 1)->count();
@@ -55,8 +56,8 @@ class UserAdminController extends Controller
 
         $currentFilter = $request->filter;
         $ratings_count = Rating::where('user_id', Auth::user()->id)->count();
-
-        return view('admin.omdaHome.users.index', compact('users', 'adminsCount', 'usersCount', 'activeUsersCount', 'inactiveUsersCount', 'bannedUsersCount', 'deletedUsersCount', 'currentFilter'))
+        $trips_count = Trip::where('user_id', Auth::user()->id)->count(); // إضافة count()
+        return view('admin.omdaHome.users.index', compact('trips_count','users', 'adminsCount', 'usersCount', 'activeUsersCount', 'inactiveUsersCount', 'bannedUsersCount', 'deletedUsersCount', 'currentFilter'))
             ->with('layout', $this->layout);
     }
 

@@ -30,6 +30,7 @@ class TripController extends Controller
         }
         return $trip->price;
     }
+
     private function calculateFinalPriceWithFees($basePrice)
     {
         $feePercent = 7.9 / 100;
@@ -90,6 +91,7 @@ class TripController extends Controller
             return back()->with('error', 'حدث خطأ في عملية الدفع. يرجى المحاولة مرة أخرى.');
         }
     }
+    
     public function paymentSuccess(Request $request)
     {
         try {
@@ -253,9 +255,6 @@ class TripController extends Controller
             ]);
         }
     }
-
-
-
 
     public function paymentCancel(Request $request)
     {

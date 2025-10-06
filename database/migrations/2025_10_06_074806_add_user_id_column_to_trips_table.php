@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('help_words', function (Blueprint $table) {
-            $table->string('audio_zh')->nullable()->after('word_zh');
+        Schema::table('trips', function (Blueprint $table) {
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade')->after('id');
         });
     }
 
@@ -21,8 +21,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('help_words', function (Blueprint $table) {
-            $table->dropColumn('audio_zh');
+        Schema::table('trips', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+            $table->dropColumn('user_id');
         });
     }
 };

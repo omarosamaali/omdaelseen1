@@ -34,20 +34,15 @@ class ProfileController extends Controller
 
     public function verifyOtp(Request $request)
     {
-        // التحقق من أن الرمز المدخل يطابق الرمز المخزن
         if ($request->input('otp') == $request->session()->get('otp')) {
-            // حذف الرمز من الجلسة
             $request->session()->forget('otp');
-
-            // تحديث حالة المستخدم إلى "موثق" في قاعدة البيانات
             $user = Auth::user();
-            $user->is_verified = true; // افترض أن لديك حقل is_verified في جدول users
+            $user->is_verified = true;
+            $user->status = 1;
             $user->save();
-
-            // إعادة توجيه المستخدم إلى صفحة النجاح
+            
             return redirect()->route('mobile.profile.success');
         } else {
-            // إعادة توجيه مع رسالة خطأ
             return redirect()->back()->withErrors(['otp' => 'الرمز غير صحيح.']);
         }
     }

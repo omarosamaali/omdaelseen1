@@ -10,7 +10,7 @@
         position: fixed;
         width: 100%;
         z-index: 999999;
-        }
+    }
 </style>
 <x-china-header :title="__('messages.china_explorers')" :route="route('mobile.welcome')" />
 
@@ -114,10 +114,28 @@
                 <div class="place-name">
                     {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
                 </div>
+@if(Auth::user()->status != 1)
+<button onclick="showActivationAlert()" class="explore-btn">
+    {{ __('messages.explore') }}
+</button>
+@else
+<a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
+    {{ __('messages.explore') }}
+</a>
+@endif
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-                <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
-                    {{ __('messages.explore') }}
-                </a>
+<script>
+    function showActivationAlert() {
+        Swal.fire({
+            title: 'تنبيه',
+            text: 'يجب تفعيل الحساب أولاً قبل استكشاف الأماكن.',
+            icon: 'warning',
+            confirmButtonText: 'حسناً',
+            confirmButtonColor: '#3085d6',
+        });
+    }
+</script>
             </div>
             @empty
             <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
@@ -178,10 +196,15 @@
                     {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
                 </div>
 
-                <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
-                    {{ __('messages.explore') }}
-
-                </a>
+@if(Auth::user()->status != 1)
+<button onclick="showActivationAlert()" class="explore-btn">
+    {{ __('messages.explore') }}
+</button>
+@else
+<a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
+    {{ __('messages.explore') }}
+</a>
+@endif
             </div>
             @empty
             <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
@@ -194,7 +217,8 @@
     {{-- الأكثر تقييماً --}}
     <div class="continaer--title" style="margin-top: 30px;">
         <h6 class="categories">{{ __('messages.most_rated') }}</h6>
-        <a class="show--all">{{ __('messages.search_for_place') }}</a>
+        <a href={{ route('mobile.china-discovers.all-places') }} class="show--all">{{
+            __('messages.search_for_place') }}</a>
     </div>
 
     <div class="slider-container">
@@ -241,10 +265,15 @@
                     {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
                 </div>
 
-                <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
-                    {{ __('messages.explore') }}
-
-                </a>
+@if(Auth::user()->status != 1)
+<button onclick="showActivationAlert()" class="explore-btn">
+    {{ __('messages.explore') }}
+</button>
+@else
+<a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
+    {{ __('messages.explore') }}
+</a>
+@endif
             </div>
             @empty
             <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">

@@ -284,7 +284,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // للأدمن
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/mobile/admin/chat/{chatUser}', [ChatController::class, 'showAdminChat'])->name('mobile.admin.chat');
     Route::get('/mobile/admin/all-chat', [ChatController::class, 'showAllChats'])->name('mobile.admin.all-chat');
 });
@@ -296,8 +296,8 @@ Route::middleware('auth')->group(function () {
     Route::post('mobile.chat/send', [ChatController::class, 'sendMessage'])->name('mobile.chat.send');
 });
 Route::post('/mobile/chat/send', [ChatController::class, 'sendMessage'])->name('mobile.chat.send');
-Route::post('/followers/toggle/{user}', [FollowersUserController::class, 'toggle'])
-    ->name('followers.toggle');
+// Route::post('/followers/toggle/{user}', [FollowersUserController::class, 'toggle'])
+//     ->name('followers.toggle');
 
 Route::middleware('mobile_auth')->group(function () {
     Route::get('/mobile/order/product/create', [ProductController::class, 'create'])
@@ -384,20 +384,22 @@ Route::get('/mobile/order', function () {
     return view('mobile.welcome.order', compact('orders'));
 })->name('mobile.order');
 
-Route::get('/mobile/helpWords/{word_type?}', function ($word_type = null) {
+Route::get('/mobile/helpWords/{word_type?}', function ($word_type = 'تحية وتعريف') {
 
-    if($word_type) {
+    // هنا نقوم بتعيين "تحية وتعريف" كقيمة افتراضية إذا لم يتم تمرير أي شيء في الـ URL
+    // {word_type?} يجعل المعامل اختياريًا، والقيمة الافتراضية داخل الدالة هي التي تُطبق
+    if ($word_type) {
         $helpWords = HelpWord::where('status', 'نشط')
             ->where('word_type', $word_type)
             ->orderBy('order', 'asc')
             ->get();
     } else {
+        // هذا الجزء قد لا يُنفذ طالما تم تعيين قيمة افتراضية
         $helpWords = HelpWord::where('status', 'نشط')->get();
     };
 
     return view('mobile.welcome.helpWords', compact('helpWords', 'word_type'));
 })->name('mobile.helpWords');
-
 Route::get('/mobile/howWeWork', function () {
     $howWeWork = Work::where('status', 'نشط')->first();
     return view('mobile.welcome.howWeWork', compact('howWeWork'));
@@ -426,8 +428,15 @@ Route::get('/mobile/faq/{category?}', function ($category = 'الطلب') {
     return view('mobile.welcome.faq', compact('faqs', 'category'));
 })->name('mobile.faq');
 
+Route::post('/followers/toggle/{id}', [FollowersUserController::class, 'toggle'])
+    ->name('followers.toggle');
+
 Route::get('/mobile/followers', [FollowersUserController::class, 'index'])->name('mobile.profile.followers');
 Route::post('/set-language', [LanguageController::class, 'setLanguage'])->name('set.language');
+Route::get('mobile/my-following', [
+    FollowersUserController::class, 'following'])
+    ->name('mobile.profile.following')
+    ->middleware('auth');
 
 Route::post('/update-hidden-notifications', function (Request $request) {
     $hiddenNotifications = $request->input('hidden_notifications');
@@ -507,9 +516,9 @@ Route::middleware('mobile_auth')->group(function () {
     Route::post('places/{place}/report', [ReportController::class, 'reportPlace'])->name('places.report');
     Route::post('/chef-profile/report-by-user', [ReportController::class, 'store']);
     Route::get('mobile/my-places', function () {
-        $myPlaces = Places::where('user_id', Auth::user()->id)->get();
+        $myPlaces = Places::where('user_id', Auth::id())->get();
         return view('mobile.china-discovers.my-places', compact('myPlaces'));
-    })->name('mobile.china-discovers.my-places');
+    })->middleware('auth')->name('mobile.china-discovers.my-places');
     Route::get('mobile/my-interests', function () {
         $favoritePlaces = auth()->user()->favoritePlaces;
         return view('mobile.profile.my-interests', compact('favoritePlaces'));
@@ -558,8 +567,11 @@ Route::middleware('mobile_auth')->group(function () {
         $myFollowers = Followers::where('follower_id', Auth::user()->id)->count();
         $iFollow = Followers::where('following_id', Auth::user()->id)->count();
         $all_orders = Product::where('user_id', Auth::user()->id)->count() + TripRequest::where('user_id', Auth::user()->id)->count();
+        $user = Auth::user();
 
-        return view('mobile.profile.profile', compact('all_orders', 'activeUsers', 'count', 'countInterests', 'myFollowers', 'iFollow'));
+        // عدد اللي بيتابعوا المستخدم الحالي
+        $UsersFollowMe = Followers::where('following_id', $user->id)->count();
+        return view('mobile.profile.profile', compact('UsersFollowMe','all_orders', 'activeUsers', 'count', 'countInterests', 'myFollowers', 'iFollow'));
     })->name('mobile.profile.profile');
 
 

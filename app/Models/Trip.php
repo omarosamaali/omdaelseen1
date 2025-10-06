@@ -32,6 +32,7 @@ class Trip extends Model
         'supervisor',
         'image',
         'factory_visit',
+        'user_id',
         'tourist_sites_visit',
         'markets_visit',
         'tickets_included',
@@ -67,5 +68,10 @@ class Trip extends Model
     public function getTranslatedTripTypeAttribute()
     {
         return __('messages.' . $this->trip_type);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

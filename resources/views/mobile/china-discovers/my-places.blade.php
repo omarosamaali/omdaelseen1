@@ -15,10 +15,10 @@
 <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
 
     <x-china-header :title="__('messages.app_name')" :route="route('mobile.profile.profile')" />
-
     <div style="margin-top: 90px; margin-bottom: 90px;">
-        @foreach ($myPlaces as $place)
-        <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="container---features">
+        @forelse ($myPlaces as $place)
+         <a href="{{ route('mobile.china-discovers.info_place', $place) }}"
+            class="container---features">
             <div style="width: 100%; height: 183px;">
                 @if ($place->status == 'inactive' || $place->status == 'banned')
                 <div class="bg-opacity">
@@ -59,25 +59,32 @@
             <div class="container--features" style="margin-top: 10px; direction: rtl;">
                 <div>
                     <img src="{{ asset('storage/' . $place->region->avatar) }}" alt="">
-                    <p style="font-size: 12px;">{{ Str::limit($place->region->{'name_' . app()->getLocale()} ?? ($place->region->name_ar ??
+                    <p style="font-size: 12px;">{{ Str::limit($place->region->{'name_' . app()->getLocale()} ??
+                        ($place->region->name_ar ??
                         __('messages.default_region')), 15) }}
                     </p>
                 </div>
                 <div>
                     <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}" alt="">
-                    <p style="font-size: 12px;">{{ Str::limit($place->mainCategory->{'name_' . app()->getLocale()} ?? ($place->mainCategory->name_ar ??
+                    <p style="font-size: 12px;">{{ Str::limit($place->mainCategory->{'name_' . app()->getLocale()} ??
+                        ($place->mainCategory->name_ar ??
                         __('messages.default_main')), 15) }}
                     </p>
                 </div>
                 <div>
                     <img src="{{ asset('storage/' . $place->subCategory->avatar) }}" alt="">
-                    <p style="font-size: 12px;">{{ Str::limit($place->subCategory->{'name_' . app()->getLocale()} ?? ($place->subCategory->name_ar ??
+                    <p style="font-size: 12px;">{{ Str::limit($place->subCategory->{'name_' . app()->getLocale()} ??
+                        ($place->subCategory->name_ar ??
                         __('messages.default_sub')), 15) }}
                     </p>
                 </div>
             </div>
         </a>
-        @endforeach
+        @empty
+        <div style="text-align: center; margin-top: 100px;">
+            <x-empty />
+        </div>
+        @endforelse
     </div>
 </div>
 

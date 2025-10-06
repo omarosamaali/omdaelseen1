@@ -16,7 +16,6 @@ use App\Models\Approval;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Storage;
 use App\Models\OrderMessage;
-use App\Models\Trip;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 
@@ -45,8 +44,7 @@ class OrderController extends Controller
         $product = Product::findOrFail($product_id); // جلب بيانات المنتج
 
         return view('admin.omdaHome.orders.messages', compact('messages', 'user', 'product_id'));
-    }  
-    
+    }
     
     public function updateStatus(Request $request, string $id)
     {
@@ -344,6 +342,15 @@ class OrderController extends Controller
             'status' => $request->status,
         ]);
 
+        $userId = $trip ? $trip->user_id : $product->user_id;
+        $user = User::find($userId);
+        if (!$user) {
+            return redirect()->route('admin.orders.index')->with('error', 'المستخدم غير موجود');
+        }
+        Mail::raw('قم بالرجوع للتطبيق لمراجعة تفاصيل الملاحظة', function ($message) use ($user) {
+            $message->to($user->email)->subject('تمت إضافة ملاحظة بنجاح من قبل فريق عمدة الصين');
+        });
+
         return redirect()->route('admin.orders.note', $id)->with('success', 'تم إنشاء الملاحظة بنجاح');
     }
 
@@ -426,6 +433,14 @@ class OrderController extends Controller
         }
 
         $orderType = $trip ? TripRequest::class : Product::class;
+        // استرجاع user_id من الطلب
+        $userId = $trip ? $trip->user_id : $product->user_id;
+
+        // استرجاع البريد الإلكتروني للمستخدم
+        $user = User::find($userId);
+        if (!$user) {
+            return redirect()->route('admin.orders.index')->with('error', 'المستخدم غير موجود');
+        }
 
         // Handle file upload
         $filePath = null;
@@ -443,6 +458,10 @@ class OrderController extends Controller
             'file_path' => $filePath,
             'user_id' => Auth::id(),
         ]);
+
+        Mail::raw('قم بالرجوع للتطبيق لمراجعة تفاصيل المستند', function ($message) use ($user) {
+            $message->to($user->email)->subject('تمت إضافة مستند جديد بنجاح من قبل فريق عمدة الصين');
+        });
 
         return redirect()->route('admin.orders.document', $id)->with('success', 'تم إنشاء المستند بنجاح');
     }
@@ -680,6 +699,15 @@ class OrderController extends Controller
             'user_id' => Auth::id(),
         ]);
 
+        $userId = $trip ? $trip->user_id : $product->user_id;
+        $user = User::find($userId);
+        if (!$user) {
+            return redirect()->route('admin.orders.index')->with('error', 'المستخدم غير موجود');
+        }
+        Mail::raw('قم بالرجوع للتطبيق لمراجعة تفاصيل الشحن ', function ($message) use ($user) {
+            $message->to($user->email)->subject('تمت إضافة تفاصيل شحن جديدة بنجاح من قبل فريق عمدة الصين');
+        });
+
         return redirect()->route('admin.orders.shippingNote', $id)->with('success', 'تم إنشاء ملاحظة الشحن بنجاح');
     }
 
@@ -847,6 +875,15 @@ class OrderController extends Controller
             'status' => 'يحتاج الموافقة',
         ]);
 
+        $userId = $trip ? $trip->user_id : $product->user_id;
+        $user = User::find($userId);
+        if (!$user) {
+            return redirect()->route('admin.orders.index')->with('error', 'المستخدم غير موجود');
+        }
+        Mail::raw('قم بالرجوع للتطبيق لمراجعة تفاصيل الموافقة', function ($message) use ($user) {
+            $message->to($user->email)->subject('تمت إضافة موافقة بنجاح من قبل فريق عمدة الصين');
+        });
+
         return redirect()->route('admin.orders.approval', $id)->with('success', 'تم إنشاء الموافقة بنجاح');
     }
 
@@ -924,9 +961,5 @@ class OrderController extends Controller
         $approval->delete();
 
         return redirect()->route('admin.orders.approval', $order_id)->with('success', 'تم حذف الموافقة بنجاح');
-    }
-    public function destroy(string $id)
-    {
-        //
     }
 }

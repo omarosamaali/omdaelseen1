@@ -89,6 +89,7 @@ class TripController extends Controller
             $validated['trip_features'] = json_encode($validated['trip_features']);
             $validated['trip_guidelines'] = json_encode($validated['trip_guidelines']);
             $validated['reference_number'] = 'REF' . mt_rand(10000000, 99999999);
+            $validated['user_id'] = auth()->user()->id;
             $trip = Trip::create($validated);
 
             if ($request->hasFile('image')) {

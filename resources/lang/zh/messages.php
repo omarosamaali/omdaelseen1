@@ -216,5 +216,21 @@ return [
     'تفاصيل الموافقة' => '成功详情',
     'notes' => '笔记',
     'تفاصيل الملاحظة' => '笔记详情',
+    'time' => '时间和天气在中国',
+    'next_event' => '下一个活动',
+    'next_exhibition' => '下一个展览',
+    'weather_conditions' => [
+        'overcast clouds' => '阴云密布',
+        'clear sky' => '晴朗',
+        'few clouds' => '少量云',
+        'scattered clouds' => '分散云',
+        'broken clouds' => '碎云',
+        'shower rain' => '阵雨',
+        'rain' => '雨',
+        'thunderstorm' => '雷暴',
+        'snow' => '雪',
+        'mist' => '雾',
+    ],
+    'no_events' => '没有活动和展览',
 
 ];

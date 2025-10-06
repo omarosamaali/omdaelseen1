@@ -103,10 +103,9 @@
     }
 </style>
 @section('content')
-    <img src="{{ asset('assets/assets/images/header-bg-2.png') }}" class="image-container" alt="">
-    <img src="{{ asset('assets/assets/images/header-bg-222.png') }}" alt="" class="fixed-header" />
-<div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white dark:bg-color1">
-    <div style="display: flex; gap: 10px;">
+    <div style="background: #c1c0bf; height: 83px; width: 100%; position: fixed; top: 0px;"></div>
+    <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white dark:bg-color1" >
+    <div style="display: flex; gap: 10px; z-index: 99999;">
         <div class="flex justify-start items-center gap-2 header-controls">
             <div class="relative">
                 <a href="{{ route('mobile.profile.notifications') }}"
@@ -128,10 +127,17 @@
                 </a>
             </div>
         </div>
-        <img src="{{ asset('assets/assets/images/logo-all.png') }}" alt=""
-            class="top-0 left-0 right-0 custom-img header-logo"
-            style="position: fixed !important; margin-top: 0rem !important; top: 10px !important;" />
-        <div class="flex justify-start items-center gap-2 header-more-options">
+
+<div style="position: fixed !important;
+    margin-top: 0rem !important;
+    top: 35px !important;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    width: 100%;">
+            لوحة التحكم
+        </div>
+            <div class="flex justify-start items-center gap-2 header-more-options">
             <div class="relative">
                 <button
                     class="border border-color24 rounded-full flex justify-center items-center relative quizDetailsMoreOptionsModalOpenButton"
@@ -148,7 +154,7 @@
                         </div>
                         <p class="text-sm">{{ __('messages.edit_account') }}</p>
                     </a>
-                    <a href="{{ route('mobile.profile.my-medals') }}"
+                    {{-- <a href="{{ route('mobile.profile.my-medals') }}"
                         class="flex justify-start items-center gap-3 pt-3 border-y border-dashed border-color21 dark:border-color24 pb-3 cursor-pointer">
                         <div
                             class="text-p2 dark:text-white dark:bg-color24 dark:border-color18 border border-color16 p-2 rounded-full flex justify-center items-center bg-color14 text-sm">
@@ -158,7 +164,7 @@
                             </svg>
                         </div>
                         <p class="text-sm text-nowrap">{{ __('messages.medals') }}</p>
-                    </a>
+                    </a> --}}
                     <form action="{{ route('mobile.auth.logout') }}" method="POST">
                         @csrf
                         <button type="submit" class="flex justify-start items-center gap-3 py-3 w-full cursor-pointer">
@@ -189,8 +195,8 @@
                     class="bg-[#B190B6] rounded-full overflow-hidden user-avatar" />
                 <img src="{{ asset('assets/assets/images/user-progress.svg') }}" alt="" style="top: 14px;"
                     class="absolute left-0 right-0" />
-                <img src="{{ asset('assets/assets/images/badge1.png') }}" alt="" class="absolute badge-icon" />
-            </div>
+<i class="ph-fill ph-seal-check" style="position: absolute; bottom: 0px; color: #3b82f6; font-size: 2rem;"
+                        title="حساب موثق"></i>            </div>
             <div class="flex justify-center items-center gap-1 bg-p2 bg-opacity-10 px-3 py-1 rounded-full border border-p2 border-opacity-20 mb-6 dark:bg-bgColor14 dark:border-bgColor16 user-stats-container"
                 style="right: -30px;">
                 <p class="text-sm text-p2 dark:text-white user-stats-text">{{ __('messages.places') }}</p>

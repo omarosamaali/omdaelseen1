@@ -115,9 +115,7 @@
     }
 </style>
 @section('content')
-    <img src="{{ asset('assets/assets/images/header-bg-2.png') }}" class="image-container" alt="">
-    <img src="{{ asset('assets/assets/images/header-bg-222.png') }}" alt="" class="fixed-header" />
-    <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white dark:bg-color1">
+<div style="background: #c1c0bf; height: 83px; width: 100%; position: fixed; top: 0px;"></div>    <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white dark:bg-color1">
         <div style="display: flex; gap: 10px;">
             <div class="flex justify-start items-center gap-2 header-controls">
                 <div class="relative">
@@ -160,7 +158,7 @@
                             </div>
                             <p class="text-sm">{{ __('messages.edit_account') }}</p>
                         </a>
-                        <a href="{{ route('mobile.profile.my-medals') }}"
+                        {{-- <a href="{{ route('mobile.profile.my-medals') }}"
                             class="flex justify-start items-center gap-3 pt-3 border-y border-dashed border-color21 dark:border-color24 pb-3 cursor-pointer">
                             <div
                                 class="text-p2 dark:text-white dark:bg-color24 dark:border-color18 border border-color16 p-2 rounded-full flex justify-center items-center bg-color14 text-sm">
@@ -170,7 +168,7 @@
                                 </svg>
                             </div>
                             <p class="text-sm text-nowrap">{{ __('messages.medals') }}</p>
-                        </a>
+                        </a> --}}
 
                         <form action="{{ route('mobile.auth.logout') }}" method="POST">
                             @csrf
@@ -216,8 +214,8 @@
                     }
                     ?>
                     <img src="{{ $src }}" alt="" style="top: 14px;" class="absolute left-0 right-0" />
-                    <img src="{{ asset('assets/assets/images/badge1.png') }}" alt="" class="absolute"
-                        style="bottom: 0px;" />
+                    <i class="ph-fill ph-seal-check text-p1" style="position: absolute; bottom: 0px; font-size: 2rem;"
+                            title="حساب موثق"></i>
                 </div>
                 <div style="position: relative; right: -30px;"
                     class="flex justify-center items-center gap-1 bg-p2 bg-opacity-10 px-3 py-1 rounded-full border border-p2 border-opacity-20 mb-6 dark:bg-bgColor14 dark:border-bgColor16">
@@ -228,9 +226,9 @@
             <div class="flex justify-center items-center pt-5 flex-col pb-5">
                 <div class="flex justify-start items-center gap-1 text-2xl">
                     <p class="font-semibold" style="text-transform: capitalize;">{{ Auth::user()->name }}</p>
-                    @if (Auth::user()->is_verified == 1)
+                    {{-- @if (Auth::user()->is_verified == 1)
                         <i class="ph-fill ph-seal-check text-p1"></i>
-                    @endif
+                    @endif --}}
                 </div>
                 <div class="flex justify-start items-center gap-1 text-2xl">
                     <p style="font-size: 14px; color: gray;">{{ Auth::user()->explorer_name }}
@@ -292,18 +290,18 @@
                     <p class="text-xs font-semibold">{{ __('messages.interests') }}</p>
                     <p class="font-semibold py-1 px-8 bg-color12 rounded-full">{{ $countInterests }}</p>
                 </a>
-                <div
+                <a href="{{ route('mobile.profile.following') }}"
                     class="flex flex-col gap-2 p-4 justify-center items-center border border-color12 rounded-xl dark:border-color24">
                     <p class="text-xs font-semibold">{{ __('messages.following') }}</p>
                     <p class="font-semibold py-1 px-8 bg-color14 rounded-full dark:bg-color7">
-                        {{ $iFollow }}
+                        {{ $myFollowers }}
                     </p>
-                </div>
+                </a>
                 <a href="{{ route('mobile.profile.followers') }}"
                     class="flex flex-col gap-2 p-4 justify-center items-center border border-color12 rounded-xl dark:border-color24">
                     <p class="text-xs font-semibold">{{ __('messages.followers') }}</p>
                     <p class="font-semibold py-1 px-8 bg-color14 rounded-full dark:bg-color7">
-                        {{ $myFollowers }}
+                        {{ $UsersFollowMe }}
                     </p>
                 </a>
             </div>

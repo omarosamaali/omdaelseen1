@@ -182,6 +182,10 @@
             })
             .catch(error => console.error('Fetch error:', error));
         });
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 10000);
     </script>
 </body>
 @endsection

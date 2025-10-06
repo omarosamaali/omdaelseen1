@@ -136,7 +136,7 @@
                                 </th>
                                 <td class="th">
                                     {{-- {{ $user->name }} --}}
-                                    {{ $loop->iteration + $users->firstitem() - 1  }}
+                                    {{ $user->name }}
                                 </td>
                                 <td class="th">
                                     {{ $user->role == 'admin' ? 'مدير' : 'مستخدم' }}
@@ -145,7 +145,7 @@
                                     {{ $user->created_at }}
                                 </td>
                                 <td class="th">
-                                    123
+                                    {{ $user->trips_count }}
                                 </td>
                                 <td class="th">
                                     {{ $user->favorites_count }}
