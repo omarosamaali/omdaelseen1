@@ -11,44 +11,45 @@
         width: 100%;
         z-index: 999999;
     }
+
     /* إضافة هذه الأنماط في الـ style tag أو في ملف الـ CSS */
-    
+
     .explorer-name {
-    transition: all 0.3s ease;
-    font-weight: 500;
+        transition: all 0.3s ease;
+        font-weight: 500;
     }
-    
+
     .explorer-name.active {
-    color: #f99e4d !important;
-    font-weight: 700;
+        color: #f99e4d !important;
+        /* font-weight: 700; */
     }
-    
+
     .explorer-link:hover .explorer-name {
-    color: #f99e4d !important;
-    transform: scale(1.05);
+        color: #f99e4d !important;
+        /* transform: scale(1.05); */
     }
-    
+
     #all-link {
-    transition: all 0.3s ease;
-    font-weight: 500;
+        transition: all 0.3s ease;
+        /* font-weight: 500; */
     }
-    
+
     .all-link:hover #all-link {
-    transform: scale(1.05);
+        /* transform: scale(1.05); */
     }
-    
+
     /* تحسين مظهر الفلتر المفعل */
     .explorer-link img {
-    transition: transform 0.3s ease;
+        transition: transform 0.3s ease;
     }
-    
+
     .explorer-link:has(.active) img {
-    transform: scale(1.1);
-    box-shadow: 0 4px 8px rgba(249, 158, 77, 0.3);
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(249, 158, 77, 0.3);
     }
-    
+
     .explorer-link:hover img {
-    transform: scale(1.05);
+        /* transform: scale(1.05); */
     }
 </style>
 <x-china-header :title="__('messages.china_explorers')" :route="route('mobile.welcome')" />
@@ -56,7 +57,8 @@
 <div style="width: 100%; display: block;">
     @if ($banners->isNotEmpty())
     @foreach ($banners as $banner)
-    <img class="fav-image" src="{{ asset('storage/' . $banner->avatar) }}" style="padding-top: 62px !important;" style="width: 100%;" alt="">
+    <img class="fav-image" src="{{ asset('storage/' . $banner->avatar) }}" style="padding-top: 62px !important;"
+        style="width: 100%;" alt="">
     @endforeach
     @endif
 </div>
@@ -67,37 +69,37 @@
             <h6 class="categories text-black" style="color: black;">{{ __('messages.categories') }}</h6>
         </div>
 
-<div style="display: flex; align-items: center; justify-content: flex-start; gap: 10px; margin: 10px;">
-    {{-- زر الكل --}}
-    <a href="{{ route('mobile.china-discovers.index') }}" class="all-link">
-        <div style="width: 99px; flex-shrink: 0;">
-            <div class="explorer-name" id="all-link"
-                style="font-size: 15px; color: {{ request()->segment(3) ? '#000' : '#f99e4d' }} !important;">
-                {{ __('messages.all') }}
+        <div style="display: flex; align-items: center; justify-content: flex-start; gap: 10px; margin: 10px;">
+            {{-- زر الكل --}}
+            <a href="{{ route('mobile.china-discovers.index') }}" class="all-link">
+                <div style="width: 99px; flex-shrink: 0;">
+                    <div class="explorer-name" id="all-link"
+                        style="font-size: 15px; color: {{ request()->segment(3) ? '#000' : '#f99e4d' }} !important;">
+                        {{ __('messages.all') }}
+                    </div>
+                </div>
+            </a>
+
+            {{-- الفلاتر --}}
+            <div class="slider-container"
+                style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding: 10px; scrollbar-width: none; -ms-overflow-style: none;">
+                @foreach ($explorers as $explorer)
+                <a href="{{ route('mobile.china-discovers.index', $explorer->id) }}"
+                    style="flex-shrink: 0; text-decoration: none; color: inherit; text-align: center; scroll-snap-align: start;"
+                    class="explorer-link" data-explorer-id="{{ $explorer->id }}">
+                    <div style="flex-shrink: 0;">
+                        <img style="max-width: 68px; border-radius: 15px; margin: auto;"
+                            src="{{ asset('storage/' . $explorer->avatar) }}"
+                            alt="{{ $explorer->{'name_' . app()->getLocale()} ?? $explorer->name_ar }}">
+                        <p class="explorer-name {{ request()->segment(3) == $explorer->id ? 'active' : '' }}"
+                            style="padding-top: 9px; font-size: 15px; color: {{ request()->segment(3) == $explorer->id ? '#f99e4d' : '#000' }};">
+                            {{ $explorer->{'name_' . app()->getLocale()} ?? $explorer->name_ar }}
+                        </p>
+                    </div>
+                </a>
+                @endforeach
             </div>
         </div>
-    </a>
-
-    {{-- الفلاتر --}}
-    <div class="slider-container"
-        style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding: 10px; scrollbar-width: none; -ms-overflow-style: none;">
-        @foreach ($explorers as $explorer)
-        <a href="{{ route('mobile.china-discovers.index', $explorer->id) }}"
-            style="flex-shrink: 0; text-decoration: none; color: inherit; text-align: center; scroll-snap-align: start;"
-            class="explorer-link" data-explorer-id="{{ $explorer->id }}">
-            <div style="flex-shrink: 0;">
-                <img style="max-width: 68px; border-radius: 15px; margin: auto;"
-                    src="{{ asset('storage/' . $explorer->avatar) }}"
-                    alt="{{ $explorer->{'name_' . app()->getLocale()} ?? $explorer->name_ar }}">
-                <p class="explorer-name {{ request()->segment(3) == $explorer->id ? 'active' : '' }}"
-                    style="padding-top: 9px; font-size: 15px; color: {{ request()->segment(3) == $explorer->id ? '#f99e4d' : '#000' }};">
-                    {{ $explorer->{'name_' . app()->getLocale()} ?? $explorer->name_ar }}
-                </p>
-            </div>
-        </a>
-        @endforeach
-    </div>
-</div>
     </div>
 
     <a href="{{ route('mobile.create') }}" class="add-place-button">{{ __('messages.add_new_place') }}
@@ -154,19 +156,19 @@
                 <div class="place-name">
                     {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
                 </div>
-@if(Auth::user()->status != 1)
-<button onclick="showActivationAlert()" class="explore-btn">
-    {{ __('messages.explore') }}
-</button>
-@else
-<a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
-    {{ __('messages.explore') }}
-</a>
-@endif
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                @if(Auth::user()->status != 1)
+                <button onclick="showActivationAlert()" class="explore-btn">
+                    {{ __('messages.explore') }}
+                </button>
+                @else
+                <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
+                    {{ __('messages.explore') }}
+                </a>
+                @endif
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
-    function showActivationAlert() {
+                <script>
+                    function showActivationAlert() {
         Swal.fire({
             title: 'تنبيه',
             text: 'يجب تفعيل الحساب أولاً قبل استكشاف الأماكن.',
@@ -175,7 +177,7 @@
             confirmButtonColor: '#3085d6',
         });
     }
-</script>
+                </script>
             </div>
             @empty
             <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">

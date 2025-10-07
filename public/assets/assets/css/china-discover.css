@@ -1390,24 +1390,17 @@ body {
     transition: all 0.3s ease;
 }
 
-.all-link:hover .explorer-name:not(.active) {
-    color: #f99e4d !important;
-    /* الحفاظ على اللون عند الـ hover */
-    border-bottom: 2px solid #f99e4d;
-    padding-bottom: 5px;
-}
 
 .all-link .explorer-name.active {
-    color: #f99e4d !important;
-    /* لون النص عند الـ active */
+    /* color: #f99e4d !important;
     font-weight: bold;
     border-bottom: unset !important;
     padding-bottom: 5px;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease; */
 }
 
 .explorer-link:hover .explorer-name:not(.active) {
-    font-weight: bold;
+    /* font-weight: bold;
     color: #861530;
     border-bottom: 2px solid #861530;
     padding-bottom: 5px;
@@ -1415,7 +1408,7 @@ body {
     align-items: center;
     justify-content: center;
     margin: auto;
-    width: 30px;
+    width: 30px; */
 }
 
 .explorer-name.active {
@@ -1479,7 +1472,7 @@ body {
 }
 
 .explorer-link:hover .explorer-name:not(.active) {
-    font-weight: bold;
+    /* font-weight: bold;
     color: #861530;
     border-bottom: 2px solid #861530;
     padding-bottom: 5px;
@@ -1487,7 +1480,7 @@ body {
     align-items: center;
     justify-content: center;
     margin: auto;
-    width: 30px;
+    width: 30px; */
 }
 
 #container-header {
