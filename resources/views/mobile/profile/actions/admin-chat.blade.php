@@ -99,7 +99,6 @@
                 </form>
             </div>
         </div>
-    </div>
 
     <script>
         document.getElementById('message-form').addEventListener('submit', function (e) {
@@ -117,7 +116,7 @@
             if (messageInput) formData.append('message', messageInput);
             if (imageInput) formData.append('image', imageInput);
 
-            fetch('{{ route('mobile.chat.send') }}', {
+            fetch('/mobile/chat/send', {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'

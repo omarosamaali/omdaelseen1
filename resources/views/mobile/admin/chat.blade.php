@@ -133,7 +133,7 @@
             if (imageInput) formData.append('image', imageInput);
 
             console.log('Sending message to receiver_id:', {{ $chatUser->id }});
-            fetch('{{ route('mobile.chat.send') }}', {
+            fetch('/mobile/chat/send', {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'

@@ -1172,7 +1172,7 @@
 
     <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white -z-10 dark:bg-color1">
         {{-- @if ($banner?->image) --}}
-        <img class="main-image" src="{{ asset('images/trips/' . $trip->image) }}" max-height="300px" alt="">
+        <img class="main-image" src="{{ asset('images/trips/' . $trip->image) }}" style="margin-top: 62px !important;" max-height="300px" alt="">
         {{-- @endif --}}
         <div class="relative z-10">
             <div class="main-image-container">

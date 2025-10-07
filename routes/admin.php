@@ -3,12 +3,18 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\ChatOrderController;
+use App\Http\Controllers\Admin\ChatController;
 
-Route::get('/mobile/orders/user-chat/{product_id}', [ChatOrderController::class, 'userChat'])->name('mobile.profile.actions.user-chat');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/orders/{trip}/chat', [ChatController::class, 'show'])->name('admin.omdaHome.orders.chat');
+    Route::post('/admin/orders/{trip}/chat/send', [ChatController::class, 'send'])->name('admin.omdaHome.orders.send');
+});
+Route::get('/mobile/orders/user-chat/{product_id}', [ChatOrderController::class, 'userChat'])
+->name('mobile.profile.actions.user-chat');
 Route::get('/mobile/orders/userAdminChat/{product_id}', [ChatOrderController::class, 'userAdminChat'])->name('mobile.profile.actions.userAdminChat');
 Route::get('/mobile/orders/admin-chat/{product_id}', [ChatOrderController::class, 'adminChat'])->name('mobile.profile.actions.admin-chat');
+// Route::post('mobile/chat/send', [ChatOrderController::class, 'sendMessage'])->name('mobile.chat.send');
 Route::post('/mobile/chat/send', [ChatOrderController::class, 'sendMessage'])->name('mobile.chat.send');
-
 Route::prefix('admin/orders')->name('admin.orders.')->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('index');
     Route::get('/user/{user}/places/count', [OrderController::class, 'getUserPlacesCount'])->name('user.places.count');

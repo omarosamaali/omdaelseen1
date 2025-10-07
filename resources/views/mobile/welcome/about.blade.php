@@ -35,11 +35,11 @@
                     ? $about->content_zh
                     : $about->content_ar) !!}
                 </p>
-                <div class="px-6 w-full">
+                {{-- <div class="px-6 w-full">
                     <a href="index.html"
                         class="bg-p2 rounded-full py-3 text-white text-sm font-semibold text-center block mt-12 dark:bg-p1">
                         {{ __('messages.contact_us') }}</a>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>

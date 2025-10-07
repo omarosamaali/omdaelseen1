@@ -129,7 +129,7 @@
 
 @section('content')
 <x-china-header :title="__('messages.place_details')" :route="route('mobile.china-discovers.index')" />
-<div class="container--header">
+<div class="container--header" style="padding-top: 50px;">
     @if (auth()->check() && Auth::user()->id == $place->user_id)
     <a class="report-button" href="{{ route('mobile.china-discovers.edit', $place->id) }}"
         style="min-width: fit-content; left: 82%;">
@@ -142,7 +142,8 @@
     ->exists();
     @endphp
     @if (!$hasReported)
-    <button class="report-button" onclick="openReportModal()" style="min-width: fit-content; left: 82%;">
+    <button class="report-button" onclick="openReportModal()" style="min-width: fit-content; position: relative;
+    z-index: 999999999999999999;">
         {{ __('messages.report') }}
     </button>
     @else
@@ -203,7 +204,7 @@
                 });
         }
 </script>
-<div class="container dark:text-white dark:bg-black">
+<div class="container dark:text-white dark:bg-black" style="padding-top: 50px;">
 
     <!-- Favorite heart icon -->
     @php
@@ -211,14 +212,14 @@
     @endphp
 
     @if (auth()->check() && auth()->id() != $place->user_id)
-    <div style="top: 15px; left: 38px; right: unset; box-shadow: 0px 0px 4px 1px #bcafafc4;"
+    <div style="margin-top: 60px; top: 15px; left: 38px; right: unset; box-shadow: 0px 0px 4px 1px #bcafafc4;"
         class="heart-icon @if ($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
         <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
             style="font-size: 18px;"></i>
     </div>
     @endif
 
-    <div class="rating-icon">
+    <div class="rating-icon" style="margin-top: 60px;">
         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
         <span style="font-size: 14px; font-weight: bold; color: #000000;">
             {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})

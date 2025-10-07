@@ -59,14 +59,14 @@ return [
     'search_placeholder' => 'Search',
     'notifications_title' => 'New Notifications',
     'place_added' => 'has been added',
-    'favorite_added' => '{{user}} added :place to favorites',
-    'place_rated' => '{{user}} rated :place',
-    'place_reported' => '{{name}} has been reported',
+    'favorite_added' => ':user added :place to favorites',
+    'place_rated' => ':user rated :place',
+    'place_reported' => ':name has been reported',
     'review_reported' => 'A review for has been reported',
     'favorite_added_by_user' => 'You added :place to favorites',
     'place_rated_by_user' => 'You rated :place',
-    'place_reported_by_user' => 'You reported {{name}}',
-    'place_reported_against' => 'Your place :place was reported by {{user}}',
+    'place_reported_by_user' => 'You reported :name',
+    'place_reported_against' => 'Your place :place was reported by :user',
     'review_reported_against' => 'A review you made for :place was reported',
     'unknown_user' => 'User',
     'edit_account' => 'Edit Account',
@@ -240,5 +240,7 @@ return [
         'mist' => 'Mist',
     ],
     'no_events' => 'No events and no exhibitions coming up',
+    'الإشعارات' => 'Notifications',
+
 
 ];

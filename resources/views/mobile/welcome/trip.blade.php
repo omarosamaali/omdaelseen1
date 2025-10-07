@@ -46,7 +46,7 @@
 
 <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white -z-10 dark:bg-color1">
     <div class="relative z-10 px-6">
-        <div class="faqCategory pt-8">
+        <div class="faqCategory pt-10">
             <ul class="flex flex-wrap justify-center items-center tab-button gap-4" style="margin: auto;">
                 <li class="item cursor-pointer" data-filter="group">{{ __('messages.جماعية') }}</li>
                 <li class="item cursor-pointer" data-filter="family">{{ __('messages.عائلية') }}</li>
@@ -59,7 +59,7 @@
             </ul>
         </div>
 
-        <div class="pt-10 px-2">
+        <div class="px-2">
             <div class="pt-5">
                 <div id="trips-container">
                     @if ($trips->isNotEmpty())

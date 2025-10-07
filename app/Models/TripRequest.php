@@ -54,4 +54,9 @@ class TripRequest extends Model
     {
         return $this->hasMany(OrderMessage::class, 'product_id', 'id');
     }
+
+    public function messages()
+    {
+        return $this->hasMany(TripMessage::class);
+    }
 }

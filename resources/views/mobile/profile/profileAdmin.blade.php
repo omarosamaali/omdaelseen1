@@ -103,7 +103,7 @@
     }
 </style>
 @section('content')
-    <div style="background: #c1c0bf; height: 83px; width: 100%; position: fixed; top: 0px;"></div>
+    <div style="background: #c1c0bf; height: 83px; width: 100%; position: fixed; top: 0px; z-index: 9999;"></div>
     <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white dark:bg-color1" >
     <div style="display: flex; gap: 10px; z-index: 99999;">
         <div class="flex justify-start items-center gap-2 header-controls">
@@ -133,8 +133,9 @@
     top: 35px !important;
     text-align: center;
     align-items: center;
+    left: 41%;
     justify-content: center;
-    width: 100%;">
+    width: fit-content; z-index: 999999999999999;">
             لوحة التحكم
         </div>
             <div class="flex justify-start items-center gap-2 header-more-options">
@@ -195,7 +196,7 @@
                     class="bg-[#B190B6] rounded-full overflow-hidden user-avatar" />
                 <img src="{{ asset('assets/assets/images/user-progress.svg') }}" alt="" style="top: 14px;"
                     class="absolute left-0 right-0" />
-<i class="ph-fill ph-seal-check" style="position: absolute; bottom: 0px; color: #3b82f6; font-size: 2rem;"
+<i class="ph-fill ph-seal-check text-p1" style="position: absolute; bottom: 0px; font-size: 2rem;"
                         title="حساب موثق"></i>            </div>
             <div class="flex justify-center items-center gap-1 bg-p2 bg-opacity-10 px-3 py-1 rounded-full border border-p2 border-opacity-20 mb-6 dark:bg-bgColor14 dark:border-bgColor16 user-stats-container"
                 style="right: -30px;">
@@ -206,9 +207,9 @@
         <div class="flex justify-center items-center pt-5 flex-col pb-5">
             <div class="flex justify-start items-center gap-1 text-2xl">
                 <p class="font-semibold" style="text-transform: capitalize;">{{ __('messages.admin_name') }}</p>
-                @if (Auth::user()->is_verified == 1)
+                {{-- @if (Auth::user()->is_verified == 1)
                     <i class="ph-fill ph-seal-check text-p1"></i>
-                @endif
+                @endif --}}
             </div>
             <p class="text-color5 pt-1 dark:text-bgColor20">{{ __('countries.' . Auth::user()->country) }}</p>
         </div>
