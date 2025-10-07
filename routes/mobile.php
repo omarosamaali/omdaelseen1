@@ -214,10 +214,57 @@ Route::delete('mobile/delete-invoice/{id}', function ($id) {
     }
 })->name('mobile.delete-invoice');
 
-Route::get('/mobile/orders/orders-admin', function () {
-    $products = Product::with('approvals')->with('notes')->get();
-    $trip_requests = TripRequest::where('user_id', Auth::user()->id)->get();
-    return view('mobile.profile.orders-admin', compact('products', 'trip_requests'));
+Route::get('/mobile/orders/orders-admin', function (Request $request) {
+    $status = $request->get('status');
+    $statuses = [
+        'في المراجعة',
+        'بإنتظار الدفع',
+        'التجهيز للشحن',
+        'تم الشحن',
+        'تم الاستلام من قبل العميل',
+        'بإنتظار مستندات',
+        'تحت الإجراء',
+        'تم الاستلام في الصين',
+        'تم الاستلام بالامارات',
+        'ملغي',
+        'مكرر',
+        'منتهي',
+        'تحتاج لموافقة'
+    ];
+    $productStats = array_fill_keys($statuses, 0);
+
+    // إحصائيات المنتجات
+    $productStatsData = Product::groupBy('status')
+        ->select('status', \DB::raw('count(*) as total'))
+        ->pluck('total', 'status')
+        ->toArray();
+
+    // إحصائيات طلبات الرحلات
+    $tripStatsData = TripRequest::groupBy('status')
+        ->select('status', \DB::raw('count(*) as total'))
+        ->pluck('total', 'status')
+        ->toArray();
+
+    // دمج الإحصائيات
+    foreach ($statuses as $s) {
+        $productStats[$s] = ($productStatsData[$s] ?? 0) + ($tripStatsData[$s] ?? 0);
+    }
+
+    $productsQuery = Product::with('approvals', 'notes');
+    $tripRequestsQuery = TripRequest::query();
+
+    if ($status) {
+        $productsQuery->where('status', $status);
+        $tripRequestsQuery->where('status', $status);
+    }
+
+    $products = $productsQuery->get();
+    $trip_requests = $tripRequestsQuery->get();
+
+    return view(
+        'mobile.profile.orders-admin',
+        compact('products', 'trip_requests', 'productStats', 'status')
+    );
 })->name('mobile.admin-orders');
 
 Route::get('/mobile/orders/orders-user', function () {
@@ -430,14 +477,8 @@ Route::get('/mobile/faq/{category?}', function ($category = 'الطلب') {
 
 Route::post('/followers/toggle/{id}', [FollowersUserController::class, 'toggle'])
     ->name('followers.toggle');
-
 Route::get('/mobile/followers', [FollowersUserController::class, 'index'])->name('mobile.profile.followers');
 Route::post('/set-language', [LanguageController::class, 'setLanguage'])->name('set.language');
-Route::get('mobile/my-following', [
-    FollowersUserController::class, 'following'])
-    ->name('mobile.profile.following')
-    ->middleware('auth');
-
 Route::post('/update-hidden-notifications', function (Request $request) {
     $hiddenNotifications = $request->input('hidden_notifications');
     Cookie::queue('hidden_notifications', $hiddenNotifications, 60 * 24 * 30);
@@ -471,6 +512,11 @@ Route::prefix('mobile/reports')->name('mobile.reports.')->group(function () {
     Route::post('/place/{placeId}', [ReportController::class, 'reportPlace'])->name('report_place');
 });
 
+Route::get('mobile/my-following', [
+    FollowersUserController::class,
+    'following'
+])->name('mobile.profile.following')->middleware('auth');
+
 Route::get('mobile/profile/discovers', function () {
     $users = User::withCount('followers')->withCount('favorites')->withCount('ratings')->where('status', 1)->where('role', 'user')->get();
     return view('mobile.profile.discovers', compact('users'));
@@ -495,7 +541,8 @@ Route::get('/all-area-places/{branch_id}', [ChinaDiscoverController::class, 'all
 Route::get('places/{place}/reviews', [RatingController::class, 'getReviews'])->name('places.reviews');
 Route::get('mobile', function () {
     $banner = Banner::where('is_active', 'نشط')->where('location', 'both', 'mobile_app')->first();
-    $events = Event::where('status', 'نشط')->where('start_date', '>', Carbon::now())->first();
+    $events = Event::where('status', 'نشط')->where('end_date', '>', Carbon::now())
+    ->where('start_date', '<=', Carbon::now())->first();
     return view('mobile.welcome', compact('banner', 'events'));
 })->name('mobile.welcome');
 Route::middleware('mobile_auth')->group(function () {
@@ -583,8 +630,8 @@ Route::middleware('mobile_auth')->group(function () {
         $countInterests = Favorites::where('user_id', Auth::user()->id)->count();
         $myFollowers = Followers::where('follower_id', Auth::user()->id)->count();
         $iFollow = Followers::where('following_id', Auth::user()->id)->count();
-        $reports = Report::all();
-        $review_reports = ReviewReport::all();
+        $reports = Report::where('status', 'pending')->get();
+        $review_reports = ReviewReport::where('status', 'pending')->get();
         $all_orders = Product::count() + TripRequest::count();
         $all_conversations = Message::count();
         return view('mobile.profile.profileAdmin', compact('all_conversations','all_orders', 'review_reports', 'reports', 'all_reports', 'all_users', 'all_places', 'count', 'countInterests', 'myFollowers', 'iFollow'));

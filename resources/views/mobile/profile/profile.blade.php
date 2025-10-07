@@ -214,8 +214,10 @@
                     }
                     ?>
                     <img src="{{ $src }}" alt="" style="top: 14px;" class="absolute left-0 right-0" />
-                    <i class="ph-fill ph-seal-check text-p1" style="position: absolute; bottom: 0px; font-size: 2rem;"
+                    @if (Auth::user()->status == 1)
+                    <i class="ph-fill ph-seal-check text-p1" style="position: absolute; bottom: 0px; font-size: 2rem;" --}}
                             title="حساب موثق"></i>
+                    @endif
                 </div>
                 <div style="position: relative; right: -30px;"
                     class="flex justify-center items-center gap-1 bg-p2 bg-opacity-10 px-3 py-1 rounded-full border border-p2 border-opacity-20 mb-6 dark:bg-bgColor14 dark:border-bgColor16">

@@ -442,7 +442,4 @@ body {
 
 .flag-img {
     z-index: 99;
-    position: relative;
-    top: -19px;
-    right: -60px;
 }

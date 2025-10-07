@@ -53,6 +53,7 @@ class FollowersUserController extends Controller
 
         return view('mobile.profile.followers', compact('topUsers', 'myFollowers'));
     }
+    
     public function following()
     {
         $topUsers = User::select('id', 'explorer_name', 'avatar', 'country')

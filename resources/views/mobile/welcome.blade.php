@@ -285,8 +285,8 @@
                             {{ \Carbon\Carbon::now('Asia/Shanghai')->format('h:iA') }}
                         </span>
                     </div>
-<script>
-    const weatherConditionsInArabic = @json(__('messages.weather_conditions'));
+                    <script>
+                        const weatherConditionsInArabic = @json(__('messages.weather_conditions'));
     const apiKey = '90454fa9d977f98eccd6e84b61b8e358';
     const city = 'China';
     const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
@@ -305,18 +305,36 @@
             const weatherElement = document.getElementById('weather');
             weatherElement.innerHTML = '{{ __("messages.weather_error") }}';
         });
-</script>
+                    </script>
                 </div>
                 <div style="margin-top: 20px;">
-                    @if ($events?->type == 'مناسبة')
-                    <span style="color: #800000"> {{ __('messages.next_event') }} </span> <br />{{ $events?->title_ar }}
-                    @elseif($events?->type == 'معرض')
-                    <span style="color: #800000"> {{ __('messages.next_exhibition') }} </span> <br />{{ $events?->title_ar }}
+                @if ($events?->type == 'مناسبة')
+
+                    <span style="color: #800000"> {{ __('messages.next_event') }} </span> <br />
+                    @if(app()->getLocale() == 'en')
+                    {{ $events?->title_en }}
+                    @elseif(app()->getLocale() == 'zh')
+                    {{ $events?->title_zh }}
                     @else
+                    {{ $events?->title_ar }}
+                    @endif
+
+                @elseif($events?->type == 'معرض')
+
+                    <span style="color: #800000"> {{ __('messages.next_exhibition') }} </span> <br />
+                    @if(app()->getLocale() == 'en')
+                    {{ $events?->title_en }}
+                    @elseif(app()->getLocale() == 'zh')
+                    {{ $events?->title_zh }}
+                    @else
+                    {{ $events?->title_ar }}
+                    @endif
+
+                @else
                     <span style="color: #800000">
                         {{ __('messages.no_events') }}
                     </span>
-                    @endif
+                @endif
                 </div>
             </div>
 

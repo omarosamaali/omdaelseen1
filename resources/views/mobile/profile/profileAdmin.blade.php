@@ -294,17 +294,6 @@
             </div>
         @endforeach
 
-        {{-- <div class="flex justify-between items-center bg-white dark:bg-color9 py-4 px-5 rounded-2xl">
-            <div class="flex justify-start items-center gap-3">
-                <p class="text-xs font-semibold">3</p>
-                <p class="text-xs font-semibold flex justify-start items-center gap-1">
-                    {{ __('messages.user_name') }}
-                </p>
-            </div>
-            <div class="flex justify-center items-center gap-2 bg-color16 dark:bg-bgColor14 py-1.5 px-4 rounded-full">
-                <p class="text-xs font-semibold text-black">{{ __('messages.violating_user') }}</p>
-            </div>
-        </div> --}}
     </div>
 </div>
 @endsection

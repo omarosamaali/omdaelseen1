@@ -32,18 +32,34 @@ class ChatController extends Controller
 
         return view('mobile.chat', compact('messages', 'admin'));
     }
-
     public function showAdminChat(User $chatUser)
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
         \Log::info('showAdminChat called', [
             'admin_id' => Auth::id(),
             'user_id' => $chatUser->id,
             'user_name' => $chatUser->name
         ]);
 
+        // تحديث حالة الرسائل غير المقروءة إلى مقروءة
+        $updated = Message::where('sender_id', $chatUser->id)
+            ->where('receiver_id', Auth::id())
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        \Log::info('Updated unread messages', [
+            'admin_id' => Auth::id(),
+            'user_id' => $chatUser->id,
+            'updated_count' => $updated
+        ]);
+
+        // جلب جميع الرسائل بين الأدمن والمستخدم
         $messages = Message::where(function ($query) use ($chatUser) {
             $query->where('sender_id', $chatUser->id)->where('receiver_id', Auth::id())
-                ->orWhere('sender_id', Auth::user()->id)->where('receiver_id', $chatUser->id);
+                ->orWhere('sender_id', Auth::id())->where('receiver_id', $chatUser->id);
         })->orderBy('created_at', 'asc')->get();
 
         \Log::info('Admin chat messages', [
@@ -65,23 +81,44 @@ class ChatController extends Controller
         $chats = [];
 
         foreach ($users as $user) {
+            // الحصول على آخر رسالة
             $lastMessage = Message::where(function ($query) use ($user) {
                 $query->where('sender_id', $user->id)->where('receiver_id', Auth::id())
                     ->orWhere('sender_id', Auth::id())->where('receiver_id', $user->id);
             })->orderBy('created_at', 'desc')->first();
 
+            // حساب عدد الرسائل غير المقروءة من المستخدم إلى الأدمن
+            $unreadCount = Message::where('sender_id', $user->id)
+                ->where('receiver_id', Auth::id())
+                ->where('is_read', false)
+                ->count();
+
             $chats[] = [
                 'user' => $user,
                 'last_message' => $lastMessage ? ($lastMessage->message ?? ($lastMessage->image ? 'Image' : 'No content')) : 'No messages yet',
                 'last_message_date' => $lastMessage ? $lastMessage->created_at->format('d M') : null,
+                'unread_count' => $unreadCount, // إضافة عدد الرسائل غير المقروءة
             ];
         }
+
+        // فرز المحادثات: المحادثات ذات الرسائل غير المقروءة أولاً، ثم حسب تاريخ آخر رسالة
+        usort($chats, function ($a, $b) {
+            if ($a['unread_count'] > 0 && $b['unread_count'] == 0) {
+                return -1; // المحادثات ذات الرسائل غير المقروءة تظهر أولاً
+            } elseif ($a['unread_count'] == 0 && $b['unread_count'] > 0) {
+                return 1;
+            } else {
+                // إذا كان عدد الرسائل غير المقروءة متساويًا، فرز حسب تاريخ آخر رسالة
+                $aDate = $a['last_message_date'] ? strtotime($a['last_message_date']) : 0;
+                $bDate = $b['last_message_date'] ? strtotime($b['last_message_date']) : 0;
+                return $bDate - $aDate;
+            }
+        });
 
         \Log::info('Admin chats', ['chats' => $chats]);
 
         return view('mobile.admin.all-chat', compact('chats'));
     }
-
     public function sendMessage(Request $request)
     {
         try {
