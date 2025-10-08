@@ -85,7 +85,7 @@
     </div>
 
     <div style="display: flex; align-items: center; justify-content: flex-start; gap: 10px; margin: 10px;">
-        <a href="{{ route('all.places') }}" class="all-link region-link" data-region-id="0"
+        <a href="{{ route('mobile.china-discovers.all--places') }}" class="all-link region-link" data-region-id="0"
             style="flex-shrink: 0; text-decoration: none; color: inherit; text-align: center;">
             <div style="flex-shrink: 0;">
                 <p class="explorer-name" style="font-size: 15px;">{{ __('messages.all') }}</p>
@@ -95,7 +95,7 @@
         <div class="slider-container"
             style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding: 10px; scrollbar-width: none; -ms-overflow-style: none;">
             @foreach ($regions as $region)
-            <a href="{{ route('all.places', ['region_id' => $region->id]) }}" class="region-link"
+            <a href="{{ route('mobile.china-discovers.all--places', ['region_id' => $region->id]) }}" class="region-link"
                 data-region-id="{{ $region->id }}"
                 style="flex-shrink: 0; text-decoration: none; color: inherit; text-align: center; scroll-snap-align: start;">
                 <div style="flex-shrink: 0;">
@@ -130,38 +130,38 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
-            $('.region-link').hover(
-                function() {
-                    // On hover in
-                    var regionId = $(this).data('region-id');
-                    var $link = $(this);
-                    $('.explorer-name').removeClass('active'); // Remove active class from all
-                    $link.find('.explorer-name').addClass('active'); // Add active class to hovered region
+        $('.region-link').on('click', function(e) {
+            e.preventDefault(); // منع إعادة تحميل الصفحة
+            
+            var regionId = $(this).data('region-id');
+            var $link = $(this);
+            
+            // إزالة الكلاس active من كل العناصر
+            $('.explorer-name').removeClass('active');
+            
+            // إضافة الكلاس active للعنصر المضغوط
+            $link.find('.explorer-name').addClass('active');
 
-                    // Make AJAX request to filter explorers
-                    $.ajax({
-                        url: '{{ route('mobile.china-discovers.filter-explorers') }}',
-                        method: 'POST',
-                        data: {
-                            region_id: regionId,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                $('#category-section').html(response.html);
-                            } else {
-                                console.error('Error:', response.message);
-                            }
-                        },
-                        error: function(xhr) {
-                            console.error('AJAX Error:', xhr.responseText);
-                        }
-                    });
+            // عمل AJAX request لتصفية الـ explorers
+            $.ajax({
+                url: '{{ route('mobile.china-discovers.filter-explorers') }}',
+                method: 'POST',
+                data: {
+                    region_id: regionId,
+                    _token: '{{ csrf_token() }}'
                 },
-                function() {
-                    // On hover out, do nothing to persist active class until next hover
+                success: function(response) {
+                    if (response.success) {
+                        $('#category-section').html(response.html);
+                    } else {
+                        console.error('Error:', response.message);
+                    }
+                },
+                error: function(xhr) {
+                    console.error('AJAX Error:', xhr.responseText);
                 }
-            );
+            });
         });
+    });
 </script>
 @endsection

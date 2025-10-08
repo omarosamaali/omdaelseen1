@@ -333,7 +333,7 @@
 @section('content')
 <x-china-header
     :title="app()->getLocale() == 'en' ? $branch->name_en : (app()->getLocale() == 'zh' ? $branch->name_ch : $branch->name_ar)"
-    :route="route('mobile.china-discovers.all-places')" />
+    :route="route('mobile.china-discovers.all--places')" />
 <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black" style="padding-top: 30px;">
     <div style="width: 100%; display: block;">
         @if ($banners->isNotEmpty())

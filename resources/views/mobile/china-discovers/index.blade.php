@@ -6,59 +6,21 @@
 
 @section('content')
 <style>
+    .categories {
+        color: black;
+    }
     #container-header {
         position: fixed;
         width: 100%;
         z-index: 999999;
     }
-
-    /* إضافة هذه الأنماط في الـ style tag أو في ملف الـ CSS */
-
-    .explorer-name {
-        transition: all 0.3s ease;
-        font-weight: 500;
-    }
-
-    .explorer-name.active {
-        color: #f99e4d !important;
-        /* font-weight: 700; */
-    }
-
-    .explorer-link:hover .explorer-name {
-        color: #f99e4d !important;
-        /* transform: scale(1.05); */
-    }
-
-    #all-link {
-        transition: all 0.3s ease;
-        /* font-weight: 500; */
-    }
-
-    .all-link:hover #all-link {
-        /* transform: scale(1.05); */
-    }
-
-    /* تحسين مظهر الفلتر المفعل */
-    .explorer-link img {
-        transition: transform 0.3s ease;
-    }
-
-    .explorer-link:has(.active) img {
-        transform: scale(1.1);
-        box-shadow: 0 4px 8px rgba(249, 158, 77, 0.3);
-    }
-
-    .explorer-link:hover img {
-        /* transform: scale(1.05); */
-    }
 </style>
 <x-china-header :title="__('messages.china_explorers')" :route="route('mobile.welcome')" />
 
-<div style="width: 100%; display: block;">
+<div style="width: 100%; display: block; padding-top: 61px;">
     @if ($banners->isNotEmpty())
     @foreach ($banners as $banner)
-    <img class="fav-image" src="{{ asset('storage/' . $banner->avatar) }}" style="padding-top: 62px !important;"
-        style="width: 100%;" alt="">
+    <img class="fav-image" src="{{ asset('storage/' . $banner->avatar) }}" style="width: 100%;" alt="">
     @endforeach
     @endif
 </div>
@@ -67,24 +29,23 @@
     <div>
         <div class="continaer--title">
             <h6 class="categories text-black" style="color: black;">{{ __('messages.categories') }}</h6>
+            <a href={{ route('mobile.china-discovers.all--places') }} class="show--all">{{
+                __('messages.search_for_place') }}</a>
         </div>
 
         <div style="display: flex; align-items: center; justify-content: flex-start; gap: 10px; margin: 10px;">
-            {{-- زر الكل --}}
-            <a href="{{ route('mobile.china-discovers.index') }}" class="all-link">
+            <a href="#" class="all-link" data-explorer-id="">
                 <div style="width: 99px; flex-shrink: 0;">
-                    <div class="explorer-name" id="all-link"
-                        style="font-size: 15px; color: {{ request()->segment(3) ? '#000' : '#f99e4d' }} !important;">
+                    <div class="explorer-name" id="all-link" style="font-size: 15px; color: #f99e4d !important;">
                         {{ __('messages.all') }}
                     </div>
                 </div>
             </a>
 
-            {{-- الفلاتر --}}
             <div class="slider-container"
                 style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding: 10px; scrollbar-width: none; -ms-overflow-style: none;">
                 @foreach ($explorers as $explorer)
-                <a href="{{ route('mobile.china-discovers.index', $explorer->id) }}"
+                <a href="#"
                     style="flex-shrink: 0; text-decoration: none; color: inherit; text-align: center; scroll-snap-align: start;"
                     class="explorer-link" data-explorer-id="{{ $explorer->id }}">
                     <div style="flex-shrink: 0;">
@@ -92,7 +53,7 @@
                             src="{{ asset('storage/' . $explorer->avatar) }}"
                             alt="{{ $explorer->{'name_' . app()->getLocale()} ?? $explorer->name_ar }}">
                         <p class="explorer-name {{ request()->segment(3) == $explorer->id ? 'active' : '' }}"
-                            style="padding-top: 9px; font-size: 15px; color: {{ request()->segment(3) == $explorer->id ? '#f99e4d' : '#000' }};">
+                            style="padding-top: 9px; font-size: 15px;">
                             {{ $explorer->{'name_' . app()->getLocale()} ?? $explorer->name_ar }}
                         </p>
                     </div>
@@ -187,8 +148,332 @@
         </div>
     </div>
 
+    {{-- أحدث الأماكن --}}
+    <div class="continaer--title" style="margin-top: 30px;">
+        <h6 class="categories">{{ __('messages.latest_places') }}</h6>
+        <a href="{{ route('mobile.china-discovers.all--places') }}" class="show--all">{{ __('messages.search_for_place')
+            }}</a>
+    </div>
+
+    <div class="slider-container">
+        <div class="slider" id="latestPlacesSlider">
+            @forelse ($latestPlaces as $place)
+            <div class="place-card">
+                <img src="{{ asset('storage/' . $place->avatar) }}"
+                    alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
+
+                @php
+                $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
+                @endphp
+
+                @if (auth()->check() && auth()->id() != $place->user_id)
+                <div class="heart-icon @if ($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
+                    <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
+                        style="font-size: 18px;"></i>
+                </div>
+                @endif
+
+                <div class="rating-icon"
+                    style="position: absolute; top: 10px; right: 53px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                    <i class="fa-solid fa-star" style="font-size: 18px;"></i>
+                    <span style="font-size: 14px; font-weight: bold; color: #fff;">
+                        {{ number_format($place->ratings_avg_rating ?? 0, 1) }}
+                        ({{ $place->ratings_count ?? 0 }})
+                    </span>
+                </div>
+
+                <div class="category-tag">
+                    @if ($place->mainCategory)
+                    <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
+                        alt="{{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}">
+                    <span>
+                        {{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}
+                    </span>
+                    @else
+                    <img src="{{ asset('storage/placeholders/no-category.png') }}" alt="{{ __('بدون تصنيف') }}">
+                    <span>{{ __('بدون تصنيف') }}</span>
+                    @endif
+                </div>
+
+                <div class="place-name">
+                    {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
+                </div>
+
+                @if(Auth::user()->status != 1)
+                <button onclick="showActivationAlert()" class="explore-btn">
+                    {{ __('messages.explore') }}
+                </button>
+                @else
+                <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
+                    {{ __('messages.explore') }}
+                </a>
+                @endif
+            </div>
+            @empty
+            <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
+                <p style="color: #6c757d; font-size: 18px;">{{ __('لا يوجد أماكن للعرض حاليًا.') }}</p>
+            </div>
+            @endforelse
+        </div>
+    </div>
+
+    {{-- الأكثر تقييماً --}}
+    <div class="continaer--title" style="margin-top: 30px;">
+        <h6 class="categories">{{ __('messages.most_rated') }}</h6>
+        <a href={{ route('mobile.china-discovers.all--places') }} class="show--all">{{
+            __('messages.search_for_place') }}</a>
+    </div>
+
+    <div class="slider-container">
+        <div class="slider" id="placesSlider">
+            @forelse ($latestPlaces as $place)
+            <div class="place-card">
+                <img src="{{ asset('storage/' . $place->avatar) }}"
+                    alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
+
+                @php
+                $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
+                @endphp
+
+                @if (auth()->check() && auth()->id() != $place->user_id)
+                <div class="heart-icon @if ($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
+                    <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
+                        style="font-size: 18px;"></i>
+                </div>
+                @endif
+
+                <div class="rating-icon"
+                    style="position: absolute; top: 10px; right: 53px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                    <i class="fa-solid fa-star" style="font-size: 18px;"></i>
+                    <span style="font-size: 14px; font-weight: bold; color: #fff;">
+                        {{ number_format($place->ratings_avg_rating ?? 0, 1) }}
+                        ({{ $place->ratings_count ?? 0 }})
+                    </span>
+                </div>
+
+                <div class="category-tag">
+                    @if ($place->mainCategory)
+                    <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
+                        alt="{{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}">
+                    <span>
+                        {{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}
+                    </span>
+                    @else
+                    <img src="{{ asset('storage/placeholders/no-category.png') }}" alt="{{ __('بدون تصنيف') }}">
+                    <span>{{ __('بدون تصنيف') }}</span>
+                    @endif
+                </div>
+
+                <div class="place-name">
+                    {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
+                </div>
+
+                @if(Auth::user()->status != 1)
+                <button onclick="showActivationAlert()" class="explore-btn">
+                    {{ __('messages.explore') }}
+                </button>
+                @else
+                <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
+                    {{ __('messages.explore') }}
+                </a>
+                @endif
+            </div>
+            @empty
+            <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
+                <p style="color: #6c757d; font-size: 18px;">{{ __('لا يوجد أماكن للعرض حاليًا.') }}</p>
+            </div>
+            @endforelse
+        </div>
+    </div>
+
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const sliderContainer = document.querySelector('.slider-container');
+    const explorerLinks = document.querySelectorAll('.explorer-link');
+    const allLink = document.querySelector('.all-link');
+    let isFiltering = false;
+    let scrollTimeout;
+
+    // دالة لإيجاد العنصر في المنتصف
+    function getCenterElement() {
+        const containerRect = sliderContainer.getBoundingClientRect();
+        const containerCenter = containerRect.left + (containerRect.width / 2);
+        let closestElement = null;
+        let closestDistance = Infinity;
+
+        explorerLinks.forEach(link => {
+            const linkRect = link.getBoundingClientRect();
+            const linkCenter = linkRect.left + (linkRect.width / 2);
+            const distance = Math.abs(containerCenter - linkCenter);
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestElement = link;
+            }
+        });
+        return closestElement;
+    }
+
+    // تحديث الشكل النشط
+    function updateActiveState(activeLink) {
+        document.querySelectorAll('.explorer-name').forEach(name => {
+            name.style.color = '#000';
+        });
+        document.getElementById('all-link').style.color = '#000';
+
+        if (activeLink) {
+            const explorerName = activeLink.querySelector('.explorer-name');
+            if (explorerName) explorerName.style.color = '#f99e4d';
+        }
+    }
+
+    // فلترة الأماكن
+    async function filterPlaces(explorerId) {
+        if (isFiltering) return;
+        isFiltering = true;
+
+        try {
+            const url = explorerId ? `/mobile/china-discovers/${explorerId}` : '/mobile/china-discovers';
+            const response = await fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+            
+            // تحديث الأماكن
+            updatePlacesHTML('#placesSlider', data.places);
+            updatePlacesHTML('#latestPlacesSlider', data.latestPlaces);
+            
+            reinitializeHeartIcons();
+
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            isFiltering = false;
+        }
+    }
+const userStatus = {{ Auth::user()->status ?? 0 }};
+const explorUrl = "{{ __('messages.explore') }}";
+    // تحديث HTML الأماكن
+    function updatePlacesHTML(selector, places) {
+        const slider = document.querySelector(selector);
+        if (!slider) return;
+
+        if (places.length === 0) {
+            slider.innerHTML = '<div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;"><p style="color: #6c757d; font-size: 18px;">لا يوجد أماكن للعرض حاليًا.</p></div>';
+            return;
+        }
+
+        slider.innerHTML = places.map(place => `
+            <div class="place-card">
+                <img src="/storage/${place.avatar}" alt="${place.name_ar}">
+                
+                ${place.user_id !== {{ auth()->id() ?? 'null' }} ? `
+                    <div class="heart-icon ${place.is_favorited ? 'favorited' : ''}" data-place-id="${place.id}">
+                        <i class="fa ${place.is_favorited ? 'fa-solid' : 'fa-regular'} fa-heart" style="font-size: 18px;"></i>
+                    </div>
+                ` : ''}
+                
+                <div class="rating-icon" style="position: absolute; top: 10px; right: 53px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                    <i class="fa-solid fa-star" style="font-size: 18px;"></i>
+                    <span style="font-size: 14px; font-weight: bold; color: #fff;">
+                        ${parseFloat(place.ratings_avg_rating || 0).toFixed(1)} (${place.ratings_count || 0})
+                    </span>
+                </div>
+                
+                <div class="category-tag">
+                    ${place.main_category ? `
+                        <img src="/storage/${place.main_category.avatar}" alt="${place.main_category.name_ar}">
+                        <span>${place.main_category.name_ar}</span>
+                    ` : `
+                        <img src="/storage/placeholders/no-category.png" alt="بدون تصنيف">
+                        <span>بدون تصنيف</span>
+                    `}
+                </div>
+                
+                <div class="place-name">${place.name_ar}</div>
+                
+${userStatus != 1 ? `
+<button onclick="showActivationAlert()" class="explore-btn">${explorUrl}</button>
+` : `
+<a href="/mobile/china-discovers/info-place/${place.id}" class="explore-btn">${explorUrl}</a>
+`}
+            </div>
+        `).join('');
+    }
+
+    // إعادة تهيئة أيقونات القلب
+    function reinitializeHeartIcons() {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        document.querySelectorAll('.heart-icon').forEach(icon => {
+            icon.replaceWith(icon.cloneNode(true));
+        });
+        
+        document.querySelectorAll('.heart-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const placeId = this.getAttribute('data-place-id');
+                const heartSvg = this.querySelector('i');
+                
+                fetch('{{ route("favorites.toggle") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({ place_id: placeId }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'added') {
+                        this.classList.add('favorited');
+                        heartSvg.classList.remove('fa-regular');
+                        heartSvg.classList.add('fa-solid');
+                    } else {
+                        this.classList.remove('favorited');
+                        heartSvg.classList.remove('fa-solid');
+                        heartSvg.classList.add('fa-regular');
+                    }
+                });
+            });
+        });
+    }
+
+    // عند انتهاء السحب
+    sliderContainer.addEventListener('scroll', function() {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            const centerElement = getCenterElement();
+            if (centerElement) {
+                const explorerId = centerElement.getAttribute('data-explorer-id');
+                updateActiveState(centerElement);
+                filterPlaces(explorerId);
+            }
+        }, 200);
+    });
+
+    // النقر على "الكل"
+    allLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        updateActiveState(null);
+        document.getElementById('all-link').style.color = '#f99e4d';
+        filterPlaces('');
+    });
+
+    // النقر المباشر
+    explorerLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const explorerId = this.getAttribute('data-explorer-id');
+            updateActiveState(this);
+            filterPlaces(explorerId);
+        });
+    });
+});
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -483,65 +768,5 @@
         });
         window.addEventListener('beforeunload', cleanup);
         window.addEventListener('pagehide', cleanup);
-
-        // إضافة هذا السكريبت في نهاية الـ view بعد السكريبت الموجود
-        
-        document.addEventListener('DOMContentLoaded', function() {
-        // التعامل مع رابط "الكل"
-        const allLink = document.querySelector('.all-link');
-        const explorerLinks = document.querySelectorAll('.explorer-link');
-        const explorerNames = document.querySelectorAll('.explorer-name');
-        
-        // الحصول على الـ ID من الـ URL إذا كان موجود
-        const currentUrl = window.location.pathname;
-        const urlParts = currentUrl.split('/');
-        const currentExplorerId = urlParts[urlParts.length - 1];
-        
-        // تفعيل الفلتر الصحيح عند تحميل الصفحة
-        if (currentExplorerId && currentExplorerId !== 'china-discovers') {
-        // إلغاء تفعيل "الكل"
-        document.querySelector('#all-link').style.color = '#000';
-        
-        // تفعيل الفلتر الحالي
-        explorerLinks.forEach(link => {
-        const explorerId = link.getAttribute('data-explorer-id');
-        const explorerName = link.querySelector('.explorer-name');
-        
-        if (explorerId === currentExplorerId) {
-        explorerName.style.color = '#f99e4d';
-        explorerName.classList.add('active');
-        } else {
-        explorerName.style.color = '#000';
-        explorerName.classList.remove('active');
-        }
-        });
-        } else {
-        // تفعيل "الكل" بشكل افتراضي
-        document.querySelector('#all-link').style.color = '#f99e4d';
-        explorerNames.forEach(name => {
-        if (name.id !== 'all-link') {
-        name.style.color = '#000';
-        name.classList.remove('active');
-        }
-        });
-        }
-        
-        // عند الضغط على "الكل"
-        allLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        window.location.href = "{{ route('mobile.china-discovers.index') }}";
-        });
-        
-        // عند الضغط على أي فلتر
-        explorerLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const explorerId = this.getAttribute('data-explorer-id');
-        
-        // الانتقال للصفحة مع الـ ID
-        window.location.href = `/mobile/china-discovers/${explorerId}`;
-        });
-        });
-        });
 </script>
 @endsection

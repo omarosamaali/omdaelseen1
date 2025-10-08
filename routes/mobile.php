@@ -518,9 +518,11 @@ Route::get('mobile/my-following', [
 ])->name('mobile.profile.following')->middleware('auth');
 
 Route::get('mobile/profile/discovers', function () {
-    $users = User::withCount('followers')->withCount('favorites')->withCount('ratings')->where('status', 1)->where('role', 'user')->get();
+    $users = User::withCount('followers')
+    ->withCount('favorites')->withCount('ratings')->where('status', 1)
+    ->where('role', 'user')->get();
     return view('mobile.profile.discovers', compact('users'));
-})->name('mobile.profile.discovers');
+})->name('mobile.profile.discovers')->middleware('mobile_auth');
 
 Route::get('mobile/info_place/{place}', function (Places $place) {
     $place->loadCount('ratings');
@@ -579,8 +581,7 @@ Route::middleware('mobile_auth')->group(function () {
     Route::put('mobile/china-discovers/{id}', [ChinaDiscoverController::class, 'update'])->name('mobile.china-discovers.update');
     Route::get('get-subcategories/{id}', [ChinaDiscoverController::class, 'getSubcategories'])->name('mobile.china-discovers.get-subcategories');
     Route::post('/translate', [ChinaDiscoverController::class, 'translate'])->name('translate');
-    Route::get('mobile/china-discovers/all-places', [ChinaDiscoverController::class, 'allPlaces'])->name('mobile.china-discovers.all-places');
-    Route::get('/all-places/{region_id?}', [ChinaDiscoverController::class, 'allPlaces'])->name('all.places');
+
     Route::post('mobile/china-discovers/filter-explorers', [ChinaDiscoverController::class, 'filterExplorers'])->name('mobile.china-discovers.filter-explorers');
     Route::get('mobile/china-discovers/all-sub-category', [ChinaDiscoverController::class, 'allSubCategory'])
         ->name('mobile.china-discovers.all-sub-category');
@@ -604,6 +605,9 @@ Route::middleware('mobile_auth')->group(function () {
     Route::get('mobile/my-medals', function () {
         return view('mobile.profile.my-medals');
     })->name('mobile.profile.my-medals');
+    // Route::get('mobile/china-discovers/all-places', [ChinaDiscoverController::class, 'allPlaces'])
+    //     ->name('mobile.china-discovers.all--places');
+    Route::get('/all-places/{region_id?}', [ChinaDiscoverController::class, 'allPlaces'])->name('mobile.china-discovers.all--places');
 
     // Profile Routes with Role-Based Redirection
     // The mobile_auth middleware will handle the redirection logic for these two routes.

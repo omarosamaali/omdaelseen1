@@ -3094,6 +3094,12 @@ path {
     }
 }
 
+@media (min-width: 355px) and (max-width: 375px) {
+    .min-\[370px\]\:-top-\[650px\] {
+        top: -664px !important;
+    }
+}
+
 @media (min-width: 370px) {
     .min-\[370px\]\:-top-\[650px\] {
         top: -650px;
@@ -3102,19 +3108,19 @@ path {
 
 @media (min-width: 380px) {
     .min-\[380px\]\:-top-\[680px\] {
-        top: -680px;
+        top: -691px;
     }
 }
 
 @media (min-width: 400px) {
     .min-\[400px\]\:-top-\[720px\] {
-        top: -720px;
+        top: -746px;
     }
 }
 
 @media (min-width: 420px) {
     .min-\[420px\]\:-top-\[750px\] {
-        top: -758px;
+        top: -779px;
     }
 }
 

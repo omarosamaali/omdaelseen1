@@ -95,12 +95,7 @@ class ChinaDiscoverController extends Controller
         return redirect()->route('mobile.china-discovers.index')
             ->with('success', 'تم إضافة المكان بنجاح!');
     }
-    /**
-     * Display the main discovery page.
-     *
-     * @param int|null $id
-     * @return \Illuminate\View\View
-     */
+
     public function index($id = null)
     {
         $banners = Banner::where('location', 'both')->orWhere('location', 'mobile_app')->get();
@@ -130,15 +125,17 @@ class ChinaDiscoverController extends Controller
 
         $latestPlaces = $latestPlacesQuery->get();
 
+        // لو الطلب AJAX يرجع JSON
+        if (request()->ajax()) {
+            return response()->json([
+                'places' => $places,
+                'latestPlaces' => $latestPlaces
+            ]);
+        }
+
         return view('mobile.china-discovers.index', compact('banners', 'explorers', 'places', 'latestPlaces'));
     }
 
-    /**
-     * Handle AJAX request to filter explorers by region.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function filterExplorers(Request $request)
     {
         if (!$request->ajax()) {
@@ -297,7 +294,7 @@ class ChinaDiscoverController extends Controller
         $mainCategoryIds = $placesQuery->distinct()->pluck('main_category_id');
         $explorers = Explorers::all();
         $sub_categories = Branches::all();
-        return view('mobile.china-discovers.all-places', compact('sub_categories', 'regions', 'banners', 'explorers', 'region_id'));
+        return view('mobile.china-discovers.all--places', compact('sub_categories', 'regions', 'banners', 'explorers', 'region_id'));
     }
 
     /**

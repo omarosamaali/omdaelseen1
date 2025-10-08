@@ -7,7 +7,7 @@
 <style>
     @media (min-width: 376px) {
         .container-time {
-            margin-top: 200px !important;
+            margin-top: 129px !important;
         }
     }
 </style>

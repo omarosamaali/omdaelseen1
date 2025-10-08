@@ -19,7 +19,7 @@
 @section('content')
 <x-china-header
     :title="app()->getLocale() == 'en' ? $explorer->name_en : (app()->getLocale() == 'zh' ? $explorer->name_ch : $explorer->name_ar)"
-    :route="route('mobile.china-discovers.all-places')" />
+    :route="route('mobile.china-discovers.all--places')" />
 <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
     <div style="width: 100%; display: block;">
         @if ($banners->isNotEmpty())
