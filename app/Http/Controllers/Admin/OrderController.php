@@ -18,9 +18,65 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\OrderMessage;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
+use App\Models\TravelChat;
 
 class OrderController extends Controller
 {
+    public function tripMessages($user_id, $trip_id = null)
+    {
+        $query = TravelChat::query()
+            ->where(function ($query) use ($user_id) {
+                $query->where('user_id', $user_id)
+                    ->orWhere('user_id', Auth::id());
+            })
+            ->with(['user', 'trip'])
+            ->orderBy('created_at', 'asc');
+
+        if ($trip_id) {
+            $query->where('trip_id', $trip_id);
+        }
+
+        $messages = $query->get();
+        $user = User::findOrFail($user_id);
+        $trip = TripRequest::findOrFail($trip_id);
+
+        return view('admin.omdaHome.orders.trip-messages', compact('messages', 'user', 'trip_id', 'trip'));
+    }
+
+    public function sendTripMessage(Request $request)
+    {
+        \Log::info('sendTripMessage called', $request->all());
+        $request->validate([
+            'trip_id' => 'required|exists:trip_requests,id',
+            'message' => 'nullable|string',
+            'image' => 'nullable|file|mimes:jpg,png,jpeg|max:2048',
+        ]);
+
+        $filePath = null;
+        if ($request->hasFile('image')) {
+            $filePath = $request->file('image')->store('chat_images', 'public');
+        }
+
+        $message = TravelChat::create([
+            'trip_id' => $request->trip_id,
+            'user_id' => Auth::id(),
+            'message' => $request->message,
+            'image' => $filePath,
+        ]);
+
+        return response()->json([
+            'message' => [
+                'id' => $message->id,
+                'message' => $message->message,
+                'image' => $message->image,
+                'created_at' => $message->created_at->toDateTimeString(),
+                'user' => [
+                    'role' => Auth::user()->role,
+                ],
+            ]
+        ]);
+    }
+
     public function messages($user_id, $product_id = null)
     {
         if (Auth::user()->role !== 'admin') {

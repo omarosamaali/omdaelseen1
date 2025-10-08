@@ -8,14 +8,6 @@
 <x-china-header :title="__('messages.الطلبات')" :route="route('mobile.profile.profile')" />
 <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
 
-    {{-- <div class="header-container">
-        <img src="{{ asset('assets/assets/images/header-bg.png') }}" alt="">
-        <a href="{{ url()->previous() }}" class="profile-link dark:bg-color10">
-            <i class="fa-solid fa-chevron-left"></i>
-        </a>
-        <div class="logo-register">{{ __('messages.الطلبات') }}</div>
-    </div> --}}
-
     <div style="margin-top: 36px;">
         <div class="relative z-20 px-2">
             <div class="flex justify-between items-center">
@@ -220,19 +212,13 @@
                             class="{{ $trip->approvals()->exists() ? 'rainbow btns' : 'btns' }}"><span><i
                                     class="fa-solid fa-check-circle" style="font-size: 18px;"></i></span> موافقة
                         </a>
-                        @if(Auth::user()->role == 'user')
-                        <a href="{{ route('mobile.profile.actions.user-chat', ['product_id' => $trip->id]) }}"
-                            class="{{ $trip->order_messages()->exists() ? 'rainbow btns' : 'btns' }}">
-                            <span><i class="fa-regular fa-envelope" style="font-size: 18px;"></i></span>
-                            مراسلة
-                        </a>
-                        @elseif(Auth::user()->role == 'admin')
-                        <a href="{{ route('mobile.profile.actions.admin-chat', ['product_id' => $trip->id]) }}"
-                            class="{{ $trip->order_messages()->exists() ? 'rainbow btns' : 'btns' }}">
-                            <span><i class="fa-regular fa-envelope" style="font-size: 18px;"></i></span>
-                            مراسلة
-                        </a>
-                        @endif
+@if(Auth::user()->role == 'user')
+<a href="{{ route('mobile.profile.actions.trip-chat', ['user_id' => Auth::id(), 'trip_id' => $trip->id]) }}"
+    class="btns">
+    <span><i class="fa-regular fa-envelope" style="font-size: 18px;"></i></span>
+    مراسلة
+</a>
+@endif
                         <a href="{{ route('mobile.profile.actions.note', $trip->id) }}" class="btns"><span><i
                                     class="fa-solid fa-sticky-note" style="font-size: 18px;"></i></span>
                             ملاحظات</a>

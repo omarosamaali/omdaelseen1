@@ -49,6 +49,10 @@ use App\Http\Controllers\TripController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\TripRegistrationController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\Admin\OrderController;
+
+Route::get('/mobile/trip-chat/{user_id}/{trip_id}', [OrderController::class, 'tripMessages'])->name('mobile.profile.actions.trip-chat');
+Route::post('/mobile/trip-chat/send', [OrderController::class, 'sendTripMessage'])->name('mobile.trip-chat.send');
 
 Route::post('mobile/invoice/{invoiceId}/pay', [InvoiceController::class, 'initiatePayment'])
     ->name('mobile.invoice.pay');

@@ -20,6 +20,11 @@ class TripRequest extends Model
         'interests' => 'array',
     ];
 
+    public function travel_chats()
+    {
+        return $this->hasMany(TravelChat::class, 'trip_id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

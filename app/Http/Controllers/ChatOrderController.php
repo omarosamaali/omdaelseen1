@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrderMessage;
-use App\Models\Product; // إضافة نموذج Product
+use App\Models\Product;
+use App\Models\TripRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -35,6 +36,15 @@ class ChatOrderController extends Controller
         return view('mobile.profile.actions.admin-chat', compact('product_id', 'product'));
     }
 
+    public function adminChatTrip($trip_id)
+    {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+        $trip = TripRequest::findOrFail($trip_id); // جلب بيانات المنتج
+        return view('mobile.profile.actions.admin-chat-trip', compact('trip_id', 'trip'));
+    }
+    
     public function sendMessage(Request $request)
     {
         $request->validate([

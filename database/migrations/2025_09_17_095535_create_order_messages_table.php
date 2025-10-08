@@ -9,15 +9,13 @@ class CreateOrderMessagesTable extends Migration
     public function up()
     {
         Schema::create('order_messages', function (Blueprint $table) {
-            $table->engine = 'InnoDB'; // لدعم القيود الأجنبية
+            $table->engine = 'InnoDB';
             $table->id();
-            $table->unsignedBigInteger('product_id'); // تغيير إلى product_id
+            $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('user_id');
             $table->text('message')->nullable();
             $table->string('image')->nullable();
             $table->timestamps();
-
-            // العلاقات المعدلة
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });

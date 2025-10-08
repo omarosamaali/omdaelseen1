@@ -49,7 +49,7 @@
                     style="flex-shrink: 0; text-decoration: none; color: inherit; text-align: center; scroll-snap-align: start;"
                     class="explorer-link" data-explorer-id="{{ $explorer->id }}">
                     <div style="flex-shrink: 0;">
-                        <img style="max-width: 68px; border-radius: 15px; margin: auto;"
+                        <img style="height: 68px; width: 68px; border-radius: 50%; margin: auto;"
                             src="{{ asset('storage/' . $explorer->avatar) }}"
                             alt="{{ $explorer->{'name_' . app()->getLocale()} ?? $explorer->name_ar }}">
                         <p class="explorer-name {{ request()->segment(3) == $explorer->id ? 'active' : '' }}"

@@ -250,7 +250,7 @@
                 @endif
                 @endforelse
 
-                @foreach ($trip_requests as $product)
+                @foreach ($trip_requests as $trip)
                 <div class="bg-white dark:bg-color9 py-4 px-5 rounded-2xl shadow-md border relative"
                     style="overflow: hidden; height: 163px;">
                     <div class="relative gap-3 flex justify-between">
@@ -260,16 +260,16 @@
                                     <span class="text-xs">
                                         @php
                                         $lang = session('locale', 'ar');
-                                        $dayName = $product->created_at->locale($lang)->translatedFormat('l');
+                                        $dayName = $trip->created_at->locale($lang)->translatedFormat('l');
                                         @endphp
                                         {{ $dayName }}
                                     </span>
                                     <div style="background-color: white;" class="py-1 px-2 bg-p2 rounded-lg">
                                         <p class="font-semibold text-lg">
-                                            {{ $product->created_at->format('m/d') }}
+                                            {{ $trip->created_at->format('m/d') }}
                                         </p>
                                         <p class="text-[19px] font-bold">
-                                            {{ $product->created_at->format('Y') }}
+                                            {{ $trip->created_at->format('Y') }}
                                         </p>
                                     </div>
                                 </div>
@@ -277,13 +277,13 @@
                         </div>
                         <div class="text-center">
                             <p class="text-xs font-semibold gap-1" style="color: maroon;">
-                                {{ $product->reference_number }}
+                                {{ $trip->reference_number }}
                             </p>
                             <p class="text-xs font-semibold gap-1" style="color: rgb(0, 0, 0);">
                                 طلب رحلة
                             </p>
                             <p class="text-xs font-semibold gap-1" style="color: green;">
-                                {{ $product->status }}
+                                {{ $trip->status }}
                             </p>
                         </div>
                         <div id="container-type">
@@ -293,7 +293,7 @@
                     <div
                         style="display: flex; align-items: center; justify-content: space-between; position: absolute; bottom: 5px; gap: 2px; width: 91%;">
 
-                        <a href="{{ route('mobile.orders.show', $product) }}" class="btns"><span><svg
+                        <a href="{{ route('mobile.orders.show', $trip) }}" class="btns"><span><svg
                                     class="w-6 h-6 text-green-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                     width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-width="2"
@@ -303,36 +303,30 @@
                                 </svg></span> عرض
                         </a>
 
-                        <a href="{{ route('mobile.profile.actions.invoice', $product->id) }}"
-                            class="{{ $product->invoices()->exists() ? 'rainbow btns' : 'btns' }}"><span><i
+                        <a href="{{ route('mobile.profile.actions.invoice', $trip->id) }}"
+                            class="{{ $trip->invoices()->exists() ? 'rainbow btns' : 'btns' }}"><span><i
                                     class="fa-solid fa-file-invoice" style="font-size: 18px;"></i></span>
                             فواتير
                         </a>
 
-                        <a href="{{ route('mobile.profile.actions.doc', $product->id) }}" class="btns"><span><i
+                        <a href="{{ route('mobile.profile.actions.doc', $trip->id) }}" class="btns"><span><i
                                     class="fa-regular fa-folder-open" style="font-size: 18px;"></i></span> مستندات
                         </a>
 
-                        <a href="{{ route('mobile.profile.actions.approve', $product->id) }}"
-                            class="{{ $product->approvals()->exists() ? 'rainbow btns' : 'btns' }}"><span><i
+                        <a href="{{ route('mobile.profile.actions.approve', $trip->id) }}"
+                            class="{{ $trip->approvals()->exists() ? 'rainbow btns' : 'btns' }}"><span><i
                                     class="fa-solid fa-check-circle" style="font-size: 18px;"></i></span> موافقة
                         </a>
-                        @if(Auth::user()->role == 'user')
-                        <a href="{{ route('mobile.profile.actions.user-chat', ['product_id' => $product->id]) }}"
-                            class="btns">
+                        @if(Auth::user()->role == 'admin')
+<a href="{{ route('mobile.profile.actions.admin-chat-trip', ['trip_id' => $trip->id]) }}" class="btns">
                             <span><i class="fa-regular fa-envelope" style="font-size: 18px;"></i></span>
-                            مراسلة
+                            مراسلة - {{ $trip->id }}
                         </a>
-                        @elseif(Auth::user()->role == 'admin')
-                        <a href="{{ route('mobile.profile.actions.admin-chat', ['product_id' => $product->id]) }}"
-                            class="btns">
-                            <span><i class="fa-regular fa-envelope" style="font-size: 18px;"></i></span>
-                            مراسلة
-                        </a>
-                        @endif
-                        <a href="{{ route('mobile.profile.actions.note', $product->id) }}" class="btns"><span><i
+@endif
+                        <a href="{{ route('mobile.profile.actions.note', $trip->id) }}" class="btns"><span><i
                                     class="fa-solid fa-sticky-note" style="font-size: 18px;"></i></span>
-                            ملاحظات</a>
+                            ملاحظات
+                        </a>
                     </div>
                 </div>
                 @endforeach

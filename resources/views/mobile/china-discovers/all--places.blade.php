@@ -99,7 +99,7 @@
                 data-region-id="{{ $region->id }}"
                 style="flex-shrink: 0; text-decoration: none; color: inherit; text-align: center; scroll-snap-align: start;">
                 <div style="flex-shrink: 0;">
-                    <img style="max-width: 68px; width: 100%; border-radius: 15px;"
+                    <img style="height: 68px; width: 68px; border-radius: 50%;"
                         src="{{ asset('storage/' . $region->avatar) }}"
                         alt="{{ app()->getLocale() == 'en' ? $region->name_en : (app()->getLocale() == 'zh' ? $region->name_ch : $region->name_ar) }}">
                     <p class="explorer-name" style="padding-top: 9px; font-size: 15px;">
@@ -116,7 +116,7 @@
         @foreach ($explorers as $explorer)
         <a href="{{ route('all.sub-category', ['explorer_id' => $explorer->id]) }}" class="category-card explorer-link"
             data-explorer-id="{{ $explorer->id }}">
-            <img style="width: 100px;" class="category-card-image" src="{{ asset('storage/' . $explorer->avatar) }}"
+            <img style="height: 68px; width: 68px; border-radius: 50%;" class="category-card-image" src="{{ asset('storage/' . $explorer->avatar) }}"
                 alt="{{ app()->getLocale() == 'en' ? $explorer->name_en : (app()->getLocale() == 'zh' ? $explorer->name_ch : $explorer->name_ar) }}">
             <p class="category-card-text explorer-name">
                 {{ app()->getLocale() == 'en' ? $explorer->name_en : (app()->getLocale() == 'zh' ? $explorer->name_ch :
