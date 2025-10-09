@@ -24,6 +24,7 @@
 
 <body class="relative -z-20">
     <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white -z-10 dark:bg-color1">
+        @if($howWeWork)
         <div class="relative z-10 px-6">
             <div class="flex flex-col justify-center items-center text-center">
                 <img src="{{ asset('storage/'. $howWeWork?->avatar) }}" alt=""
@@ -37,6 +38,11 @@
                 </p>
             </div>
         </div>
+        @else
+        <div class="relative z-10 px-6" style="padding-top: 50px;">
+            <x-empty />
+        </div>
+        @endif
     </div>
 
 </body>

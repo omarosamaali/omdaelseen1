@@ -32,7 +32,7 @@
         <x-china-header :title="__('messages.special_request')" :route="route('mobile.welcome')" />
 
         <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white -z-10 dark:bg-color1">
-                <div class="faqCategory pt-2">
+                <div class="faqCategory pt-10 px-6">
                     <p class="text-center px-2">{{ __('messages.زر طلب خاص') }}</p>
                 </div>
 
@@ -44,6 +44,7 @@
                         </a>
                     </div>
                     <div class="pt-5">
+                        @if($orders->isNotEmpty())
                         @foreach ($orders as $order)
                             <div class="flex flex-col gap-4" style="margin-bottom: 10px;">
                                 <div class="rounded-2xl overflow-hidden quiz-link">
@@ -96,6 +97,11 @@
                                 </div>
                             </div>
                         @endforeach
+                        @else
+                            <div>
+                                <x-empty />
+                            </div>
+                        @endif
                     </div>
                 </div>
 
