@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{{ asset('assets/assets/css/china-discover.css') }}">
 
 @section('content')
-<x-china-header :title="__('messages.الطلبات')" :route="route('mobile.profile.profile')" />
+<x-china-header :title="__('messages.الطلبات')" :route="url()->previous()" />
 <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
 
     <div style="margin-top: 36px;">
@@ -198,17 +198,17 @@
                             عرض
                         </a>
 
-                        <a href="{{ route('mobile.profile.actions.trip-invoice', $trip->id) }}"
+                        <a href="{{ route('mobile.profile.actions.invoice-trip', $trip->id) }}"
                             class="{{ $trip->invoices()->exists() ? 'rainbow btns' : 'btns' }}"><span><i
                                     class="fa-solid fa-file-invoice" style="font-size: 18px;"></i></span>
                             فواتير
                         </a>
 
-                        <a href="{{ route('mobile.profile.actions.doc', $trip->id) }}" class="btns"><span><i
+                        <a href="{{ route('mobile.profile.actions.doc-trip', $trip->id) }}" class="btns"><span><i
                                     class="fa-regular fa-folder-open" style="font-size: 18px;"></i></span> مستندات
                         </a>
 
-                        <a href="{{ route('mobile.profile.actions.approve', $trip->id) }}"
+                        <a href="{{ route('mobile.profile.actions.approve-trip', $trip->id) }}"
                             class="{{ $trip->approvals()->exists() ? 'rainbow btns' : 'btns' }}"><span><i
                                     class="fa-solid fa-check-circle" style="font-size: 18px;"></i></span> موافقة
                         </a>
@@ -219,7 +219,7 @@
     مراسلة
 </a>
 @endif
-                        <a href="{{ route('mobile.profile.actions.note', $trip->id) }}" class="btns"><span><i
+                        <a href="{{ route('mobile.profile.actions.note-trip', $trip->id) }}" class="btns"><span><i
                                     class="fa-solid fa-sticky-note" style="font-size: 18px;"></i></span>
                             ملاحظات</a>
                     </div>

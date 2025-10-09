@@ -7,7 +7,6 @@
 @section('content')
 <x-china-header :title="__('messages.تفاصيل الفاتورة')" :route="url()->previous()" />
 <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
-
     <div style="margin-top: 36px;">
         <div class="relative z-20">
             <div class="flex flex-col gap-4 pt-8" style="padding-left: 10px; padding-right: 10px; direction: rtl;">
@@ -73,7 +72,7 @@
                             @endif
                     </div>
                     <div class="flex justify-end mt-4">
-                        <a href="{{ route('mobile.profile.actions.invoice', $product->id) }}"
+                        <a href="{{ route('mobile.profile.actions.invoice', $trip->id) }}"
                             class="bg-color16 dark:bg-bgColor14 py-1.5 px-4 rounded-full text-xs font-semibold">
                             العودة إلى الفواتير
                         </a>

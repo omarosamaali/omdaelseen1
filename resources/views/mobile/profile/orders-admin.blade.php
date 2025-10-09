@@ -293,37 +293,39 @@
                     <div
                         style="display: flex; align-items: center; justify-content: space-between; position: absolute; bottom: 5px; gap: 2px; width: 91%;">
 
-                        <a href="{{ route('mobile.orders.show', $trip) }}" class="btns"><span><svg
+                        <a href="{{ route('mobile.orders.show-trip', $trip) }}" class="btns"><span><svg
                                     class="w-6 h-6 text-green-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                     width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-width="2"
                                         d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"></path>
                                     <path stroke="currentColor" stroke-width="2"
                                         d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"></path>
-                                </svg></span> عرض
+                                </svg>
+                            </span> 
+                            عرض
                         </a>
 
-                        <a href="{{ route('mobile.profile.actions.invoice', $trip->id) }}"
+                        <a href="{{ route('mobile.profile.actions.invoice-trip', $trip->id) }}"
                             class="{{ $trip->invoices()->exists() ? 'rainbow btns' : 'btns' }}"><span><i
                                     class="fa-solid fa-file-invoice" style="font-size: 18px;"></i></span>
                             فواتير
                         </a>
 
-                        <a href="{{ route('mobile.profile.actions.doc', $trip->id) }}" class="btns"><span><i
+                        <a href="{{ route('mobile.profile.actions.doc-trip', $trip->id) }}" class="btns"><span><i
                                     class="fa-regular fa-folder-open" style="font-size: 18px;"></i></span> مستندات
                         </a>
 
-                        <a href="{{ route('mobile.profile.actions.approve', $trip->id) }}"
+                        <a href="{{ route('mobile.profile.actions.approve-trip', $trip->id) }}"
                             class="{{ $trip->approvals()->exists() ? 'rainbow btns' : 'btns' }}"><span><i
                                     class="fa-solid fa-check-circle" style="font-size: 18px;"></i></span> موافقة
                         </a>
                         @if(Auth::user()->role == 'admin')
 <a href="{{ route('mobile.profile.actions.admin-chat-trip', ['trip_id' => $trip->id]) }}" class="btns">
                             <span><i class="fa-regular fa-envelope" style="font-size: 18px;"></i></span>
-                            مراسلة - {{ $trip->id }}
+                            مراسلة
                         </a>
 @endif
-                        <a href="{{ route('mobile.profile.actions.note', $trip->id) }}" class="btns"><span><i
+                        <a href="{{ route('mobile.profile.actions.note-trip', $trip->id) }}" class="btns"><span><i
                                     class="fa-solid fa-sticky-note" style="font-size: 18px;"></i></span>
                             ملاحظات
                         </a>

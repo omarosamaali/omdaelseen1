@@ -88,7 +88,8 @@
                     <td class="th">رحلة</td>
                     <td class="th">رحلة خاصة</td>
                     <td class="th">{{ $trip->user->name }}</td>
-                    <td class="th status-cell" data-id="{{ $trip->id }}">{{ $trip->payment_status == 'paid' ? 'مدفوعة' : 'غير مدفوعة' }}</td>
+                    <td class="th status-cell" data-id="{{ $trip->id }}">{{ $trip->payment_status == 'paid' ? 'مدفوعة' :
+                        'غير مدفوعة' }}</td>
                     <td class="th" style="display: flex; gap: 8px;">
                         <a href="{{ route('admin.orders.bookingShow', $trip->id) }}" class="font-medium text-green-600">
                             <svg class="w-6 h-6 text-green-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -161,9 +162,10 @@
                         <a href="{{ route('admin.orders.approval', $trip->id) }}" class="text-green-600">
                             <i class="fa-solid fa-check-circle" style="font-size: 18px;"></i>
                         </a>
-                        <button class="text-indigo-600">
+                        <a href="{{ route('mobile.profile.actions.userAdminChatTrip', $trip->id) }}"
+                            class="text-indigo-600">
                             <i class="fa-regular fa-envelope" style="font-size: 18px;"></i>
-                        </button>
+                        </a>
                         <button
                             onclick="showStatusModal('{{ $trip->id }}', 'App\\Models\\TripRequest', '{{ $trip->status }}')"
                             class="text-red-600">

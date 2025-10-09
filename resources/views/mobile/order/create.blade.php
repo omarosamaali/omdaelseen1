@@ -29,7 +29,8 @@
             </div>
         </div>
     </div>
-    {{-- <x-china-header :title="'طلب جديد'" :route="route('mobile.order')" /> --}}
+    {{--
+    <x-china-header :title="'طلب جديد'" :route="route('mobile.order')" /> --}}
     <div class="relative z-30 px-6">
         <div id="productForm" class="p-6 rounded-xl bg-white dark:bg-color9 mt-12 border border-color21 hidden">
             <div id="successMessage" class="success-message" style="display: none;">
@@ -157,7 +158,11 @@ function renderSelectedItems() {
 }
 
 function updateHiddenInput() {
-    interestsInput.value = JSON.stringify(selectedOptions);
+const selectedNames = selectedOptions.map(id => {
+    const option = options.find(opt => opt.id == id);
+    return option ? option.name : '';
+    });
+    interestsInput.value = JSON.stringify(selectedNames);
 }
 
 searchInput.addEventListener('focus', () => {

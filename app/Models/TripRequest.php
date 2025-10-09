@@ -39,10 +39,10 @@ class TripRequest extends Model
         return $this->hasMany(Document::class, 'order_id', 'id');
     }
 
-    public function orderProducts()
-    {
-        return $this->hasMany(OrderProduct::class);
-    }
+    // public function orderProducts()
+    // {
+    //     return $this->hasMany(OrderProduct::class);
+    // }
 
     public function approvals()
     {

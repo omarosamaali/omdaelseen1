@@ -12,7 +12,11 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/mobile/orders/user-chat/{product_id}', [ChatOrderController::class, 'userChat'])
 ->name('mobile.profile.actions.user-chat');
-Route::get('/mobile/orders/userAdminChat/{product_id}', [ChatOrderController::class, 'userAdminChat'])->name('mobile.profile.actions.userAdminChat');
+Route::get('/mobile/orders/userAdminChat/{product_id}', [ChatOrderController::class, 'userAdminChat'])
+->name('mobile.profile.actions.userAdminChat');
+
+Route::get('/mobile/orders/userAdminChatTrip/{trip_id}', [ChatOrderController::class, 'userAdminChatTrip'])
+    ->name('mobile.profile.actions.userAdminChatTrip');
 
 Route::get('/mobile/orders/admin-chat/{product_id}', [ChatOrderController::class, 'adminChat'])
 ->name('mobile.profile.actions.admin-chat');

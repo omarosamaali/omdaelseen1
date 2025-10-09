@@ -14,6 +14,11 @@
         width: 100%;
         z-index: 999999;
     }
+
+    .heart-icon {
+        top: unset !important;
+        bottom: 12px;
+    }
 </style>
 <x-china-header :title="__('messages.china_explorers')" :route="route('mobile.welcome')" />
 
@@ -87,18 +92,18 @@
                 @endphp
 
                 @if (auth()->check() && auth()->id() != $place->user_id)
-                <div class="heart-icon @if ($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
+                <div style="bottom: 12px; top: unset;" class="heart-icon @if ($isFavorited) favorited @endif" data-place-id="{{ $place->id }}">
                     <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
                         style="font-size: 18px;"></i>
                 </div>
                 @endif
 
                 <div class="rating-icon"
-                    style="position: absolute; top: 10px; right: 53px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                    style="bottom: 20px; top: unset; position: absolute; right: 159px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                     <i class="fa-solid fa-star" style="font-size: 18px;"></i>
-                    <span style="font-size: 14px; font-weight: bold; color: #fff;">
+                    {{-- <span style="font-size: 14px; font-weight: bold; color: #fff;">
                         {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
-                    </span>
+                    </span> --}}
                 </div>
 
                 <div class="category-tag">
@@ -174,12 +179,8 @@
                 @endif
 
                 <div class="rating-icon"
-                    style="position: absolute; top: 10px; right: 53px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                    style="position: absolute; top: unset !important; bottom: 20px; right: 156px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                     <i class="fa-solid fa-star" style="font-size: 18px;"></i>
-                    <span style="font-size: 14px; font-weight: bold; color: #fff;">
-                        {{ number_format($place->ratings_avg_rating ?? 0, 1) }}
-                        ({{ $place->ratings_count ?? 0 }})
-                    </span>
                 </div>
 
                 <div class="category-tag">
@@ -243,12 +244,8 @@
                 @endif
 
                 <div class="rating-icon"
-                    style="position: absolute; top: 10px; right: 53px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                    style="position: absolute; top: unset !important; bottom: 20px; right: 156px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                     <i class="fa-solid fa-star" style="font-size: 18px;"></i>
-                    <span style="font-size: 14px; font-weight: bold; color: #fff;">
-                        {{ number_format($place->ratings_avg_rating ?? 0, 1) }}
-                        ({{ $place->ratings_count ?? 0 }})
-                    </span>
                 </div>
 
                 <div class="category-tag">
@@ -378,11 +375,8 @@ const explorUrl = "{{ __('messages.explore') }}";
                     </div>
                 ` : ''}
                 
-                <div class="rating-icon" style="position: absolute; top: 10px; right: 53px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                <div class="rating-icon" style="position: absolute; top: unset !important; bottom: 20px; right: 156px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                     <i class="fa-solid fa-star" style="font-size: 18px;"></i>
-                    <span style="font-size: 14px; font-weight: bold; color: #fff;">
-                        ${parseFloat(place.ratings_avg_rating || 0).toFixed(1)} (${place.ratings_count || 0})
-                    </span>
                 </div>
                 
                 <div class="category-tag">

@@ -288,16 +288,39 @@ Route::get('/mobile/orders/note/{id}', function ($id) {
     return view('mobile.profile.actions.note', compact('product'));
 })->name('mobile.profile.actions.note');
 
+Route::get('/mobile/orders/note/{tripId}/show-trip/{noteId}', function ($tripId, $noteId) {
+    $trip = TripRequest::findOrFail($tripId);
+    $note = Note::findOrFail($noteId);
+    return view('mobile.profile.actions.show_note-trip', compact('trip', 'note'));
+})->name('mobile.profile.actions.show_note-trip');
+
+Route::get('/mobile/orders/note-trip/{id}', function ($id) {
+    $trip = TripRequest::findOrFail($id)->load('notes');
+    return view('mobile.profile.actions.note-trip', compact('trip'));
+})->name('mobile.profile.actions.note-trip');
+
+
 Route::get('/mobile/orders/approve/{productId}/show/{approveId}', function ($productId, $approveId) {
     $product = Product::findOrFail($productId);
     $approve = Approval::findOrFail($approveId);
     return view('mobile.profile.actions.show_approve', compact('product', 'approve'));
 })->name('mobile.profile.actions.show_approve');
 
+Route::get('/mobile/orders/approve/{tripId}/show-trip/{approveId}', function ($tripId, $approveId) {
+    $trip = TripRequest::findOrFail($tripId);
+    $approve = Approval::findOrFail($approveId);
+    return view('mobile.profile.actions.show_approve-trip', compact('trip', 'approve'));
+})->name('mobile.profile.actions.show_approve-trip');
+
 Route::get('/mobile/orders/approve/{id}', function ($id) {
     $product = Product::findOrFail($id)->load('approvals', 'notes');
     return view('mobile.profile.actions.approve', compact('product'));
 })->name('mobile.profile.actions.approve');
+
+Route::get('/mobile/orders/approve-trip/{id}', function ($id) {
+    $trip = TripRequest::findOrFail($id)->load('approvals', 'notes');
+    return view('mobile.profile.actions.approve-trip', compact('trip'));
+})->name('mobile.profile.actions.approve-trip');
 
 Route::get('/mobile/orders/invoice/{productId}/show/{invoiceId}', function ($productId, $invoiceId) {
     $product = Product::findOrFail($productId);
@@ -305,10 +328,28 @@ Route::get('/mobile/orders/invoice/{productId}/show/{invoiceId}', function ($pro
     return view('mobile.profile.actions.show_invoice', compact('product', 'invoice'));
 })->name('mobile.profile.actions.show_invoice');
 
+Route::get('/mobile/orders/invoice/{tripId}/show-trip/{invoiceId}', function ($tripId, $invoiceId) {
+    $trip = TripRequest::findOrFail($tripId);
+    $invoice = Invoice::findOrFail($invoiceId);
+    return view('mobile.profile.actions.show_invoice-trip', compact('trip', 'invoice'));
+})->name('mobile.profile.actions.show_invoice-trip');
+
 Route::get('/mobile/orders/invoice/{id}', function ($id) {
     $product = Product::findOrFail($id)->load('invoices', 'notes');
     return view('mobile.profile.actions.invoice', compact('product'));
 })->name('mobile.profile.actions.invoice');
+
+Route::get('/mobile/orders/invoice-trip/{id}', function ($id) {
+    $trip = TripRequest::findOrFail($id)->load('invoices', 'notes');
+    return view('mobile.profile.actions.invoice-trip', compact('trip'));
+})->name('mobile.profile.actions.invoice-trip');
+
+
+Route::get('/mobile/orders/documents/{tripId}/show-trip/{documentId}', function ($tripId, $documentId) {
+    $trip = TripRequest::findOrFail($tripId);
+    $document = Document::findOrFail($documentId);
+    return view('mobile.profile.actions.show_document-trip', compact('trip', 'document'));
+})->name('mobile.profile.actions.show_document-trip');
 
 Route::get('/mobile/orders/documents/{productId}/show/{documentId}', function ($productId, $documentId) {
     $product = Product::findOrFail($productId);
@@ -316,16 +357,25 @@ Route::get('/mobile/orders/documents/{productId}/show/{documentId}', function ($
     return view('mobile.profile.actions.show_document', compact('product', 'document'));
 })->name('mobile.profile.actions.show_document');
 
+
 Route::get('/mobile/orders/documents/{id}', function ($id) {
     $product = Product::findOrFail($id)->load('documents', 'notes');
     return view('mobile.profile.actions.doc', compact('product'));
 })->name('mobile.profile.actions.doc');
 
+Route::get('/mobile/orders/documents-trip/{id}', function ($id) {
+    $trip = TripRequest::findOrFail($id)->load('documents', 'notes');
+    return view('mobile.profile.actions.doc-trip', compact('trip'));
+})->name('mobile.profile.actions.doc-trip');
+
 Route::get('/mobile/orders/orders-user/{product}', function (App\Models\Product $product) {
     $product->load('approvals', 'notes');
     return view('mobile.profile.order-display', compact('product'));
 })->name('mobile.orders.show');
-
+Route::get('/mobile/orders/orders-user-trip/{trip}', function (App\Models\TripRequest $trip) {
+    $trip->load('approvals', 'notes');
+    return view('mobile.profile.order-display-trip', compact('trip'));
+})->name('mobile.orders.show-trip');
 Route::middleware(['auth'])->group(function () {
     Route::post('/mobile/chat/send', [ChatController::class, 'sendMessage'])->name('mobile.chat.send');
 });

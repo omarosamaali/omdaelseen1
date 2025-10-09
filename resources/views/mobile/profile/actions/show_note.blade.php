@@ -5,15 +5,8 @@
 <link rel="stylesheet" href="{{ asset('assets/assets/css/china-discover.css') }}">
 
 @section('content')
+<x-china-header :title="__('messages.تفاصيل الملاحظة')" :route="url()->previous()" />
 <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
-    <div class="header-container">
-        <img src="{{ asset('assets/assets/images/header-bg.png') }}" alt="">
-        <a href="{{ route('mobile.profile.actions.doc', $product->id) }}" class="profile-link dark:bg-color10">
-            <i class="fa-solid fa-chevron-left"></i>
-        </a>
-        <div class="logo-register">{{ __('messages.تفاصيل الملاحظة') }}</div>
-    </div>
-
     <div style="margin-top: 36px;">
         <div class="relative z-20">
             <div class="flex flex-col gap-4 pt-8" style="padding-left: 10px; padding-right: 10px; direction: rtl;">
@@ -43,7 +36,7 @@
                         @if ($note->file_path)
                         <p class="text-xs font-semibold">
                             <span class="font-bold">الملف:</span>
-                            <a href="{{ asset($note->file_path) }}" target="_blank" class="text-blue-500 underline">
+<a href="{{ asset('storage/' . $note->file_path) }}" download target="_blank" class="text-blue-500 underline">
                                 تحميل الملف
                             </a>
                         </p>

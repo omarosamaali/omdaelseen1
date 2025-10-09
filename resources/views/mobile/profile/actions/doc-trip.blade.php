@@ -6,21 +6,20 @@
 
 @section('content')
     @if(Auth::user()->role == 'admin')
-    <x-china-header :title="__('messages.المستندات')" :route="route('mobile.admin-orders')" />
-    @else
-    <x-china-header :title="__('messages.المستندات')" :route="route('mobile.orders')" />
-    @endif
+        <x-china-header :title="__('messages.المستندات')" :route="route('mobile.admin-orders')" />
+        @else
+        <x-china-header :title="__('messages.المستندات')" :route="route('mobile.orders')" />
+        @endif
 <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
-
     <div style="margin-top: 36px;">
         <div class="relative z-20">
             <div class="flex flex-col gap-4 pt-8" style="direction: rtl;">
-                @if ($product->documents->isEmpty())
+                @if ($trip->documents->isEmpty())
                 <div class="bg-white dark:bg-color9 py-4 px-5 rounded-2xl shadow-md border text-center">
                     <x-empty />
                 </div>
                 @else
-                @foreach ($product->documents as $document)
+                @foreach ($trip->documents as $document)
                 <div class="shadow flex border justify-between items-center bg-white dark:bg-color9 py-4 px-5 rounded-2xl"
                     style="margin-left: 10px; margin-right: 10px;">
                     <div class="flex justify-start items-center gap-3">
@@ -130,7 +129,7 @@
                     <div
                         class="flex justify-center items-center gap-2 bg-color16 dark:bg-bgColor14 py-1.5 px-4 rounded-full">
                         <a
-                            href="{{ route('mobile.profile.actions.show_document', ['productId' => $product->id, 'documentId' => $document->id]) }}">
+                            href="{{ route('mobile.profile.actions.show_document-trip', ['tripId' => $trip->id, 'documentId' => $document->id]) }}">
                             <i class="fa-solid fa-eye" style="color: green;"></i>
                         </a>
                     </div>

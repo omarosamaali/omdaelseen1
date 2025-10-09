@@ -6,22 +6,22 @@
 
 @section('content')
 @if(Auth::user()->role == 'admin')
-<x-china-header :title="__('messages.الفواتير')" :route="route('mobile.admin-orders')" />
-@else
-<x-china-header :title="__('messages.الفواتير')" :route="route('mobile.orders')" />
-@endif
+    <x-china-header :title="__('messages.الفواتير')" :route="route('mobile.admin-orders')" />
+    @else
+    <x-china-header :title="__('messages.الفواتير')" :route="route('mobile.orders')" />
+    @endif
 <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
 
 
     <div style="margin-top: 36px;">
         <div class="relative z-20">
             <div class="flex flex-col gap-4 pt-8" style="direction: rtl;">
-                @if ($product->invoices->isEmpty())
+                @if ($trip->invoices->isEmpty())
                 <div class="bg-white dark:bg-color9 py-4 px-5 rounded-2xl shadow-md border text-center">
                     <x-empty />
                 </div>
                 @else
-                @foreach ($product->invoices as $invoice)
+                @foreach ($trip->invoices as $invoice)
                 <div class="shadow flex border justify-between items-center bg-white dark:bg-color9 py-4 px-5 rounded-2xl"
                     style="margin-left: 10px; margin-right: 10px;">
                     <div class="flex justify-start items-center gap-3">
@@ -137,7 +137,7 @@
                     <div
                         class="flex justify-center items-center gap-2 bg-color16 dark:bg-bgColor14 py-1.5 px-4 rounded-full">
                         <a
-                            href="{{ route('mobile.profile.actions.show_invoice', ['productId' => $product->id, 'invoiceId' => $invoice->id]) }}">
+                            href="{{ route('mobile.profile.actions.show_invoice-trip', ['tripId' => $trip->id, 'invoiceId' => $invoice->id]) }}">
                             <i class="fa-solid fa-eye" style="color: green;"></i>
                         </a>
                     </div>

@@ -5,12 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\OrderMessage;
 use App\Models\Product;
 use App\Models\TripRequest;
+use App\Models\TravelChat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ChatOrderController extends Controller
 {
+    public function userAdminChatTrip($trip_id)
+    {
+
+        $trip = TripRequest::findOrFail($trip_id); // جلب بيانات المنتج
+        return view('mobile.profile.actions.userAdminChatTrip', compact('trip_id', 'trip'));
+    }
+
     public function userAdminChat($product_id)
     {
         
