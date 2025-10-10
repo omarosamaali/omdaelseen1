@@ -122,6 +122,7 @@
                 <div class="place-name">
                     {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
                 </div>
+                @auth
                 @if(Auth::user()->status != 1)
                 <button onclick="showActivationAlert()" class="explore-btn">
                     {{ __('messages.explore') }}
@@ -131,6 +132,7 @@
                     {{ __('messages.explore') }}
                 </a>
                 @endif
+                @endauth
                 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
                 <script>
@@ -199,7 +201,7 @@
                 <div class="place-name">
                     {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
                 </div>
-
+@auth
                 @if(Auth::user()->status != 1)
                 <button onclick="showActivationAlert()" class="explore-btn">
                     {{ __('messages.explore') }}
@@ -209,6 +211,7 @@
                     {{ __('messages.explore') }}
                 </a>
                 @endif
+                @endauth
             </div>
             @empty
             <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
@@ -265,6 +268,7 @@
                     {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
                 </div>
 
+                    @auth
                 @if(Auth::user()->status != 1)
                 <button onclick="showActivationAlert()" class="explore-btn">
                     {{ __('messages.explore') }}
@@ -274,6 +278,7 @@
                     {{ __('messages.explore') }}
                 </a>
                 @endif
+                @endauth
             </div>
             @empty
             <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">

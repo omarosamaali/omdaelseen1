@@ -24,8 +24,8 @@
 
 <body class="relative -z-20">
     <div class="container min-h-dvh relative overflow-hidden py-8 dark:text-white -z-10 dark:bg-color1">
+        @if($privacy)
         <div class="relative z-10 px-6">
-
             <div class="flex flex-col justify-center items-center text-center">
                 <img src="{{ asset('storage/' . $privacy?->avatar) }}" alt=""
                     style="padding-top:30px; height: 300px;" />
@@ -38,6 +38,9 @@
                 </p>
             </div>
         </div>
+        @else
+        <x-empty />
+        @endif
     </div>
 
 </body>
