@@ -6,6 +6,9 @@
 
 @section('content')
 <style>
+    .rating-icon {
+        z-index: 99;
+    }
     .categories {
         color: black;
     }
