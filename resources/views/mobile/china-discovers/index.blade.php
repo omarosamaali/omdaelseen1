@@ -6,9 +6,15 @@
 
 @section('content')
 <style>
+    .place-name {
+        /* position: absolute; */
+        bottom: 0px !important;
+    }
+
     .rating-icon {
         z-index: 99;
     }
+
     .categories {
         color: black;
     }
@@ -37,7 +43,7 @@
 
     <div>
         <div class="continaer--title">
-            <h6 class="categories text-black" style="color: black;">{{ __('messages.categories') }}</h6>
+            <h6 class="categories text-black" style="color: maroon;">{{ __('messages.categories') }}</h6>
             <a href={{ route('mobile.china-discovers.all--places') }} class="show--all">{{
                 __('messages.search_for_place') }}</a>
         </div>
@@ -92,11 +98,9 @@
                 <div class="place-card">
                     <img src="{{ asset('storage/' . $place->avatar) }}"
                         alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
-
                     @php
                     $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
                     @endphp
-
                     @if (auth()->check() && auth()->id() != $place->user_id)
                     <div style="bottom: 12px; top: unset;" class="heart-icon @if ($isFavorited) favorited @endif"
                         data-place-id="{{ $place->id }}">
@@ -104,15 +108,13 @@
                             style="font-size: 18px;"></i>
                     </div>
                     @endif
-
                     <div class="rating-icon"
-                        style="bottom: 16px; top: unset; position: absolute; right: 81px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                        style="bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
                         <span style="font-size: 14px; font-weight: bold; color: #fff;">
                             {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
                         </span>
                     </div>
-
                     <div class="category-tag">
                         @if ($place->mainCategory)
                         <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
@@ -125,12 +127,6 @@
                         <span>{{ __('بدون تصنيف') }}</span>
                         @endif
                     </div>
-                    <style>
-                        .place-name {
-                            /* position: absolute; */
-                            bottom: 0px !important;
-                        }
-                    </style>
                     <div class="place-name">
                         <span style="bottom: 50px; position: relative;">
                             {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
@@ -181,7 +177,7 @@
                     @endif
 
                     <div class="rating-icon"
-                        style="bottom: 16px; top: unset; position: absolute; right: 81px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                        style="bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
                         <span style="font-size: 14px; font-weight: bold; color: #fff;">
                             {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
@@ -201,22 +197,22 @@
                         @endif
                     </div>
 
-<span style="bottom: 50px; position: relative;">
-                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}                    @auth
-                    {{-- @if(Auth::user()->status != 1) --}}
-                    {{-- <button onclick="showActivationAlert()" class="explore-btn">
-                        {{ __('messages.explore') }}
-                    </button> --}}
-                    @else
-                    {{-- <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
-                        {{ __('messages.explore') }}
-                    </a> --}}
-                    {{-- @endif --}}
-                    @endauth
-                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                    <span style="bottom: 50px; position: relative;">
+                        {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }} @auth
+                        {{-- @if(Auth::user()->status != 1) --}}
+                        {{-- <button onclick="showActivationAlert()" class="explore-btn">
+                            {{ __('messages.explore') }}
+                        </button> --}}
+                        @else
+                        {{-- <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
+                            {{ __('messages.explore') }}
+                        </a> --}}
+                        {{-- @endif --}}
+                        @endauth
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-                    <script>
-                        function showActivationAlert() {
+                        <script>
+                            function showActivationAlert() {
                                 Swal.fire({
                                     title: 'تنبيه',
                                     text: 'يجب تفعيل الحساب أولاً قبل استكشاف الأماكن.',
@@ -225,11 +221,10 @@
                                     confirmButtonColor: '#3085d6',
                                 });
                             }
-                    </script>
+                        </script>
                 </div>
             </a>
             @endauth
-
             @empty
             <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
                 <p style="color: #6c757d; font-size: 18px;">{{ __('لا يوجد أماكن للعرض حاليًا.') }}</p>
@@ -240,8 +235,9 @@
 
     {{-- أحدث الأماكن --}}
     <div class="continaer--title" style="margin-top: 30px;">
-        <h6 class="categories">{{ __('messages.latest_places') }}</h6>
-        <a href="{{ route('mobile.china-discovers.all--places') }}" class="show--all">{{ __('messages.search_for_place')
+        <h6 class="categories" style="color: maroon;">{{ __('messages.latest_places') }}</h6>
+        <a href="{{ route('mobile.china-discovers.all--places') }}" style="border: 0px;" class="show--all">{{
+            __('messages.show_all')
             }}</a>
     </div>
 
@@ -267,7 +263,7 @@
                     @endif
 
                     <div class="rating-icon"
-                        style="bottom: 16px; top: unset; position: absolute; right: 81px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                        style="bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
                         <span style="font-size: 14px; font-weight: bold; color: #fff;">
                             {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
@@ -288,8 +284,9 @@
                     </div>
 
                     <div class="place-name">
-<span style="bottom: 50px; position: relative;">
-                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}                    </div>
+                        <span style="bottom: 50px; position: relative;">
+                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
+                    </div>
                     @auth
                     {{-- @if(Auth::user()->status != 1) --}}
                     {{-- <button onclick="showActivationAlert()" class="explore-btn">
@@ -335,7 +332,7 @@
                     @endif
 
                     <div class="rating-icon"
-                        style="bottom: 16px; top: unset; position: absolute; right: 81px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                        style="bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
                         <span style="font-size: 14px; font-weight: bold; color: #fff;">
                             {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
@@ -356,8 +353,9 @@
                     </div>
 
                     <div class="place-name">
-<span style="bottom: 50px; position: relative;">
-                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}                    </div>
+                        <span style="bottom: 50px; position: relative;">
+                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
+                    </div>
                     @auth
                     {{-- @if(Auth::user()->status != 1) --}}
                     {{-- <button onclick="showActivationAlert()" class="explore-btn">
@@ -394,14 +392,14 @@
 
     {{-- الأكثر تقييماً --}}
     <div class="continaer--title" style="margin-top: 30px;">
-        <h6 class="categories">{{ __('messages.most_rated') }}</h6>
-        <a href={{ route('mobile.china-discovers.all--places') }} class="show--all">{{
-            __('messages.search_for_place') }}</a>
+        <h6 class="categories" style="color: maroon;">{{ __('messages.most_rated') }}</h6>
+        <a href={{ route('mobile.china-discovers.all--places') }} style="border: 0px !important;" class="show--all">{{
+            __('messages.show_all') }}</a>
     </div>
 
     <div class="slider-container">
         <div class="slider" id="placesSlider">
-            @forelse ($latestPlaces as $place)
+            @forelse ($topRatedPlaces as $place)
             @auth
             <a href="{{ route('mobile.china-discovers.info_place', $place) }}">
                 <div class="place-card">
@@ -421,7 +419,7 @@
                     @endif
 
                     <div class="rating-icon"
-                        style="bottom: 16px; top: unset; position: absolute; right: 81px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                        style="bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
                         <span style="font-size: 14px; font-weight: bold; color: #fff;">
                             {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
@@ -442,8 +440,9 @@
                     </div>
 
                     <div class="place-name">
-<span style="bottom: 50px; position: relative;">
-                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}                    </div>
+                        <span style="bottom: 50px; position: relative;">
+                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
+                    </div>
                     @auth
                     {{-- @if(Auth::user()->status != 1) --}}
                     {{-- <button onclick="showActivationAlert()" class="explore-btn">
@@ -489,7 +488,7 @@
                     @endif
 
                     <div class="rating-icon"
-                        style="bottom: 16px; top: unset; position: absolute; right: 81px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                        style="bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
                         <span style="font-size: 14px; font-weight: bold; color: #fff;">
                             {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
@@ -510,8 +509,9 @@
                     </div>
 
                     <div class="place-name">
-<span style="bottom: 50px; position: relative;">
-                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}                    </div>
+                        <span style="bottom: 50px; position: relative;">
+                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
+                    </div>
                     @auth
                     {{-- @if(Auth::user()->status != 1) --}}
                     {{-- <button onclick="showActivationAlert()" class="explore-btn">

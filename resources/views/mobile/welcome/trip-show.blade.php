@@ -70,8 +70,11 @@
     }
 
     .show--all {
-        font-size: 14px;
-        color: gray;
+        border: 1px solid black;
+        color: black;
+        border-radius: 6px;
+        padding: 6px;
+        font-size: 17px;
     }
 
     .categories {
@@ -1172,13 +1175,15 @@
 
     <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white -z-10 dark:bg-color1">
         {{-- @if ($banner?->image) --}}
-        <img class="main-image" src="{{ asset('images/trips/' . $trip->image) }}" style="margin-top: 62px !important;" max-height="300px" alt="">
+        <img class="main-image" src="{{ asset('images/trips/' . $trip->image) }}" style="margin-top: 62px !important;"
+            max-height="300px" alt="">
         {{-- @endif --}}
         <div class="relative z-10">
             <div class="main-image-container">
                 <div>
                     <div class="py-5 bg-white dark:bg-color10">
-                        <div style="border-bottom: 1px dashed rgba(150, 147, 147, 0.401) !important;" class="text-center pb-4 border-b border-dashed border-black dark:border-color24 border-opacity-10 ">
+                        <div style="border-bottom: 1px dashed rgba(150, 147, 147, 0.401) !important;"
+                            class="text-center pb-4 border-b border-dashed border-black dark:border-color24 border-opacity-10 ">
                             <p class="font-semibold text-sm" style="margin-bottom: 15px;">
                                 {{ app()->getLocale() == 'en'
                                 ? $trip->title_en
@@ -1187,8 +1192,10 @@
                                 : $trip->title_ar) }}
                             </p>
                         </div>
-                        <img src="{{ asset('assets/assets/images/fly-GIF.gif') }}" class="fly-img" style="z-index: 999;" alt="">
-                        <div style="position: relative; top: -30px; gap: 30px;" class="flex justify-between items-center">
+                        <img src="{{ asset('assets/assets/images/fly-GIF.gif') }}" class="fly-img" style="z-index: 999;"
+                            alt="">
+                        <div style="position: relative; top: -30px; gap: 30px;"
+                            class="flex justify-between items-center">
                             <div class="flex justify-start items-center gap-2">
                                 <div class="text-center">
                                     <span class="text-sm">{{
@@ -1225,30 +1232,43 @@
                         @if ($trip->private_room_price)
                         <div class="flex justify-between items-center">
                             <div style="display: flex; align-items: center; justify-content: space-between;">
-                                <p class="tab-details-content" style="display: flex; flex-direction: column; align-items: center;">
+                                <p class="tab-details-content"
+                                    style="display: flex; flex-direction: column; align-items: center;">
                                     <i class="fa-solid fa-bed" style="color: maroon;"></i>
                                     نوع الغرفة
                                     خاصه
-                                    <span style="display: flex; align-items: center;">{{ $trip->shared_room_price }}<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                            <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                    <span style="display: flex; align-items: center;">{{ $trip->shared_room_price }}<svg
+                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none">
+                                            <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z"
+                                                stroke="#000" stroke-width="1.5" stroke-miterlimit="10"
+                                                stroke-linecap="round" stroke-linejoin="round">
                                             </path>
-                                            <path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
                                             </path>
-                                            <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
                                             </path>
                                         </svg></span>
                                 </p>
-                                <p class="tab-details-content" style="display: flex; flex-direction: column; align-items: center;">
+                                <p class="tab-details-content"
+                                    style="display: flex; flex-direction: column; align-items: center;">
                                     <i class="fa-solid fa-bed" style="color: maroon;"></i>نوع الغرفة
                                     مشتركة
 
                                     <span style="display: flex; align-items: center;">{{ $trip->private_room_price }}
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                            <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none">
+                                            <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z"
+                                                stroke="#000" stroke-width="1.5" stroke-miterlimit="10"
+                                                stroke-linecap="round" stroke-linejoin="round">
                                             </path>
-                                            <path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
                                             </path>
-                                            <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
                                             </path>
                                         </svg></span>
                                 </p>
@@ -1257,14 +1277,22 @@
                         @else
                         <div class="flex justify-between items-center">
                             <div style="display: flex; align-items: center; justify-content: center;">
-                                <p class="tab-details-content" style="display: flex; flex-direction: column; align-items: center;">نوع الغرفة<i class="fa-solid fa-bed" style="color: maroon;"></i>
+                                <p class="tab-details-content"
+                                    style="display: flex; flex-direction: column; align-items: center;">نوع الغرفة<i
+                                        class="fa-solid fa-bed" style="color: maroon;"></i>
                                     <span style="display: flex; align-items: center;">{{ $room_type }}</span>
-                                    <span style="display: flex; align-items: center;">{{ $trip->price }} <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                            <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                    <span style="display: flex; align-items: center;">{{ $trip->price }} <svg
+                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none">
+                                            <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z"
+                                                stroke="#000" stroke-width="1.5" stroke-miterlimit="10"
+                                                stroke-linecap="round" stroke-linejoin="round">
                                             </path>
-                                            <path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
                                             </path>
-                                            <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5"
+                                                stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
                                             </path>
                                         </svg></span>
                                 </p>
@@ -1273,7 +1301,8 @@
                         @endif
                     </div>
 
-                    {{-- <a href="{{ route('mobile.auth.step2', ['trip_id' => $trip->id]) }}" class="trip-button">الاشتراك</a> --}}
+                    {{-- <a href="{{ route('mobile.auth.step2', ['trip_id' => $trip->id]) }}"
+                        class="trip-button">الاشتراك</a> --}}
                 </div>
             </div>
             <div class="tabs-container">
@@ -1298,7 +1327,8 @@
                             <div class="quiz-link p-2 bg-white dark:bg-color10">
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 7px;">
                                 </div>
-                                <div style="position: relative; top: -30px;" class="border-b border-dashed border-black dark:border-color24 border-opacity-10 flex justify-between items-center">
+                                <div style="position: relative; top: -30px;"
+                                    class="border-b border-dashed border-black dark:border-color24 border-opacity-10 flex justify-between items-center">
                                     <div class="sub-category">
                                         @if($activity->place?->subCategory->name_ar)
                                         <p>{{ $activity->place->subCategory->name_ar}}</p>
@@ -1311,13 +1341,16 @@
                                         $periodTranslation = '';
                                         switch($activity->period) {
                                         case 'morning':
-                                        $periodTranslation = '<img src="' . asset('assets/assets/images/mor2.png') . '">';
+                                        $periodTranslation = '<img
+                                            src="' . asset('assets/assets/images/mor2.png') . '">';
                                         break;
                                         case 'afternoon':
-                                        $periodTranslation = '<img src="' . asset('assets/assets/images/noon2.png') . '">';
+                                        $periodTranslation = '<img
+                                            src="' . asset('assets/assets/images/noon2.png') . '">';
                                         break;
                                         case 'evening':
-                                        $periodTranslation = '<img src="' . asset('assets/assets/images/nghit2.png') . '">';
+                                        $periodTranslation = '<img
+                                            src="' . asset('assets/assets/images/nghit2.png') . '">';
                                         break;
                                         default:
                                         $periodTranslation = $activity->period;
@@ -1328,7 +1361,8 @@
                                     @if ($activity->is_place_related == 0)
                                     <img src="{{ asset('storage/' . $activity?->image) }}" class="fly-img-order" alt="">
                                     @else
-                                    <img src="{{ asset('storage/' . $activity?->place->avatar ?? '') }}" class="fly-img-order" alt="">
+                                    <img src="{{ asset('storage/' . $activity?->place->avatar ?? '') }}"
+                                        class="fly-img-order" alt="">
                                     @endif
                                 </div>
 
@@ -1351,21 +1385,21 @@
                                     </p>
                                     <p class="text-xs pt-2">
                                         {{-- {{ $activity->place->details_ar }} --}}
-                                        <p class="text-xs pt-2">
-                                            @if ($activity->is_place_related == 0)
-                                            {!! app()->getLocale() == 'en'
-                                            ? $activity->details_en
-                                            : (app()->getLocale() == 'zh'
-                                            ? $activity->details_zh
-                                            : $activity->details_ar) !!}
-                                            @else
-                                            {!! app()->getLocale() == 'en'
-                                            ? $activity->place->details_en
-                                            : (app()->getLocale() == 'zh'
-                                            ? $activity->place->details_zh
-                                            : $activity->place->details_ar) !!}
-                                            @endif
-                                        </p>
+                                    <p class="text-xs pt-2">
+                                        @if ($activity->is_place_related == 0)
+                                        {!! app()->getLocale() == 'en'
+                                        ? $activity->details_en
+                                        : (app()->getLocale() == 'zh'
+                                        ? $activity->details_zh
+                                        : $activity->details_ar) !!}
+                                        @else
+                                        {!! app()->getLocale() == 'en'
+                                        ? $activity->place->details_en
+                                        : (app()->getLocale() == 'zh'
+                                        ? $activity->place->details_zh
+                                        : $activity->place->details_ar) !!}
+                                        @endif
+                                    </p>
                                     </p>
                                 </div>
                             </div>
@@ -1450,7 +1484,8 @@
 
                 <div id="tab1" class="tab-content">
                     <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <p class="tab-details-content" style="display: flex; flex-direction: column; align-items: center;">
+                        <p class="tab-details-content"
+                            style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-square-h" style="color: maroon;"></i>
                             <span style="color: maroon">
                                 فندق الاقامة
@@ -1461,7 +1496,8 @@
                             ? $trip->hotel_zh
                             : $trip->hotel_ar) }}
                         </p>
-                        <p class="tab-details-content" style="display: flex; flex-direction: column; align-items: center;">
+                        <p class="tab-details-content"
+                            style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-car" style="color: maroon;"></i>
                             <span style="color: maroon">
                                 مركبة خاصة
@@ -1477,7 +1513,8 @@
                     </div>
 
                     <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <p class="tab-details-content" style="display: flex; flex-direction: column; align-items: center;">
+                        <p class="tab-details-content"
+                            style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-language" style="color: maroon;"></i>
                             <span style="color: maroon">
                                 المترجمين
@@ -1490,7 +1527,8 @@
                             ? 'لا يوجد'
                             : '')) }}
                         </p>
-                        <p class="tab-details-content" style="display: flex; flex-direction: column; align-items: center;">
+                        <p class="tab-details-content"
+                            style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-utensils" style="color: maroon;"></i>
                             <span style="color: maroon">
                                 وجبات الطعام
@@ -1515,29 +1553,34 @@
                         </p>
                     </div>
                     <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <p class="tab-details-content" style="display: flex; flex-direction: column; align-items: center;">
+                        <p class="tab-details-content"
+                            style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-user" style="color: maroon;"></i>
                             <span style="color: maroon">
                                 استقبال بالمطار
                             </span>
                             {{ $trip->airport_pickup == '1' ? 'نعم' : 'لا' }}
                         </p>
-                        <p class="tab-details-content" style="display: flex; flex-direction: column; align-items: center;">
-                            <img src="{{ asset('assets/assets/images/omda-icon (1).png') }}" style="width: 30px; height: 19px;" alt="">
+                        <p class="tab-details-content"
+                            style="display: flex; flex-direction: column; align-items: center;">
+                            <img src="{{ asset('assets/assets/images/omda-icon (1).png') }}"
+                                style="width: 30px; height: 19px;" alt="">
                             <span style="color: maroon">مشرف من عمدة الصين</span>
                             {{ $trip->supervisor == '1' ? 'نعم' : 'لا' }}
                         </p>
                     </div>
 
                     <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <p class="tab-details-content" style="display: flex; flex-direction: column; align-items: center;">
+                        <p class="tab-details-content"
+                            style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-industry" style="color: maroon;"></i>
                             <span style="color: maroon">
                                 زيارة المصانع
                             </span>
                             {{ $trip->factory_visit == '1' ? 'نعم' : 'لا' }}
                         </p>
-                        <p class="tab-details-content" style="display: flex; flex-direction: column; align-items: center;">
+                        <p class="tab-details-content"
+                            style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-torii-gate" style="color: maroon;"></i>
                             <span style="color: maroon">
                                 زيارة المواقع السياحية
@@ -1547,14 +1590,16 @@
                     </div>
 
                     <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <p class="tab-details-content" style="display: flex; flex-direction: column; align-items: center;">
+                        <p class="tab-details-content"
+                            style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-ticket" style="color: maroon;"></i>
                             <span style="color: maroon">
                                 يشمل التذاكر
                             </span>
                             {{ $trip->tickets_included == '1' ? 'نعم' : 'لا' }}
                         </p>
-                        <p class="tab-details-content" style="display: flex; flex-direction: column; align-items: center;">
+                        <p class="tab-details-content"
+                            style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-wallet" style="color: maroon;"></i>
                             <span style="color: maroon">
                                 سعر الرحلة
@@ -1582,7 +1627,8 @@
                         <i class="fa-solid fa-star modal-star"></i>
                         <i class="fa-solid fa-star modal-star"></i>
                     </div>
-                    <textarea id="commentInput" class="modal-comment" placeholder="شاركنا تجربتك وانطباعك عن هذا المكان... (اختياري)"></textarea>
+                    <textarea id="commentInput" class="modal-comment"
+                        placeholder="شاركنا تجربتك وانطباعك عن هذا المكان... (اختياري)"></textarea>
                     <div class="modal-actions">
                         <button class="modal-button cancel-button" onclick="closeRatingModal()">إلغاء</button>
                         <button class="modal-button confirm-button" onclick="confirmRating()">تأكيد التقييم</button>

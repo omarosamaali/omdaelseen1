@@ -601,6 +601,12 @@ Route::get('mobile', function () {
     ->where('start_date', '<=', Carbon::now())->first();
     return view('mobile.welcome', compact('banner', 'events'));
 })->name('mobile.welcome');
+Route::get('mobile1', function () {
+    $banner = Banner::where('is_active', 'نشط')->where('location', 'both', 'mobile_app')->first();
+    $events = Event::where('status', 'نشط')->where('end_date', '>', Carbon::now())
+        ->where('start_date', '<=', Carbon::now())->first();
+    return view('mobile.welcome1', compact('banner', 'events'));
+})->name('mobile.welcome1');
 Route::middleware('mobile_auth')->group(function () {
 
 

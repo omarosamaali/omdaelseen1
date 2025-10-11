@@ -274,7 +274,56 @@ class AppServiceProvider extends ServiceProvider
                 'reportsAgainstUserPlaces' => $reportsAgainstUserPlacesCount // يمكنك استخدام هذا في الـ view
             ]);
         });
-        
+
+        View::composer(['mobile.profile.profileAdmin', 'mobile.welcome1'], function ($view) {
+            $totalCount = Report::count() + Favorites::count() + Rating::count() + ReviewReport::count();
+            $hiddenNotificationsCount = 0;
+            $hiddenNotificationsJson = Cookie::get('hidden_notifications');
+            if ($hiddenNotificationsJson) {
+                $hiddenNotifications = json_decode($hiddenNotificationsJson, true);
+                if (is_array($hiddenNotifications)) {
+                    $hiddenNotificationsCount = count($hiddenNotifications);
+                }
+            }
+
+            $finalCount = max(0, $totalCount - $hiddenNotificationsCount);
+            $view->with('countNotifications', $finalCount);
+        });
+
+        View::composer(['mobile.profile.profile', 'mobile.welcome1'], function ($view) {
+            $userId = Auth::user()?->id;
+            $userReportsCount = Report::where('user_id', $userId)->count();
+            $reportsAgainstUserPlacesCount = Report::whereIn('place_id', function ($query) use ($userId) {
+                $query->select('id')
+                    ->from('places')
+                    ->where('user_id', $userId);
+            })->count();
+            $favoritesCount = Favorites::where('user_id', $userId)->count();
+            $ratingsCount = Rating::where('user_id', $userId)->count();
+            $reviewReportsCount = ReviewReport::where('user_id', $userId)->count();
+            $totalCount = +$userReportsCount +
+                $reportsAgainstUserPlacesCount +
+                $favoritesCount +
+                $ratingsCount +
+                $reviewReportsCount;
+
+            $hiddenNotificationsCount = 0;
+            $hiddenNotificationsJson = Cookie::get('hidden_notifications');
+            if ($hiddenNotificationsJson) {
+                $hiddenNotifications = json_decode($hiddenNotificationsJson, true);
+                if (is_array($hiddenNotifications)) {
+                    $hiddenNotificationsCount = count($hiddenNotifications);
+                }
+            }
+
+            $finalCount = max(0, $totalCount - $hiddenNotificationsCount);
+
+            // تمرير البيانات للـ view
+            $view->with([
+                'countNotificationsUser' => $finalCount,
+                'reportsAgainstUserPlaces' => $reportsAgainstUserPlacesCount // يمكنك استخدام هذا في الـ view
+            ]);
+        });
         View::composer('*', function ($view) {
             if (Auth::check()) {
                 $view->with('user', Auth::user());

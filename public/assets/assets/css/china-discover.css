@@ -47,9 +47,11 @@
 }
 
 .show--all {
-    font-size: 14px;
-    color: gray;
-}
+        border: 1px solid black;
+        color: black;
+        border-radius: 6px;
+        padding: 6px;
+        font-size: 17px;}
 
 .categories {
     font-weight: bold;
@@ -1076,11 +1078,6 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 13px;
-}
-
-.show--all {
-    font-size: 14px;
-    color: gray;
 }
 
 .categories {

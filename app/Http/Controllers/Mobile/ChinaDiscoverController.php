@@ -101,41 +101,67 @@ class ChinaDiscoverController extends Controller
         $banners = Banner::where('location', 'both')->orWhere('location', 'mobile_app')->get();
         $explorers = Explorers::all();
 
-        $placesQuery = Places::with('mainCategory')
-            ->withCount('ratings')
-            ->withAvg('ratings', 'rating')
-            ->where('status', 'active');
-
-        if ($id) {
-            $placesQuery->where('main_category_id', $id);
-        }
-
-        $places = $placesQuery->get();
-
-        $latestPlacesQuery = Places::with('mainCategory')
+        // عرض أول مكان من كل تصنيف (6 أماكن)
+        $places = Places::with('mainCategory')
             ->withCount('ratings')
             ->withAvg('ratings', 'rating')
             ->where('status', 'active')
+            ->when($id, function ($query) use ($id) {
+                $query->where('main_category_id', $id);
+            })
+            ->get()
+            ->groupBy('main_category_id')
+            ->map(function ($group) {
+                return $group->first();
+            })
+            ->take(6)
+            ->values();
+
+        // أحدث 6 أماكن (واحد من كل تصنيف)
+        $latestPlaces = Places::with('mainCategory')
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->where('status', 'active')
+            ->when($id, function ($query) use ($id) {
+                $query->where('main_category_id', $id);
+            })
             ->latest()
-            ->take(5);
+            ->get()
+            ->groupBy('main_category_id')
+            ->map(function ($group) {
+                return $group->first(); // أحدث مكان من كل تصنيف
+            })
+            ->take(6)
+            ->values();
 
-        if ($id) {
-            $latestPlacesQuery->where('main_category_id', $id);
-        }
-
-        $latestPlaces = $latestPlacesQuery->get();
+        // الأعلى تقييماً من كل تصنيف (3 أماكن)
+        $topRatedPlaces = Places::with('mainCategory')
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating')
+            ->where('status', 'active')
+            ->when($id, function ($query) use ($id) {
+                $query->where('main_category_id', $id);
+            })
+            ->get()
+            ->groupBy('main_category_id')
+            ->map(function ($group) {
+                // ترتيب المجموعة حسب أعلى تقييم وأخذ الأول
+                return $group->sortByDesc('ratings_avg_rating')->first();
+            })
+            ->take(6)
+            ->values();
 
         // لو الطلب AJAX يرجع JSON
         if (request()->ajax()) {
             return response()->json([
                 'places' => $places,
-                'latestPlaces' => $latestPlaces
+                'latestPlaces' => $latestPlaces,
+                'topRatedPlaces' => $topRatedPlaces
             ]);
         }
 
-        return view('mobile.china-discovers.index', compact('banners', 'explorers', 'places', 'latestPlaces'));
+        return view('mobile.china-discovers.index', compact('banners', 'explorers', 'places', 'latestPlaces', 'topRatedPlaces'));
     }
-
     public function filterExplorers(Request $request)
     {
         if (!$request->ajax()) {
