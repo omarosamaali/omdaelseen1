@@ -362,7 +362,7 @@
                                     @endif
                                 </div>
                                 <div class="text-center pb-4">
-                                    <p class="font-semibold text-sm">
+                                    <p class="font-semibold text-sm px-3">
                                         @if ($activity->is_place_related == 0)
                                         {!! app()->getLocale() == 'en'
                                         ? $activity?->place_name_en

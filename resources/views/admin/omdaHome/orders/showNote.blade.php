@@ -98,12 +98,6 @@
                 <span class="detail-label">اسم العميل:</span>
                 <span class="detail-value">{{ $order->user->name ?? 'غير متاح' }}</span>
             </div>
-            <div class="mt-6">
-                <a href="{{ route('admin.orders.note', $order->id) }}"
-                    class="btn btn-dark px-4 py-2 bg-black text-white rounded-md">
-                    العودة إلى قائمة الملاحظات
-                </a>
-            </div>
         </div>
     </div>
 </div>

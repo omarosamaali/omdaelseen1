@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    <x-china-header :title="__('messages.الإشعارات')" :route="route('mobile.profile.profile')" />
+    <x-china-header :title="__('messages.الإشعارات')" :route="url()->previous()" />
     <div class="container bg-white dark:bg-color10 p-6 min-h-screen dark:text-white relative">
 
         <p class="text-xl font-semibold pt-8" style="padding-top: 50px;">{{ __('messages.notifications_title') }}</p>

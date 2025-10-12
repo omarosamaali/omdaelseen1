@@ -10,51 +10,90 @@
 
     <div style="margin-top: 36px;">
         <div class="relative z-20 px-2">
-            <div class="flex justify-between items-center">
+            {{-- في ملف resources/views/mobile/profile/orders-user.blade.php --}}
+
+            {{-- عرض الإحصائيات --}}
+            <div class="flex justify-between items-center px-4">
+                {{-- إحصائيات الرحلات --}}
                 <div class="flex flex-col justify-center items-center gap-2 pt-5 font-semibold">
                     <p>الرحلات</p>
-                    <div class="flex justify-center items-center gap-1 bg-p3 px-4 py-1.5 text-white"
-                        style="color:black; border: 1px solid maroon; background-color: white; width: 100%; border-radius: 12px;">
-                        <p class="text-xs" style="display: flex; flex-direction: column; align-items: center;">منتهية
-                            <span style="color: maroon;">15</span>
+                    <a href="{{ route('mobile.orders', ['filter' => 'منتهية']) }}"
+                        class="flex justify-center items-center gap-1 px-4 py-1.5 cursor-pointer transition-all hover:shadow-md"
+                        style="color:black; border: 1px solid maroon; background-color: {{ $filter === 'منتهية' ? '#fef3f3' : 'white' }}; width: 100%; border-radius: 12px;">
+                        <p class="text-xs" style="display: flex; flex-direction: column; align-items: center;">
+                            منتهية
+                            <span style="color: maroon; font-weight: bold;">{{ $tripsFinished }}</span>
                         </p>
-                    </div>
-                    <div class="flex justify-center items-center gap-1 bg-p3 px-4 py-1.5 text-white"
-                        style="color:black; border: 1px solid maroon; background-color: white; width: 100%; border-radius: 12px;">
-                        <p class="text-xs" style="display: flex; flex-direction: column; align-items: center;">غير
-                            منتهية <span style="color: maroon;">31</span></p>
-                    </div>
+                    </a>
+                    <a href="{{ route('mobile.orders', ['filter' => 'غير منتهية']) }}"
+                        class="flex justify-center items-center gap-1 px-4 py-1.5 cursor-pointer transition-all hover:shadow-md"
+                        style="color:black; border: 1px solid maroon; background-color: {{ $filter === 'غير منتهية' ? '#fef3f3' : 'white' }}; width: 100%; border-radius: 12px;">
+                        <p class="text-xs" style="display: flex; flex-direction: column; align-items: center;">
+                            غير منتهية
+                            <span style="color: maroon; font-weight: bold;">{{ $tripsUnfinished }}</span>
+                        </p>
+                    </a>
                 </div>
+
+                {{-- إحصائيات المنتجات --}}
+                <div class="flex flex-col justify-center items-center gap-2 pt-5 font-semibold">
+                    <p>المنتجات</p>
+                    <a href="{{ route('mobile.orders', ['filter' => 'products_finished']) }}"
+                        class="flex justify-center items-center gap-1 px-4 py-1.5 cursor-pointer transition-all hover:shadow-md"
+                        style="color:black; border: 1px solid maroon; background-color: {{ $filter === 'products_finished' ? '#fef3f3' : 'white' }}; width: 100%; border-radius: 12px;">
+                        <p class="text-xs" style="display: flex; flex-direction: column; align-items: center;">
+                            منتهية
+                            <span style="color: maroon; font-weight: bold;">{{ $productsFinished }}</span>
+                        </p>
+                    </a>
+                    <a href="{{ route('mobile.orders', ['filter' => 'products_unfinished']) }}"
+                        class="flex justify-center items-center gap-1 px-4 py-1.5 cursor-pointer transition-all hover:shadow-md"
+                        style="color:black; border: 1px solid maroon; background-color: {{ $filter === 'products_unfinished' ? '#fef3f3' : 'white' }}; width: 100%; border-radius: 12px;">
+                        <p class="text-xs" style="display: flex; flex-direction: column; align-items: center;">
+                            غير منتهية
+                            <span style="color: maroon; font-weight: bold;">{{ $productsUnfinished }}</span>
+                        </p>
+                    </a>
+                </div>
+
+                {{-- إحصائيات الطلبات الخاصة --}}
                 <div class="flex flex-col justify-center items-center gap-2 pt-5 font-semibold">
                     <p>الطلبات الخاصة</p>
                     <div class="flex justify-center items-center gap-1 bg-p1 px-4 py-1.5 text-white"
                         style="color:black; border: 1px solid maroon; background-color: white; width: 100%; border-radius: 12px;">
-                        <p class="text-xs" style="display: flex; flex-direction: column; align-items: center;"> منتهية
-                            <span style="color: maroon;">31</span>
+                        <p class="text-xs" style="display: flex; flex-direction: column; align-items: center;">
+                            منتهية
+                            <span style="color: maroon;">{{ $specialOrdersFinished }}</span>
                         </p>
                     </div>
                     <div class="flex justify-center items-center gap-1 bg-p1 px-4 py-1.5 text-white"
                         style="color:black; border: 1px solid maroon; background-color: white; width: 100%; border-radius: 12px;">
-                        <i class="fa fa-money"></i>
-                        <p class="text-xs" style="display: flex; flex-direction: column; align-items: center;">غير
-                            منتهية <span style="color: maroon;">31</span></p>
-                    </div>
-                </div>
-                <div class="flex flex-col justify-center items-center gap-2 pt-5 font-semibold">
-                    <p>الإضافات</p>
-                    <div class="flex justify-center items-center gap-1 bg-p2 px-4 py-1.5 text-white"
-                        style="color:black; border: 1px solid maroon; background-color: white; width: 100%; border-radius: 12px;">
-                        <p class="text-xs" style="display: flex; flex-direction: column; align-items: center;"> منتهية
-                            <span style="color: maroon;">31</span>
+                        <p class="text-xs" style="display: flex; flex-direction: column; align-items: center;">
+                            غير منتهية
+                            <span style="color: maroon;">{{ $specialOrdersUnfinished }}</span>
                         </p>
-                    </div>
-                    <div class="flex justify-center items-center gap-1 bg-p2 px-4 py-1.5 text-white"
-                        style="color:black; border: 1px solid maroon; background-color: white; width: 100%; border-radius: 12px;">
-                        <p class="text-xs" style="display: flex; flex-direction: column; align-items: center;">غير
-                            منتهية <span style="color: maroon;">31</span></p>
                     </div>
                 </div>
             </div>
+
+            <style>
+                .text-maroon {
+                    color: rgb(255, 255, 255);
+                }
+
+                .bg-maroon {
+                    background-color: maroon;
+                }
+            </style>
+
+<a href="{{ route('mobile.orders', ['filter' => 'all']) }}"
+    style="display: flex; align-items: center; justify-content: center; margin: auto; margin-top: 20px; border: 1px solid maroon;"
+    class="px-4 py-2 rounded-lg {{ $filter === 'all' ? 'bg-maroon text-maroon' : 'bg-gray-200 text-gray-700' }}">
+    الكل
+</a>
+
+
+            
             <div class="flex flex-col gap-4 pt-8" style="direction: rtl;">
                 @foreach ($products as $product)
                 <div class="bg-white dark:bg-color9 py-4 px-5 rounded-2xl shadow-md border relative"
@@ -186,9 +225,9 @@
                         style="display: flex; align-items: center; justify-content: space-between; position: absolute; bottom: 5px; gap: 2px; width: 91%;">
                         <a href={{ route('mobile.orders.trip-display', $trip) }} class="btns">
                             <span>
-                                <svg
-                                    class="w-6 h-6 text-green-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <svg class="w-6 h-6 text-green-800" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                    viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-width="2"
                                         d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"></path>
                                     <path stroke="currentColor" stroke-width="2"
@@ -212,13 +251,13 @@
                             class="{{ $trip->approvals()->exists() ? 'rainbow btns' : 'btns' }}"><span><i
                                     class="fa-solid fa-check-circle" style="font-size: 18px;"></i></span> موافقة
                         </a>
-@if(Auth::user()->role == 'user')
-<a href="{{ route('mobile.profile.actions.trip-chat', ['user_id' => Auth::id(), 'trip_id' => $trip->id]) }}"
-    class="btns">
-    <span><i class="fa-regular fa-envelope" style="font-size: 18px;"></i></span>
-    مراسلة
-</a>
-@endif
+                        @if(Auth::user()->role == 'user')
+                        <a href="{{ route('mobile.profile.actions.trip-chat', ['user_id' => Auth::id(), 'trip_id' => $trip->id]) }}"
+                            class="btns">
+                            <span><i class="fa-regular fa-envelope" style="font-size: 18px;"></i></span>
+                            مراسلة
+                        </a>
+                        @endif
                         <a href="{{ route('mobile.profile.actions.note-trip', $trip->id) }}" class="btns"><span><i
                                     class="fa-solid fa-sticky-note" style="font-size: 18px;"></i></span>
                             ملاحظات</a>

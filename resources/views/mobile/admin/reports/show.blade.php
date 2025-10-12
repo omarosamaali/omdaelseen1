@@ -212,15 +212,49 @@
         background: transparent;
     }
 </style>
-
-<div class="flex justify-start items-center relative z-10">
-    <div class="logo-register">
-        <img src="{{ asset('assets/assets/images/logo-all.png') }}" class="image-regsiter" alt="">
-    </div>
-    <x-back-button href="{{ route('mobile.profile.profile') }}" />
-</div>
-
-<div class="container mx-auto px-4 py-6 max-w-md">
+<style>
+        .place-image {
+            max-width: 200px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+    
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 999999999999999;
+            justify-content: center;
+            align-items: center;
+        }
+    
+        .modal.active {
+            display: flex;
+        }
+    
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+    
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+    </style>
+<x-china-header :title="__('messages.البلاغات')" :route="route('mobile.reports.index')" />
+<div class="container mx-auto px-4 py-6 max-w-md" style="padding-top: 90px;">
     <!-- عنوان الصفحة مع معرف البلاغ -->
     <div class="page-header">
         <h2 class="font-bold text-xl">تفاصيل البلاغ</h2>
@@ -364,22 +398,31 @@
         <div class="info-item">
             <div class="info-label">صورة المكان</div>
             <div class="mt-2">
-                <img src="{{ asset('storage/' . $report->place->avatar) }}" alt="{{ $report->place->name_ar }}"
-                    class="place-image">
-            </div>
+<div class="mt-2">
+    <a href="javascript:void(0)" onclick="openModal('{{ asset('storage/' . $report->place->avatar) }}')">
+    <img src="{{ asset('storage/' . $report->place->avatar) }}" alt="{{ $report->place->name_ar }}" class="place-image"
+        onclick="openModal(this.src)">
+    </a>
+</div>
+
+<!-- المودال - حطه مرة واحدة قبل </body> -->
+<div class="modal" id="imageModal" onclick="closeModal()">
+    <button class="modal-close">&times;</button>
+    <img id="modalImage" src="" alt="Preview">
+</div>            </div>
         </div>
         @endif
-        @if ($report->place && $report->place->additional_images &&
-        is_array(json_decode($report->place->additional_images, true)))
-        <div class="images-gallery">
-            @foreach (json_decode($report->place->additional_images, true) as $image)
-            <img src="{{ asset('storage/' . $image) }}" alt="{{ $report->place->name_ar ?? 'مكان غير متوفر' }}"
-                class="place-image">
-            @endforeach
-        </div>
-        @endif
-    </div>
+@if ($report->place && $report->place->additional_images && is_array(json_decode($report->place->additional_images,
+true)))
+<div class="images-gallery">
+    @foreach (json_decode($report->place->additional_images, true) as $image)
+    <img src="{{ asset('storage/' . $image) }}" alt="{{ $report->place->name_ar ?? 'مكان غير متوفر' }}"
+        class="place-image" onclick="openModal(this.src)">
+    @endforeach
+</div>
+@endif    </div>
     @else
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
@@ -394,7 +437,20 @@
             });
     </script>
     @endif
+<script>
+    function openModal(imageSrc) {
+    document.getElementById('modalImage').src = imageSrc;
+    document.getElementById('imageModal').classList.add('active');
+}
 
+function closeModal() {
+    document.getElementById('imageModal').classList.remove('active');
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
+});
+</script>
     <!-- إجراءات البلاغ -->
     @if ($report->status == 'pending')
     <div class="actions-container">

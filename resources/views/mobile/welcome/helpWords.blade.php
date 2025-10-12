@@ -47,6 +47,7 @@
     class="container min-h-dvh relative overflow-hidden py-8 dark:text-white -z-10 dark:bg-color1">
     <p class="text-2xl font-semibold text-center pt-18">{{ __('messages.اضغط لسماع الكلمة') }}</p>
     <div class="faqCategory pt-20">
+        @if(app()->getLocale() == 'ar' || app()->getLocale() == 'zh')
         <ul class="flex justify-center items-center tab-button gap-2">
             <li class=" item cursor-pointer shadow border {{ $word_type == 'تحية وتعريف' ? 'active' : '' }}">
                 <a href="{{ route('mobile.helpWords', 'تحية وتعريف') }}">{{ __('messages.تحية') }}</a>
@@ -64,6 +65,31 @@
                 <a href="{{ route('mobile.helpWords', 'التسوق') }}">{{ __('messages.التسوق') }}</a>
             </li>
         </ul>
+        @else
+        <ul style="flex-direction: column;" class="flex justify-center items-center tab-button gap-2">
+            <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 15px;">
+
+                <li class=" item cursor-pointer shadow border {{ $word_type == 'تحية وتعريف' ? 'active' : '' }}">
+                    <a href="{{ route('mobile.helpWords', 'تحية وتعريف') }}">{{ __('messages.تحية') }}</a>
+                </li>
+                <li class=" item cursor-pointer shadow border {{ $word_type == 'أسئلة' ? 'active' : '' }}">
+                    <a href="{{ route('mobile.helpWords', 'أسئلة') }}">{{ __('messages.أسئلة') }}</a>
+                </li>
+                <li class=" item cursor-pointer shadow border {{ $word_type == 'طلب أو تقديم مساعدة' ? 'active' : '' }}">
+                    <a href="{{ route('mobile.helpWords', 'طلب أو تقديم مساعدة') }}">{{ __('messages.طلب') }}</a>
+                </li>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 15px;">
+                <li class=" item cursor-pointer shadow border {{ $word_type == 'السفر' ? 'active' : '' }}">
+                    <a href="{{ route('mobile.helpWords', 'السفر') }}">{{ __('messages.السفر') }}</a>
+                </li>
+                <li class=" item cursor-pointer shadow border {{ $word_type == 'التسوق' ? 'active' : '' }}">
+                    <a href="{{ route('mobile.helpWords', 'التسوق') }}">{{ __('messages.التسوق') }}</a>
+                </li>
+            </div>
+        </ul>
+        @endif
+
     </div>
     <!-- Search Box End -->
 
@@ -88,16 +114,16 @@
 
                 <!-- زر التشغيل -->
 
-<button type="button" class="play-audio-button" data-audio-id="audio-{{ $word->id }}">
-            <i class="fas fa-volume-up"></i>
-        </button>
-        
-        <audio id="audio-{{ $word->id }}" hidden>
-            <source src="{{ asset('storage/' . $word->audio_zh) }}" type="audio/ogg">
-            <source src="{{ asset('storage/' . $word->audio_zh) }}" type="audio/mpeg">
-        </audio>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
+                <button type="button" class="play-audio-button" data-audio-id="audio-{{ $word->id }}">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+
+                <audio id="audio-{{ $word->id }}" hidden>
+                    <source src="{{ asset('storage/' . $word->audio_zh) }}" type="audio/ogg">
+                    <source src="{{ asset('storage/' . $word->audio_zh) }}" type="audio/mpeg">
+                </audio>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
     // 1. الحصول على جميع الأزرار التي تحمل الفئة "play-audio-button"
     var playButtons = document.querySelectorAll('.play-audio-button');
 
@@ -126,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-</script>
+                </script>
             </div>
             @endforeach @endif
         </div>

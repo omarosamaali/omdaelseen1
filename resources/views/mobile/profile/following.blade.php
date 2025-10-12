@@ -104,7 +104,10 @@
                     </div>
                     <div class="flex flex-col justify-center items-center pt-4">
                         <div class="relative size-24 flex justify-center items-center">
-                            <img src="{{ asset('storage/' . $user->avatar) }}" alt=""
+                            <img src="{{ 
+                             $user->avatar ?
+                                            asset('storage/' . $user->avatar) :
+                                            asset('assets/assets/images/default.jpg') }}" alt=""
                                 class="size-[68px] rounded-full" />
                             @php
                             if ($user->status == 1) {

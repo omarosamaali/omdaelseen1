@@ -85,18 +85,8 @@
 </head>
 
 <body>
-    <x-china-header :title="__('messages.الإشعارات')" :route="route('mobile.profile.profile')" />
+    <x-china-header :title="__('messages.الإشعارات')" :route="url()->previous()" />
     <div class="container bg-white dark:bg-color10 p-6 min-h-screen dark:text-white relative">
-        {{-- <div class="flex justify-start items-center gap-3">
-            <div
-                class="flex justify-start items-center gap-3 bg-color14 border border-color16 p-4 rounded-full w-full dark:border-bgColor16 dark:bg-bgColor14">
-                <i class="ph ph-magnifying-glass"></i>
-                <input type="text" id="searchInput" placeholder="{{ __('messages.search_placeholder') }}"
-                    class="bg-transparent outline-none placeholder:text-color1 w-full text-xs dark:text-white dark:placeholder:text-white" />
-            </div>
-            <x-back-button href="{{ url()->previous() }}" />
-        </div> --}}
-
         <p class="text-xl font-semibold pt-8" style="padding-top: 50px;">{{ __('messages.notifications_title') }}</p>
         <div class="flex flex-col gap-4 pt-5">
             <div id="notifications-container" class="flex flex-col gap-4 pt-5">

@@ -1184,7 +1184,7 @@
                     <div class="py-5 bg-white dark:bg-color10">
                         <div style="border-bottom: 1px dashed rgba(150, 147, 147, 0.401) !important;"
                             class="text-center pb-4 border-b border-dashed border-black dark:border-color24 border-opacity-10 ">
-                            <p class="font-semibold text-sm" style="margin-bottom: 15px;">
+                            <p class="font-semibold text-sm px-3" style="margin-bottom: 15px;">
                                 {{ app()->getLocale() == 'en'
                                 ? $trip->title_en
                                 : (app()->getLocale() == 'zh'
@@ -1278,9 +1278,11 @@
                         <div class="flex justify-between items-center">
                             <div style="display: flex; align-items: center; justify-content: center;">
                                 <p class="tab-details-content"
-                                    style="display: flex; flex-direction: column; align-items: center;">نوع الغرفة<i
-                                        class="fa-solid fa-bed" style="color: maroon;"></i>
+                                    style="display: flex; flex-direction: column; align-items: center;">
+                                    {{ __('messages.room_type') }}
+                                    <i class="fa-solid fa-bed" style="color: maroon;"></i>
                                     <span style="display: flex; align-items: center;">{{ $room_type }}</span>
+                                    {{-- <span style="display: flex; align-items: center;">{{ $trip }}</span> --}}
                                     <span style="display: flex; align-items: center;">{{ $trip->price }} <svg
                                             xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                             viewBox="0 0 24 24" fill="none">
@@ -1307,20 +1309,26 @@
             </div>
             <div class="tabs-container">
                 <div class="tab-buttons">
-                    <button class="tab-button active details" onclick="showTab('tab1')">التفاصيل</button>
-                    <button class="tab-button" onclick="showTab('tab2')">الارشادات</button>
-                    <button class="tab-button rating" onclick="showTab('tab3')">المميزات</button>
-                    <button class="tab-button rating" onclick="showTab('tab4')">الجدول</button>
+                    <button class="tab-button active details" onclick="showTab('tab1')">
+                        {{ __('messages.details') }}
+                    </button>
+                    <button class="tab-button" onclick="showTab('tab2')">
+                        {{ __('messages.الإرشادات') }}
+                    </button>
+                    <button class="tab-button rating" onclick="showTab('tab3')">
+                        {{ __('messages.المميزات') }}
+                    </button>
+                    <button class="tab-button rating" onclick="showTab('tab4')">
+                        {{ __('messages.الجدول') }}
+                    </button>
                 </div>
                 <div id="tab4" class="tab-content">
                     @foreach ($activities as $date => $dailyActivities)
-                    {{-- عرض التاريخ مرة واحدة فقط --}}
                     <div style="color: maroon; margin-bottom: 15px; font-weight: bold; font-size: 16px;">
                         <i class="fa fa-calendar"></i>
                         {{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}
                     </div>
 
-                    {{-- عرض جميع الأنشطة لهذا التاريخ --}}
                     @foreach ($dailyActivities as $activity)
                     <div class="flex flex-col gap-4" style="margin-bottom: 10px;">
                         <div class="rounded-2xl overflow-hidden quiz-link">
@@ -1333,7 +1341,7 @@
                                         @if($activity->place?->subCategory->name_ar)
                                         <p>{{ $activity->place->subCategory->name_ar}}</p>
                                         @else
-                                        <p>جديد</p>
+                                        <p>{{ __('messages.new') }}</p>
                                         @endif
                                     </div>
                                     <div class="sub-category-right">
@@ -1407,7 +1415,6 @@
                     </div>
                     @endforeach
 
-                    {{-- خط فاصل بين الأيام --}}
                     @if (!$loop->last)
                     <hr style="margin: 20px 0; border-color: #ddd;">
                     @endif
@@ -1417,7 +1424,8 @@
                 <div id="tab3" class="tab-content">
                     @if ($trip->trip_features)
                     <div class=" bg-gray-100 p-4 rounded-lg shadow-sm">
-                        <h3 class="font-semibold text-lg mb-4 text-right text-gray-700 border-b pb-2">مميزات الرحلة
+                        <h3 class="font-semibold text-lg mb-4 text-right text-gray-700 border-b pb-2">
+                            {{ __('messages.مميزات_الرحلة') }}
                         </h3>
                         <ul class="list-disc list-inside text-right text-gray-600">
                             @php
@@ -1426,10 +1434,8 @@
                             $features = json_decode($features, true);
                             }
                             @endphp
-
                             @forelse ($features as $feature_id)
                             @php
-                            // التأكد من أن القيمة رقم قبل البحث عنها
                             if (is_numeric($feature_id)) {
                             $feature = \App\Models\TripFeatures::find($feature_id);
                             } else {
@@ -1437,10 +1443,24 @@
                             }
                             @endphp
                             @if ($feature)
-                            <li>{{ $feature?->name_ar }}</li>
+                            <li>
+                                <?php
+                                    $locale = app()->getLocale();
+                                    if($locale == 'en') {
+                                        $featureName = $feature->name_en;
+                                    } elseif($locale == 'zh') {
+                                        $featureName = $feature->name_zh;
+                                    } else {
+                                        $featureName = $feature->name_ar;
+                                    }
+                                ?>
+                                {{ $featureName }}
+                            </li>
                             @endif
                             @empty
-                            <li>لا توجد مميزات مُضافة.</li>
+                            <li>
+                                <x-empty />
+                            </li>
                             @endforelse
                         </ul>
                     </div>
@@ -1451,8 +1471,8 @@
 
                     @if ($trip->trip_guidelines)
                     <div class="bg-gray-100 p-4 rounded-lg shadow-sm">
-                        <h3 class="font-semibold text-lg mb-4 text-right text-gray-700 border-b pb-2">إرشادات
-                            الرحلة
+                        <h3 class="font-semibold text-lg mb-4 text-right text-gray-700 border-b pb-2">
+                            {{ __('messages.ارشادات_الرحلة') }}
                         </h3>
                         <ul class="list-disc list-inside text-right text-gray-600">
                             @php
@@ -1470,11 +1490,24 @@
                             $guideline = null;
                             }
                             @endphp
+                            <?php
+                                $locale = app()->getLocale();
+
+                                if($locale == 'en') {
+                                    $guidelineName = $guideline->name_en;
+                                } elseif($locale == 'zh') {
+                                    $guidelineName = $guideline->name_zh;
+                                } else {
+                                    $guidelineName = $guideline->name_ar;
+                                }
+                            ?>
                             @if ($guideline)
-                            <li>{{ $guideline?->name_ar }}</li>
+                            <li>{{ $guidelineName }}</li>
                             @endif
                             @empty
-                            <li>لا توجد إرشادات مُضافة.</li>
+                            <li>
+                                <x-empty />
+                            </li>
                             @endforelse
                         </ul>
                     </div>
@@ -1488,7 +1521,7 @@
                             style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-square-h" style="color: maroon;"></i>
                             <span style="color: maroon">
-                                فندق الاقامة
+                                {{ __('messages.فندق_الإقامة') }}
                             </span>
                             {{ app()->getLocale() == 'en'
                             ? $trip->hotel_en
@@ -1500,15 +1533,17 @@
                             style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-car" style="color: maroon;"></i>
                             <span style="color: maroon">
-                                مركبة خاصة
+                                {{ __('messages.مركبة_خاصة') }}
                             </span>
-                            {{ $trip->transportation_type == 'shared_bus'
-                            ? 'حافلة خاصة مشتركة'
-                            : ($trip->transportation_type == 'private_car'
-                            ? 'سيارة خاصة'
-                            : ($trip->transportation_type == 'airport_only'
-                            ? 'من وإلي المطار فقط'
-                            : 'بدون مواصلات')) }}
+                            @php
+                            $transportationKey = match($trip->transportation_type) {
+                            'shared_bus' => 'shared_bus',
+                            'private_car' => 'private_car',
+                            'airport_only' => 'airport_only',
+                            default => 'no_transportation'
+                            };
+                            @endphp
+                            {{ __('messages.transportation_types.' . $transportationKey) }}
                         </p>
                     </div>
 
@@ -1517,39 +1552,22 @@
                             style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-language" style="color: maroon;"></i>
                             <span style="color: maroon">
-                                المترجمين
+                                {{ __('messages.المترجمين') }}
                             </span>
-                            {{ $trip->translators == 'group_translator'
-                            ? 'للمجموعة'
-                            : ($trip->translators == 'private_translator'
-                            ? 'خاص لكل شخص'
-                            : ($trip->translators == 'none'
-                            ? 'لا يوجد'
-                            : '')) }}
+                            {{ __('messages.translator_types.' . ($trip->translators ?? 'none')) }}
                         </p>
                         <p class="tab-details-content"
                             style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-utensils" style="color: maroon;"></i>
                             <span style="color: maroon">
-                                وجبات الطعام
+                                {{ __('messages.الوجبات') }}
                             </span>
-                            {{ is_array($trip->meals) && !empty($trip->meals)
-                            ? implode(
-                            ', ',
-                            array_map(function ($meal) {
-                            switch ($meal) {
-                            case 'breakfast':
-                            return 'فطار';
-                            case 'lunch':
-                            return 'غداء';
-                            case 'dinner':
-                            return 'عشاء';
-                            default:
-                            return '';
-                            }
-                            }, $trip->meals),
-                            )
-                            : '' }}
+                            @if(is_array($trip->meals) && !empty($trip->meals))
+                            {{ collect($trip->meals)
+                            ->map(fn($meal) => __('messages.meals.' . $meal))
+                            ->filter()
+                            ->implode(', ') }}
+                            @endif
                         </p>
                     </div>
                     <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -1557,16 +1575,19 @@
                             style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-user" style="color: maroon;"></i>
                             <span style="color: maroon">
-                                استقبال بالمطار
+                                {{ __('messages.استقبال_بالمطار') }}
                             </span>
-                            {{ $trip->airport_pickup == '1' ? 'نعم' : 'لا' }}
+                            {{ $trip->airport_pickup == '1' ? __('messages.yes') : __('messages.no') }}
                         </p>
                         <p class="tab-details-content"
                             style="display: flex; flex-direction: column; align-items: center;">
                             <img src="{{ asset('assets/assets/images/omda-icon (1).png') }}"
                                 style="width: 30px; height: 19px;" alt="">
-                            <span style="color: maroon">مشرف من عمدة الصين</span>
-                            {{ $trip->supervisor == '1' ? 'نعم' : 'لا' }}
+                            <span style="color: maroon">
+                                {{ __('messages.مشرف_من_عمدة_الصين') }}
+
+                            </span>
+                            {{ $trip->supervisor == '1' ? __('messages.yes') : __('messages.no') }}
                         </p>
                     </div>
 
@@ -1575,17 +1596,17 @@
                             style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-industry" style="color: maroon;"></i>
                             <span style="color: maroon">
-                                زيارة المصانع
+                                {{ __('messages.زيارة_المصانع') }}
                             </span>
-                            {{ $trip->factory_visit == '1' ? 'نعم' : 'لا' }}
+                            {{ $trip->factory_visit == '1' ? __('messages.yes') : __('messages.no') }}
                         </p>
                         <p class="tab-details-content"
                             style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-torii-gate" style="color: maroon;"></i>
                             <span style="color: maroon">
-                                زيارة المواقع السياحية
+                                {{ __('messages.زيارة_المواقع_السياحية') }}
                             </span>
-                            {{ $trip->tourist_sites_visit == '1' ? 'نعم' : 'لا' }}
+                            {{ $trip->tourist_sites_visit == '1' ? __('messages.yes') : __('messages.no') }}
                         </p>
                     </div>
 
@@ -1594,15 +1615,15 @@
                             style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-ticket" style="color: maroon;"></i>
                             <span style="color: maroon">
-                                يشمل التذاكر
+                                {{ __('messages.يشمل_التذاكر') }}
                             </span>
-                            {{ $trip->tickets_included == '1' ? 'نعم' : 'لا' }}
+                            {{ $trip->tickets_included == '1' ? __('messages.yes') : __('messages.no') }}
                         </p>
                         <p class="tab-details-content"
                             style="display: flex; flex-direction: column; align-items: center;">
                             <i class="fa-solid fa-wallet" style="color: maroon;"></i>
                             <span style="color: maroon">
-                                سعر الرحلة
+                                {{ __('messages.سعر_الرحلة') }}
                             </span>
                             {{ $trip->price }}
                         </p>
@@ -1610,38 +1631,6 @@
 
                 </div>
 
-            </div>
-            <div id="ratingModal" class="modal-overlay" onclick="closeModalOnOverlay(event)">
-                <div class="modal">
-                    <button class="modal-close" onclick="closeRatingModal()">
-                        <i class="fa fa-x"></i>
-                    </button>
-                    <h3 class="modal-title">
-                        <i class="fa fa-chat-circle-text" style="color: maroon;"></i>
-                        ما رأيك في هذا المكان؟
-                    </h3>
-                    <div class="modal-rating-display" id="modalStars">
-                        <i class="fa-solid fa-star modal-star"></i>
-                        <i class="fa-solid fa-star modal-star"></i>
-                        <i class="fa-solid fa-star modal-star"></i>
-                        <i class="fa-solid fa-star modal-star"></i>
-                        <i class="fa-solid fa-star modal-star"></i>
-                    </div>
-                    <textarea id="commentInput" class="modal-comment"
-                        placeholder="شاركنا تجربتك وانطباعك عن هذا المكان... (اختياري)"></textarea>
-                    <div class="modal-actions">
-                        <button class="modal-button cancel-button" onclick="closeRatingModal()">إلغاء</button>
-                        <button class="modal-button confirm-button" onclick="confirmRating()">تأكيد التقييم</button>
-                    </div>
-                </div>
-            </div>
-            <div id="imageModal" class="modal-overlay" onclick="closeImageModalOnOverlay(event)">
-                <div class="image-modal">
-                    <button class="modal-close" onclick="closeImageModal()">
-                        <i class="fa fa-x"></i>
-                    </button>
-                    <img id="modalImage" src="" alt="">
-                </div>
             </div>
         </div>
     </div>

@@ -356,13 +356,13 @@
 
 .bg-opacity span {
     position: absolute;
-    top: -3%;
-    left: 41%;
+    top: 1%;
+    left: 38%;
     transform: translate(-50%, -50%);
     color: white;
     font-weight: bold;
     font-size: 27px;
-    rotate: -36deg;
+    rotate: -41deg;
     background: red;
     width: 132%;
     text-align: center;

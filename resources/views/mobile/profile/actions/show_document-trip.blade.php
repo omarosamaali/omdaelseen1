@@ -42,12 +42,6 @@
                         <p class="text-xs font-semibold text-gray-500">لا يوجد ملف مرفق</p>
                         @endif
                     </div>
-                    <div class="flex justify-end mt-4">
-                        <a href="{{ route('mobile.profile.actions.doc', $trip->id) }}"
-                            class="bg-color16 dark:bg-bgColor14 py-1.5 px-4 rounded-full text-xs font-semibold">
-                            العودة إلى المستندات
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>

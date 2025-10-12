@@ -152,76 +152,85 @@
 
                 <div class="flex flex-col gap-4" style="direction: rtl;">
                     <div class="flex flex-col gap-4" style="direction: rtl;">
-<div class="grid grid-cols-2 gap-4 pt-5" style="direction: rtl;">
-    @forelse ($myFollowers as $myFollower)
-    @php
-    $follower = $myFollower->follower;
-    if ($follower->id == auth()->id()) continue;
-    @endphp
+                        @forelse ($myFollowers as $myFollower)
+                        <div class="grid grid-cols-2 gap-4 pt-5" style="direction: rtl;">
+                            @php
+                            $follower = $myFollower->follower;
+                            if ($follower->id == auth()->id()) continue;
+                            @endphp
 
-    <div
-        class="p-4 rounded-xl border border-black border-opacity-10 bg-white shadow2 swiper-slide dark:bg-color9 dark:border-color24">
-        <div class="flex justify-between items-center pb-3 border-b border-dashed border-black border-opacity-10">
-            <div
-                class="bg-p2 bg-opacity-10 border border-p2 border-opacity-20 py-1 px-3 flex justify-start items-center gap-1 rounded-full dark:bg-bgColor14 dark:border-bgColor16">
-                <i class="fa fa-location-dot" style="color: white;"></i>
-                <p class="text-xs font-semibold text-p2 text-white">
-                    {{ $follower->places_count }}
-                </p>
-            </div>
-            <img src="https://flagcdn.com/32x24/{{ strtolower($follower->country) }}.png" alt="Flag" class="flag-img">
-        </div>
+                            <div
+                                class="p-4 rounded-xl border border-black border-opacity-10 bg-white shadow2 swiper-slide dark:bg-color9 dark:border-color24">
+                                <div
+                                    class="flex justify-between items-center pb-3 border-b border-dashed border-black border-opacity-10">
+                                    <div
+                                        class="bg-p2 bg-opacity-10 border border-p2 border-opacity-20 py-1 px-3 flex justify-start items-center gap-1 rounded-full dark:bg-bgColor14 dark:border-bgColor16">
+                                        <i class="fa fa-location-dot" style="color: white;"></i>
+                                        <p class="text-xs font-semibold text-p2 text-white">
+                                            {{ $follower->places_count }}
+                                        </p>
+                                    </div>
+                                    <img src="https://flagcdn.com/32x24/{{ strtolower($follower->country) }}.png"
+                                        alt="Flag" class="flag-img">
+                                </div>
 
-        <div class="flex flex-col justify-center items-center pt-4">
-            <div class="relative size-24 flex justify-center items-center">
-                <img src="{{ asset('storage/' . $follower->avatar) }}" alt="" class="size-[68px] rounded-full" />
-                @php
-                if ($follower->status == 1) {
-                $src = asset('assets/assets/images/user-progress-green.svg');
-                } elseif ($follower->status == 0) {
-                $src = asset('assets/assets/images/user-progress.svg');
-                } elseif ($follower->status == 2) {
-                $src = asset('assets/assets/images/user-progress-black.svg');
-                } elseif ($follower->status == 3) {
-                $src = asset('assets/assets/images/user-progress-red.svg');
-                }
-                @endphp
-                <img src="{{ $src }}" alt="" class="absolute top-0 left-0" />
-            </div>
+                                <div class="flex flex-col justify-center items-center pt-4">
+                                    <div class="relative size-24 flex justify-center items-center">
+                                        <img src="{{ $user->avatar ?
+                                            asset('storage/' . $user->avatar) :
+                                            asset('assets/assets/images/default.jpg') }}" alt=""
+                                            class="size-[68px] rounded-full" />
+                                        @php
+                                        if ($follower->status == 1) {
+                                        $src = asset('assets/assets/images/user-progress-green.svg');
+                                        } elseif ($follower->status == 0) {
+                                        $src = asset('assets/assets/images/user-progress.svg');
+                                        } elseif ($follower->status == 2) {
+                                        $src = asset('assets/assets/images/user-progress-black.svg');
+                                        } elseif ($follower->status == 3) {
+                                        $src = asset('assets/assets/images/user-progress-red.svg');
+                                        }
+                                        @endphp
+                                        <img src="{{ $src }}" alt="" class="absolute top-0 left-0" />
+                                    </div>
 
-            <div class="text-xs font-semibold text-color8 dark:text-white">
-                {{ $follower->explorer_name }}
-            </div>
+                                    <div class="text-xs font-semibold text-color8 dark:text-white">
+                                        {{ $follower->explorer_name }}
+                                    </div>
 
-            <div class="flex justify-between items-center pt-2 w-full">
-                <p class="text-color8 pt-1 dark:text-white text-xs">
-                    <span id="followers-count-{{ $follower->id }}">{{ $follower->followers_count }}</span>
-                    <i class="fa fa-users"></i>
-                </p>
-            </div>
+                                    <div class="flex justify-between items-center pt-2 w-full">
+                                        <p class="text-color8 pt-1 dark:text-white text-xs">
+                                            <span id="followers-count-{{ $follower->id }}">{{ $follower->followers_count
+                                                }}</span>
+                                            <i class="fa fa-users"></i>
+                                        </p>
+                                    </div>
 
-            <form action="{{ route('followers.toggle', $follower->id) }}" method="POST">
-                @csrf
-                @if ($myFollower->is_following_back)
-                <button type="submit" class="text-white text-xs bg-p2 py-1 px-4 rounded-full dark:bg-p1"
-                    style="background-color: #fee2e2; color: red; font-size: 10px;">
-                    <i class="fa-solid fa-user-xmark" style="color: red;"></i>
-                    {{ __('messages.unfollow') }}
-                </button>
-                @else
-                <button type="submit" class="text-white text-xs bg-p2 py-1 px-4 rounded-full dark:bg-p1"
-                    style="background-color: #dcfce7; color: blue; font-size: 10px;">
-                    <i class="fa-solid fa-user-plus" style="color: blue;"></i>
-                    {{ __('messages.follow') }}
-                </button>
-                @endif
-            </form>
-        </div>
-    </div>
-    @empty
-    <x-empty />
-    @endforelse
-</div>                    </div>
+                                    <form action="{{ route('followers.toggle', $follower->id) }}" method="POST">
+                                        @csrf
+                                        @if ($myFollower->is_following_back)
+                                        <button type="submit"
+                                            class="text-white text-xs bg-p2 py-1 px-4 rounded-full dark:bg-p1"
+                                            style="background-color: #fee2e2; color: red; font-size: 10px;">
+                                            <i class="fa-solid fa-user-xmark" style="color: red;"></i>
+                                            {{ __('messages.unfollow') }}
+                                        </button>
+                                        @else
+                                        <button type="submit"
+                                            class="text-white text-xs bg-p2 py-1 px-4 rounded-full dark:bg-p1"
+                                            style="background-color: #dcfce7; color: blue; font-size: 10px;">
+                                            <i class="fa-solid fa-user-plus" style="color: blue;"></i>
+                                            {{ __('messages.follow') }}
+                                        </button>
+                                        @endif
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        @empty
+                        <x-empty />
+                        @endforelse
+                    </div>
                 </div>
             </div>
         </div>

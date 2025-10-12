@@ -88,14 +88,9 @@
     }
 </style>
 @section('content')
+<x-china-header :title="__('messages.تفاصيل الطلب')" :route="url()->previous()" />
 <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
-    <div class="header-container">
-        <img src="{{ asset('assets/assets/images/header-bg.png') }}" alt="">
-        <a href="{{ url()->previous() }}" class="profile-link dark:bg-color10">
-            <i class="fa-solid fa-chevron-left"></i>
-        </a>
-        <div class="logo-register">{{ __('messages.تفاصيل الطلب') }}</div>
-    </div>
+
     <div class="container">
         <div class="container mx-auto py-8 px-4">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -139,7 +134,7 @@
                 </div>
             </div>
 
-            <div class="lg:col-span-2 bg-white rounded-lg shadow-md mb-8 p-6">
+            <div class="lg:col-span-2 bg-white rounded-lg shadow-md my-8 p-6" >
                 <h2 class="text-xl font-bold mb-4 text-gray-800">الإهتمامات التي تخص هذا الطلب</h2>
                 <div class="grid grid-cols-1 gap-4">
                     @forelse ($trip->interests as $interest)

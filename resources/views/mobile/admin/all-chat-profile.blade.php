@@ -21,7 +21,7 @@
 </style>
 
 <body class="relative -z-20">
-    <x-china-header :title="__('messages.all_chats')" :route="route('mobile.welcome')" />
+    <x-china-header :title="__('messages.all_chats')" :route="route('mobile.profile.profileAdmin')" />
     <div style="padding-top: 65px;"
         class="container min-h-dvh relative overflow-hidden py-8 dark:text-white dark:bg-color1">
         <div class="px-6 flex flex-col gap-5 pt-5">

@@ -1,6 +1,6 @@
 @extends('layouts.mobile')
 
-@section('title', 'أماكني | My places')
+@section('title', 'جميع الأماكن | All places')
 <link rel="stylesheet" href="{{ asset('assets/assets/css/my-places.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/assets/css/china-discover.css') }}">
 <style>
@@ -14,18 +14,10 @@
 @section('content')
 <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black">
 
-    <x-china-header :title="__('messages.app_name')" :route="route('mobile.profile.profile')" />
+    <x-china-header :title="__('messages.all_places')" :route="route('mobile.profile.profileAdmin')" />
     <div style="margin-top: 90px; margin-bottom: 90px;">
-        
-        @forelse ($myPlaces as $place)
-         <a href="{{ ($place->status == 'inactive' || $place->status == 'banned') ? 'javascript:void(0)'
-         :route('mobile.china-discovers.info_place', $place) }}"
-            class="container---features">
-
-            {{-- href="{{ ($place->status == 'inactive' || $place->status == 'banned') ? 'javascript:void(0)' :
-            route('mobile.china-discovers.info_place', $place) }}"
-            class="container---features {{ ($place->status == 'inactive' || $place->status == 'banned') ? 'disabled-link' : '' }}" --}}
-            {{-- {{ ($place->status == 'inactive' || $place->status == 'banned') ? 'onclick="return false;"' : '' }}> --}}
+        @forelse ($allPlaces as $place)
+        <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="container---features">
             <div style="width: 100%; height: 183px;">
                 @if ($place->status == 'inactive' || $place->status == 'banned')
                 <div class="bg-opacity">

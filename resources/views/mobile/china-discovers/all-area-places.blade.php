@@ -342,7 +342,7 @@
         @endforeach
         @endif
     </div>
-    <div class="container--features">
+    <div class="container--features" style="margin-bottom: 5px;">
         <div class="box-info">
             <img src="{{ asset('storage/' . $places[0]->region?->avatar) }}" alt="">
             <p>{{ app()->getLocale() == 'en' ? $places[0]->region?->name_en : (app()->getLocale() == 'zh' ?

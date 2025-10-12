@@ -155,12 +155,12 @@
                                     @auth
                                     <a href="{{ route('mobile.trip-show', $trip->id) }}"
                                         class="w-full text-white text-md bg-p2 py-2 px-4 rounded-full dark:bg-p1 text-center">
-                                        التفاصيل
+                                        {{ __('messages.details') }}
                                     </a>
                                     @else
-                                    <a href="{{ route('mobile.auth.login', $trip->id) }}"
+                                    <a href="{{ route('mobile.auth.login') }}"
                                         class="w-full text-white text-md bg-p2 py-2 px-4 rounded-full dark:bg-p1 text-center">
-                                        التفاصيل
+                                        {{ __('messages.details') }}
                                     </a>
                                     @endauth
                                 </div>

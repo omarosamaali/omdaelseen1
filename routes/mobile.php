@@ -9,6 +9,7 @@ use App\Models\Favorites;
 use App\Models\Message;
 use App\Models\Followers;
 use App\Models\Report;
+use App\Http\Controllers\ChatOrderController;
 use App\Models\TripActivity;
 use App\Models\About;
 use App\Models\ReviewReport;
@@ -271,10 +272,84 @@ Route::get('/mobile/orders/orders-admin', function (Request $request) {
     );
 })->name('mobile.admin-orders');
 
+// في ملف routes/web.php
 Route::get('/mobile/orders/orders-user', function () {
-    $products = Product::where('user_id', Auth::user()->id)->with('approvals')->with('notes')->get();
-    $trip_requests = TripRequest::where('user_id', Auth::user()->id)->get();
-    return view('mobile.profile.orders-user', compact('products', 'trip_requests'));
+    $userId = Auth::user()->id;
+
+    // حساب إحصائيات الرحلات من الداتابيز
+    $tripsFinished = TripRequest::where('user_id', $userId)
+        ->where('status', 'منتهية')
+        ->count();
+
+    $tripsUnfinished = TripRequest::where('user_id', $userId)
+        ->where('status', '!=', 'منتهية')
+        ->count();
+
+    // حساب إحصائيات المنتجات من الداتابيز
+    $productsFinished = Product::where('user_id', $userId)
+        ->where('status', 'منتهية')
+        ->count();
+
+    $productsUnfinished = Product::where('user_id', $userId)
+        ->where('status', '!=', 'منتهية')
+        ->count();
+
+    // الطلبات الخاصة - Static مؤقتاً
+    $specialOrdersFinished = 0;
+    $specialOrdersUnfinished = 0;
+
+
+    // جلب البيانات للعرض (مع الفلتر إذا موجود)
+    $filter = request('filter', 'all');
+
+    $productsQuery = Product::where('user_id', $userId)
+        ->with('approvals')
+        ->with('notes');
+
+    $tripRequestsQuery = TripRequest::where('user_id', $userId);
+
+    // تطبيق الفلتر
+    switch ($filter) {
+        case 'trips_finished':
+            $tripRequestsQuery->where('status', 'منتهية');
+            $productsQuery->whereRaw('1 = 0'); // إخفاء المنتجات
+            break;
+
+        case 'trips_unfinished':
+            $tripRequestsQuery->where('status', '!=', 'منتهية');
+            $productsQuery->whereRaw('1 = 0'); // إخفاء المنتجات
+            break;
+
+        case 'products_finished':
+            $productsQuery->where('status', 'منتهية');
+            $tripRequestsQuery->whereRaw('1 = 0'); // إخفاء الرحلات
+            break;
+
+        case 'products_unfinished':
+            $productsQuery->where('status', '!=', 'منتهية');
+            $tripRequestsQuery->whereRaw('1 = 0'); // إخفاء الرحلات
+            break;
+
+        case 'all':
+        default:
+            // عرض الكل بدون فلتر
+            break;
+    }
+
+    $products = $productsQuery->get();
+    $trip_requests = $tripRequestsQuery->get();
+
+    return view('mobile.profile.orders-user', compact(
+        'products',
+        'trip_requests',
+        'tripsFinished',
+        'tripsUnfinished',
+        'productsFinished',
+        'productsUnfinished',
+        'specialOrdersFinished',
+        'specialOrdersUnfinished',
+        'filter'
+    ));
 })->name('mobile.orders');
 
 Route::get('/mobile/orders/note/{productId}/show/{noteId}', function ($productId, $noteId) {
@@ -377,28 +452,26 @@ Route::get('/mobile/orders/orders-user-trip/{trip}', function (App\Models\TripRe
     return view('mobile.profile.order-display-trip', compact('trip'));
 })->name('mobile.orders.show-trip');
 Route::middleware(['auth'])->group(function () {
-    Route::post('/mobile/chat/send', [ChatController::class, 'sendMessage'])->name('mobile.chat.send');
-});
-Route::middleware(['auth'])->group(function () {
-    Route::get('/mobile/chat', [ChatController::class, 'showUserChat'])->name('mobile.user.chat');
-    Route::post('/mobile/chat/send', [ChatController::class, 'sendMessage'])->name('mobile.chat.send');
+    // للشات العادي
+    Route::post('/mobile/chat/send', [ChatController::class, 'sendMessage'])
+        ->name('mobile.chat.send');
+
+    // للشات الخاص بالطلبات
+    Route::post('/mobile/chat/send', [ChatOrderController::class, 'sendMessage'])
+        ->name('mobile.chat.order.send');
 });
 
-// للأدمن
 Route::middleware(['auth'])->group(function () {
-    Route::get('/mobile/admin/chat/{chatUser}', [ChatController::class, 'showAdminChat'])->name('mobile.admin.chat');
-    Route::get('/mobile/admin/all-chat', [ChatController::class, 'showAllChats'])->name('mobile.admin.all-chat');
+    Route::get('/mobile/chat', [ChatController::class, 'showUserChat'])->name('mobile.user.chat');
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('mobile.chat', [ChatController::class, 'showUserChat'])->name('mobile.chat');
-    Route::get('mobile.admin.all-chat', [ChatController::class, 'showAllChats'])->name('mobile.admin.all-chat');
-    Route::get('mobile.admin.chat/{chatUser}', [ChatController::class, 'showAdminChat'])->name('mobile.admin.chat');
-    Route::post('mobile.chat/send', [ChatController::class, 'sendMessage'])->name('mobile.chat.send');
+    Route::get('mobile/chat', [ChatController::class, 'showUserChat'])->name('mobile.chat');
+    Route::get('mobile/admin/all-chat', [ChatController::class, 'showAllChats'])->name('mobile.admin.all-chat');
+    Route::get('mobile/admin/all-chat-profile', [ChatController::class, 'showAllChatsProfile'])->name('mobile.admin.all-chat-profile');
+    Route::get('mobile/admin/chat/{chatUser}', [ChatController::class, 'showAdminChat'])->name('mobile.admin.chat');
+    Route::post('mobile/chat/send', [ChatController::class, 'sendMessage'])->name('mobile.chat.send');
 });
-Route::post('/mobile/chat/send', [ChatController::class, 'sendMessage'])->name('mobile.chat.send');
-// Route::post('/followers/toggle/{user}', [FollowersUserController::class, 'toggle'])
-//     ->name('followers.toggle');
 
 Route::middleware('mobile_auth')->group(function () {
     Route::get('/mobile/order/product/create', [ProductController::class, 'create'])
@@ -608,6 +681,10 @@ Route::get('mobile1', function () {
     return view('mobile.welcome1', compact('banner', 'events'));
 })->name('mobile.welcome1');
 Route::middleware('mobile_auth')->group(function () {
+    Route::get('mobile/all-places', function () {
+        $allPlaces = Places::paginate(10);
+        return view('mobile.admin.all-places', compact('allPlaces'));
+    })->middleware('auth')->name('mobile.china-discovers.all-places');
 
 
     Route::get('mobile2', function () {

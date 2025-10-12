@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 
 class ChatController extends Controller
 {
@@ -15,7 +14,6 @@ class ChatController extends Controller
     {
         $admin = User::where('role', 'admin')->first();
         if (!$admin) {
-            \Log::error('No admin found');
             abort(404, 'Admin not found');
         }
 
@@ -24,51 +22,69 @@ class ChatController extends Controller
                 ->orWhere('sender_id', $admin->id)->where('receiver_id', Auth::id());
         })->orderBy('created_at', 'asc')->get();
 
-        \Log::info('User chat messages', [
-            'user_id' => Auth::id(),
-            'admin_id' => $admin->id,
-            'messages' => $messages->toArray()
-        ]);
-
         return view('mobile.chat', compact('messages', 'admin'));
     }
+
     public function showAdminChat(User $chatUser)
     {
         if (Auth::user()->role !== 'admin') {
             abort(403, 'Unauthorized');
         }
 
-        \Log::info('showAdminChat called', [
-            'admin_id' => Auth::id(),
-            'user_id' => $chatUser->id,
-            'user_name' => $chatUser->name
-        ]);
-
-        // تحديث حالة الرسائل غير المقروءة إلى مقروءة
-        $updated = Message::where('sender_id', $chatUser->id)
+        Message::where('sender_id', $chatUser->id)
             ->where('receiver_id', Auth::id())
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
-        \Log::info('Updated unread messages', [
-            'admin_id' => Auth::id(),
-            'user_id' => $chatUser->id,
-            'updated_count' => $updated
-        ]);
-
-        // جلب جميع الرسائل بين الأدمن والمستخدم
         $messages = Message::where(function ($query) use ($chatUser) {
             $query->where('sender_id', $chatUser->id)->where('receiver_id', Auth::id())
                 ->orWhere('sender_id', Auth::id())->where('receiver_id', $chatUser->id);
         })->orderBy('created_at', 'asc')->get();
 
-        \Log::info('Admin chat messages', [
-            'admin_id' => Auth::id(),
-            'user_id' => $chatUser->id,
-            'messages' => $messages->toArray()
-        ]);
-
         return view('mobile.admin.chat', compact('messages', 'chatUser'));
+    }
+
+    public function showAllChatsProfile()
+    {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
+        $users = User::where('role', 'user')->get();
+        $chats = [];
+
+        foreach ($users as $user) {
+            $lastMessage = Message::where(function ($query) use ($user) {
+                $query->where('sender_id', $user->id)->where('receiver_id', Auth::id())
+                    ->orWhere('sender_id', Auth::id())->where('receiver_id', $user->id);
+            })->orderBy('created_at', 'desc')->first();
+
+            $unreadCount = Message::where('sender_id', $user->id)
+                ->where('receiver_id', Auth::id())
+                ->where('is_read', false)
+                ->count();
+
+            $chats[] = [
+                'user' => $user,
+                'last_message' => $lastMessage ? ($lastMessage->message ?? ($lastMessage->image ? 'Image' : 'No content')) : 'No messages yet',
+                'last_message_date' => $lastMessage ? $lastMessage->created_at->format('d M') : null,
+                'unread_count' => $unreadCount,
+            ];
+        }
+
+        usort($chats, function ($a, $b) {
+            if ($a['unread_count'] > 0 && $b['unread_count'] == 0) {
+                return -1;
+            } elseif ($a['unread_count'] == 0 && $b['unread_count'] > 0) {
+                return 1;
+            } else {
+                $aDate = $a['last_message_date'] ? strtotime($a['last_message_date']) : 0;
+                $bDate = $b['last_message_date'] ? strtotime($b['last_message_date']) : 0;
+                return $bDate - $aDate;
+            }
+        });
+
+        return view('mobile.admin.all-chat-profile', compact('chats'));
     }
 
     public function showAllChats()
@@ -81,13 +97,11 @@ class ChatController extends Controller
         $chats = [];
 
         foreach ($users as $user) {
-            // الحصول على آخر رسالة
             $lastMessage = Message::where(function ($query) use ($user) {
                 $query->where('sender_id', $user->id)->where('receiver_id', Auth::id())
                     ->orWhere('sender_id', Auth::id())->where('receiver_id', $user->id);
             })->orderBy('created_at', 'desc')->first();
 
-            // حساب عدد الرسائل غير المقروءة من المستخدم إلى الأدمن
             $unreadCount = Message::where('sender_id', $user->id)
                 ->where('receiver_id', Auth::id())
                 ->where('is_read', false)
@@ -97,60 +111,42 @@ class ChatController extends Controller
                 'user' => $user,
                 'last_message' => $lastMessage ? ($lastMessage->message ?? ($lastMessage->image ? 'Image' : 'No content')) : 'No messages yet',
                 'last_message_date' => $lastMessage ? $lastMessage->created_at->format('d M') : null,
-                'unread_count' => $unreadCount, // إضافة عدد الرسائل غير المقروءة
+                'unread_count' => $unreadCount,
             ];
         }
 
-        // فرز المحادثات: المحادثات ذات الرسائل غير المقروءة أولاً، ثم حسب تاريخ آخر رسالة
         usort($chats, function ($a, $b) {
             if ($a['unread_count'] > 0 && $b['unread_count'] == 0) {
-                return -1; // المحادثات ذات الرسائل غير المقروءة تظهر أولاً
+                return -1;
             } elseif ($a['unread_count'] == 0 && $b['unread_count'] > 0) {
                 return 1;
             } else {
-                // إذا كان عدد الرسائل غير المقروءة متساويًا، فرز حسب تاريخ آخر رسالة
                 $aDate = $a['last_message_date'] ? strtotime($a['last_message_date']) : 0;
                 $bDate = $b['last_message_date'] ? strtotime($b['last_message_date']) : 0;
                 return $bDate - $aDate;
             }
         });
 
-        \Log::info('Admin chats', ['chats' => $chats]);
-
         return view('mobile.admin.all-chat', compact('chats'));
     }
+
     public function sendMessage(Request $request)
     {
         try {
-            // التحقق من المصادقة أولاً
             if (!Auth::check()) {
                 return response()->json(['error' => 'Unauthenticated'], 401);
             }
 
-            \Log::info('Received sendMessage request', [
-                'sender_id' => Auth::id(),
-                'sender_role' => Auth::user()->role,
-                'input' => $request->all()
-            ]);
-
-            // Validation
             $validated = $request->validate([
                 'message' => 'nullable|string',
                 'receiver_id' => 'required|exists:users,id',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
-            // التحقق من أن المستلم ليس المرسل نفسه
             if (Auth::id() == $request->receiver_id) {
-                \Log::warning('Attempt to send message to self', [
-                    'sender_id' => Auth::id(),
-                    'receiver_id' => $request->receiver_id,
-                    'message' => $request->message
-                ]);
                 return response()->json(['error' => 'لا يمكنك إرسال رسالة لنفسك'], 400);
             }
 
-            // التحقق من وجود محتوى للرسالة
             if (!$request->message && !$request->hasFile('image')) {
                 return response()->json(['error' => 'يجب إرسال نص أو صورة'], 400);
             }
@@ -161,27 +157,15 @@ class ChatController extends Controller
                 'message' => $request->message,
             ];
 
-            // رفع الصورة إذا وجدت
             if ($request->hasFile('image')) {
                 $imagePath = $request->file('image')->store('chat_images', 'public');
                 $data['image'] = $imagePath;
             }
 
-            // حفظ الرسالة
             $message = Message::create($data);
 
-            \Log::info('Message saved successfully', [
-                'message_id' => $message->id,
-                'sender_id' => $message->sender_id,
-                'receiver_id' => $message->receiver_id,
-                'message' => $message->message,
-                'image' => $message->image
-            ]);
-
-            // إرسال الإيميلات
             $this->sendEmailNotifications($message);
 
-            // إرجاع JSON response
             return response()->json([
                 'status' => 'success',
                 'message' => [
@@ -194,20 +178,11 @@ class ChatController extends Controller
                 ]
             ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('Validation error in sendMessage', [
-                'errors' => $e->errors(),
-                'input' => $request->all()
-            ]);
             return response()->json([
                 'error' => 'خطأ في البيانات المدخلة',
                 'details' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            \Log::error('Error sending message: ' . $e->getMessage(), [
-                'sender_id' => Auth::id(),
-                'input' => $request->all(),
-                'trace' => $e->getTraceAsString()
-            ]);
             return response()->json([
                 'error' => 'فشل إرسال الرسالة',
                 'message' => $e->getMessage()
@@ -215,9 +190,6 @@ class ChatController extends Controller
         }
     }
 
-    /**
-     * إرسال إشعارات البريد الإلكتروني للرسائل
-     */
     private function sendEmailNotifications($message)
     {
         try {
@@ -225,48 +197,33 @@ class ChatController extends Controller
             $receiver = User::find($message->receiver_id);
 
             if (!$sender || !$receiver) {
-                \Log::warning('Sender or receiver not found for email notification', [
-                    'message_id' => $message->id,
-                    'sender_id' => $message->sender_id,
-                    'receiver_id' => $message->receiver_id
-                ]);
                 return;
             }
 
-            // تحضير بيانات الرسالة
             $messageData = [
                 'messageText' => $message->message,
                 'messageImage' => $message->image ? asset('storage/' . $message->image) : null,
                 'messageDate' => $message->created_at->format('Y-m-d H:i A'),
             ];
 
-            // إذا كان المرسل مستخدم عادي والمستقبل أدمن
             if ($sender->role !== 'admin' && $receiver->role === 'admin') {
                 $this->notifyAdmins($message, $sender, $messageData);
-            }
-            // إذا كان المرسل أدمن والمستقبل مستخدم عادي
-            elseif ($sender->role === 'admin' && $receiver->role !== 'admin') {
+            } elseif ($sender->role === 'admin' && $receiver->role !== 'admin') {
                 $this->notifyUser($message, $receiver, $messageData);
             }
         } catch (\Exception $e) {
-            \Log::error('Failed to send email notifications', [
-                'message_id' => $message->id,
-                'error' => $e->getMessage()
-            ]);
-            // لا نرمي الخطأ عشان ما نأثرش على حفظ الرسالة
+            // Silent fail - don't interrupt message sending
         }
     }
-    /**
-     * إرسال إشعار لجميع الأدمنز
-     */
+
     private function notifyAdmins($message, $sender, $messageData)
     {
         try {
             $admins = User::where('role', 'admin')->get();
             if ($admins->isEmpty()) {
-                \Log::warning('No admins found to notify');
                 return;
             }
+
             $timestamp = now()->timestamp;
             $counter = 1;
 
@@ -276,29 +233,17 @@ class ChatController extends Controller
                     'senderEmail' => $sender->email,
                     'senderPhone' => $sender->phone ?? $sender->mobile ?? null,
                     'chatUrl' => route('mobile.admin.chat', $sender->id),
-                ]), function ($mail) use ($admin, $sender, $timestamp, $counter) {
+                ]), function ($mail) use ($admin, $timestamp, $counter) {
                     $mail->to($admin->email)
                         ->subject('💬 رسالة جديدة رقم ' . ' #' . $timestamp . '-' . $counter);
                 });
                 $counter++;
             }
-
-
-            \Log::info('Admin email notifications sent', [
-                'message_id' => $message->id,
-                'admin_count' => $admins->count()
-            ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to notify admins', [
-                'message_id' => $message->id,
-                'error' => $e->getMessage()
-            ]);
+            // Silent fail
         }
     }
 
-    /**
-     * إرسال إشعار للمستخدم
-     */
     private function notifyUser($message, $receiver, $messageData)
     {
         try {
@@ -309,18 +254,8 @@ class ChatController extends Controller
                 $mail->to($receiver->email)
                     ->subject('💬 رد جديد من فريق عمدة الصين');
             });
-
-            \Log::info('User email notification sent', [
-                'message_id' => $message->id,
-                'user_id' => $receiver->id,
-                'user_email' => $receiver->email
-            ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to notify user', [
-                'message_id' => $message->id,
-                'user_id' => $receiver->id,
-                'error' => $e->getMessage()
-            ]);
+            // Silent fail
         }
     }
 }

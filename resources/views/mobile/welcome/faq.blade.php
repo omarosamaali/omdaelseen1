@@ -18,6 +18,11 @@
         padding: 8px 16px;
         border-radius: 9999px;
     }
+
+    .faqCategory .tab-button .item {
+        border-radius: 50px;
+        box-shadow: 0px 0px 0px 2px #d8905e5c;
+    }
 </style>
 
 <x-china-header :title="__('messages.الأسئلة الشائعة')" :route="route('mobile.welcome')" />
@@ -33,7 +38,7 @@
                         class="bg-transparent outline-none bg-gray-200 placeholder:text-white w-full text-xs" />
                 </div>
             </div> --}}
-            <div class="faqCategory pt-8">
+            <div class="faqCategory pt-12">
                 <ul class="flex justify-start items-center gap-3 tab-button">
                     <li class="item cursor-pointer {{ $category == 'الطلب' ? 'active' : '' }}">
                         <a href="{{ route('mobile.faq', 'الطلب') }}">{{ __('messages.الطلب') }}</a>

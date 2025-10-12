@@ -44,7 +44,6 @@
 <x-china-header :title="__('messages.البلاغات')" :route="route('mobile.profile.profile')" />
 <div style="padding-top: 79px;" class="min-h-screen">
     <div class="container">
-        <!-- فلاتر -->
         <div class="filter-container">
             <div class="filter-group">
                 <label class="filter-label" for="typeFilter">نوع البلاغ</label>
@@ -65,7 +64,6 @@
             </div>
         </div>
 
-        <!-- رسائل النجاح أو الخطأ باستخدام SweetAlert2 -->
         @if (session('success'))
         <script>
             document.addEventListener('DOMContentLoaded', function() {

@@ -73,7 +73,7 @@
                     </button>
                     <button style="max-width: 200px; margin: auto;"
                         class="filter-btn flex items-center justify-center w-full text-black text-md py-2 px-4 rounded-full dark:bg-p1"
-                        data-filter="معرض">
+                        >
                         {{ __('messages.المعارض') }}
                     </button>
                     <button style="max-width: 200px; margin: auto;"
@@ -86,16 +86,26 @@
                     <div id="events-container">
                         @if ($events->isNotEmpty())
                         @foreach ($events as $event)
-                        <div class="flex flex-col gap-4 event-card" style="margin-bottom: 29px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0px 1px 2px 0px rgb(58 58 58 / 62%), 0px 1px 3px 0px rgb(58 58 58 / 36%);
-    border-radius: 15px;"
+                        <div class="flex flex-col gap-4 event-card" style="margin-bottom: 29px; overflow: hidden; position: relative; box-shadow: 0px 1px 2px 0px rgb(58 58 58 / 62%), 0px 1px 3px 0px rgb(58 58 58 / 36%); border-radius: 15px;"
                             data-event-type="{{ $event->type }}" style="margin-bottom: 10px;">
                             <div class="rounded-2xl overflow-hidden quiz-link">
                                 <div class="p-2 bg-white dark:bg-color10">
                                     <div id="container-type">
-                                        <span>{{ $event->type }}</span>
+@php
+$translations = [
+'en' => ['Exhibition' => 'Exhibition', 'معرض' => 'Exhibition', '展览' => 'Exhibition',
+'Event' => 'Event', 'مناسبة' => 'Event', '活动' => 'Event'],
+'ar' => ['Exhibition' => 'معرض', 'معرض' => 'معرض', '展览' => 'معرض',
+'Event' => 'مناسبة', 'مناسبة' => 'مناسبة', '活动' => 'مناسبة'],
+'zh' => ['Exhibition' => '展览', 'معرض' => '展览', '展览' => '展览',
+'Event' => '活动', 'مناسبة' => '活动', '活动' => '活动'],
+];
+
+$locale = app()->getLocale();
+$eventName = $translations[$locale][$event->type] ?? $event->type;
+@endphp
+
+<span>{{ $eventName }}</span>
                                     </div>
                                     <div style="position: relative; top: -30px;"
                                         class="border-b border-dashed border-black dark:border-color24 border-opacity-10 flex justify-between items-center">
@@ -142,14 +152,18 @@
                                     <div style="{{ $background }} position: relative; top: -4px; color: white; padding: 10px 0px; border-radius: 15px;"
                                         class="flex justify-between items-center flex-col">
                                         @if($event->start_date > now())
-                                        <p>باقي للبدء</p>
+                                        <p>{{ __('messages.remaining') }}</p>
                                         <div class="countdown-display" data-end-date="{{ $event->start_date }}">
                                         </div>
-                                        @elseif($event->start_date < now()) <p>باقي للإنتهاء</p>
+                                        @elseif($event->start_date < now()) <p>
+                                            {{ __('messages.remaining_end') }}
+                                        </p>
                                             <div class="countdown-display" data-end-date="{{ $event->end_date }}">
                                             </div>
                                             @else
-                                            <p>حدث منتهي</p>
+                                            <p>
+                                                {{ __('messages.ended') }}
+                                            </p>
                                             @endif
                                     </div>
                                 </div>
@@ -227,19 +241,27 @@
                             (1000 * 60)) / 1000);
                         element.innerHTML = ` <div style="text-align: center;">
         <p class="font-bold text-md">${days}</p>
-        <p class="text-xs">يوم</p>
+        <p class="text-xs">
+            {{ __('messages.days') }}
+            </p>
         </div>
         <div style="text-align: center;">
             <p class="font-bold text-md">${hours}</p>
-            <p class="text-xs">ساعة</p>
+            <p class="text-xs">
+                {{ __('messages.hours') }}
+            </p>
         </div>
         <div style="text-align: center;">
             <p class="font-bold text-md">${minutes}</p>
-            <p class="text-xs">دقيقة</p>
+            <p class="text-xs">
+                {{ __('messages.minutes') }}
+            </p>
         </div>
         <div style="text-align: center;">
             <p class="font-bold text-md">${seconds}</p>
-            <p class="text-xs">ثانية</p>
+            <p class="text-xs">
+                {{ __('messages.seconds') }}
+            </p>
         </div>
         `;
                     }

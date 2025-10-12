@@ -241,6 +241,64 @@ return [
     ],
     'no_events' => 'No events and no exhibitions coming up',
     'الإشعارات' => 'Notifications',
+    'الإرشادات' => 'Guides',
+    'المميزات' => 'Features',
+    'الجدول' => 'Schedule',
+    'new' => 'New',
+    'الرحلة' => 'Trip',
+    'فندق_الإقامة' => 'Hotel & Accommodation',
+    'مركبة_خاصة' => 'Private Car',
+    'حافلة_خاصة_مشتركة' => 'Shared Bus',
+    'room_type' => 'Room Type',
+    'المترجمين' => 'Translators',
+    'الوجبات' => 'Dishes',
+    'استقبال_بالمطار' => 'Arrival at the airport',
+    'مشرف_من_عمدة_الصين' => 'Supervisor in China Office',
+    'زيارة_المصانع' => 'Visit the factories',
+    'زيارة_المواقع_السياحية' => 'Visit tourist sites',
+    'يشمل_التذاكر' => 'Includes tickets',
+    'سعر_الرحلة' => 'Trip Price',
+    'ارشادات_الرحلة' => 'Trip Guidelines',
+    'مميزات_الرحلة' => 'Trip Features',
+    'transportation_types' => [
+        'shared_bus' => 'Shared Private Bus',
+        'private_car' => 'Private Car',
+        'airport_only' => 'Airport Transfer Only',
+        'no_transportation' => 'No Transportation',
+    ],
+    'translator_types' => [
+        'group_translator' => 'Group Translator',
+        'private_translator' => 'Private for Each Person',
+        'none' => 'None',
+    ],
+    'meals' => [
+        'breakfast' => 'Breakfast',
+        'lunch' => 'Lunch',
+        'dinner' => 'Dinner',
+    ],
+    'yes' => 'Yes',
+    'no' => 'No',
+    'remaining' => 'Left to start',
+    'remaining_end' => 'Left to end',
+    'ended' => 'Ended',
+    'days' => 'Day',
+    'hours' => 'Hour',
+    'minutes' => 'Minute',
+    'seconds' => 'Second',
+    'all_chats' => 'All Chats',
+    'message_placeholder' => 'Message',
+    'all_places' => 'All Places',
+    'العميل' => 'Customer',
+
+
+
+
+
+
+
+
+
+
 
 
 ];
