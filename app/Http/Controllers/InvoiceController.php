@@ -54,7 +54,7 @@ class InvoiceController extends Controller
                 $invoiceData,
                 $successUrl,
                 $cancelUrl,
-                app()->environment('local'),
+                false,
                 $finalAmount
             );
 
