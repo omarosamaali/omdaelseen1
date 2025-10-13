@@ -629,6 +629,7 @@ const explorUrl = "{{ __('messages.explore') }}";
         }
 
         slider.innerHTML = places.map(place => `
+        <a href="{{ route('mobile.china-discovers.info_place', $place) }}">
             <div class="place-card">
                 <img src="/storage/${place.avatar}" alt="${place.name_ar}">
                 
@@ -657,6 +658,8 @@ const explorUrl = "{{ __('messages.explore') }}";
                         ${place.name_ar}
                         </span>
                     </div>
+                </div>
+            </a>
                 
 ${userStatus != 1 ? `
 ` : `
