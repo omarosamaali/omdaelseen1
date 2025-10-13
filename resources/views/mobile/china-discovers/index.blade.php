@@ -659,9 +659,7 @@ const explorUrl = "{{ __('messages.explore') }}";
                     </div>
                 
 ${userStatus != 1 ? `
-// <button onclick="showActivationAlert()" class="explore-btn">${explorUrl}</button>
 ` : `
-// <a href="/mobile/china-discovers/info-place/${place.id}" class="explore-btn">${explorUrl}</a>
 `}
             </div>
         `).join('');
