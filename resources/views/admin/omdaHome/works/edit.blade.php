@@ -5,7 +5,7 @@
 
     <div style="display: flex; flex-direction: row-reverse; margin: 0px 20px; position: relative; z-index: 1;">
         <div class="container py-4 mx-auto max-w-4xl"
-            style="position: relative; right: -50px; background: white; border-radius: 10px; padding: 20px;">
+            style="position: relative; right: -50px; background: white; border-radius: 10px; padding: 20px; margin-bottom: 30px;">
             <form action="{{ route('admin.works.update', $work->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')

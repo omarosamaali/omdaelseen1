@@ -3,7 +3,7 @@
 @section('content')
 <h2 class="text-right mb-4 font-bold text-xl" style="display: flex; margin-top: 50px; margin-right: 50px; ">كيف نعمل</h2>
 
-    <div style="display: flex; flex-direction: row-reverse; position: relative; z-index: 1;">
+    <div style="margin-bottom: 30px; display: flex; flex-direction: row-reverse; position: relative; z-index: 1;">
         <div class="container py-4 mx-auto max-w-4xl" style="position: relative; right: -50px; background: white; border-radius: 10px; padding: 20px;">
             <form action="{{ route('admin.works.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf

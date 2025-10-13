@@ -1,7 +1,7 @@
 @extends($layout)
 
 @section('content')
-    <div class="py-4 text-end" style="text-align: right; margin-top: 30px; max-width: 800px; margin-right: auto; margin-left: auto;">
+    <div class="py-4 text-end" style="margin-top: 30px; max-width: 800px; margin-right: auto; margin-left: auto;">
         <h2 class="text-2xl font-bold mb-4">تعديل سؤال</h2>
         <form action="{{ route('admin.faq.update', $faq->id) }}" method="POST">
             @csrf
@@ -11,11 +11,6 @@
                 <input type="text" name="question_ar" id="question_ar" value="{{ $faq->question_ar }}"
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
             </div>
-            <div class="mb-4">
-                            <label for="answer_ar" class="block text-sm font-medium text-gray-700">السؤال (عربي)</label>
-                            <input type="text" name="answer_ar" id="answer_ar" value="{{ $faq->answer_ar }}"
-                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                        </div>
             <!-- Other fields (question_en, question_zh, answer_ar, etc.) -->
             <div class="mb-4">
                 <label for="category" class="block text-sm font-medium text-gray-700">التصنيف</label>

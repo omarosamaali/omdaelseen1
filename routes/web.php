@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\HelpWordsController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\FavoriteAdminController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\TripController;
 use App\Http\Controllers\TripGuidelineController;
@@ -229,6 +230,17 @@ Route::prefix('admin/faq')->name('admin.faq.')->group(function () {
     Route::get('/{id}', [FaqController::class, 'show'])->name('show');
     Route::delete('/{id}', [FaqController::class, 'destroy'])->name('destroy');
 });
+
+Route::prefix('admin/favorites')->name('admin.favorites.')->group(function () {
+    Route::get('/', [FavoriteAdminController::class, 'index'])->name('index');
+    Route::get('/create', [FavoriteAdminController::class, 'create'])->name('create');
+    Route::post('/', [FavoriteAdminController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [FavoriteAdminController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [FavoriteAdminController::class, 'update'])->name('update');
+    Route::get('/{id}', [FavoriteAdminController::class, 'show'])->name('show');
+    Route::delete('/{id}', [FavoriteAdminController::class, 'destroy'])->name('destroy');
+});
+
 
 Route::prefix('admin/about')->name('admin.about.')->group(function () {
     Route::get('/', [AboutController::class, 'index'])->name('index');

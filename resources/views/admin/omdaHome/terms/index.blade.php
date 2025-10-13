@@ -12,14 +12,10 @@
     </style>
 
     <div class="py-4 text-end" style="margin-top: 30px;">
-        <div style="">
-            <div style="display: flex; flex-direction: row-reverse; justify-content: space-between;">
-                <a href="{{ route('admin.terms.create') }}" class=""
-                    style="background: black; color: white; padding: 10px 20px; border-radius: 5px; margin: 15px 0px; margin-left: 20px;">إضافة
-                    الشروط</a>
+        <div>
+            <div style="direction: ltr; display: flex; flex-direction: row-reverse; justify-content: space-between;">
                 <div
                     style="display: flex; align-items: center; justify-content: space-between; gap:10px; margin-right: 20px;">
-                    <p>الشروط</p>
                     <div class="custom-select" style="position: relative; width: fit-content;">
                         <div style="position: relative;">
                             <span
@@ -36,7 +32,14 @@
                                 placeholder="بحث" required>
                         </div>
                     </div>
+                    <p>الشروط</p>
                 </div>
+                @if(! \App\Models\Terms::exists())
+                <a href="{{ route('admin.terms.create') }}"
+                    style="background: black; color: white; padding: 10px 20px; border-radius: 5px; margin: 15px 0px; margin-left: 20px;">إضافة
+                    الشروط
+                </a>
+                @endif
             </div>
 
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg" style="max-width: 100%; margin: 20px">

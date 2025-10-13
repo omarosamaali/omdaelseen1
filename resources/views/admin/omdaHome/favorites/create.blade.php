@@ -1,47 +1,62 @@
 @extends($layout)
 
 @section('content')
-    <div class="py-4 text-end" style="text-align: right; margin-top: 30px; max-width: 800px; margin-right: auto; margin-left: auto;">
-        <h2 class="text-2xl font-bold mb-4">تعديل سؤال</h2>
-        <form action="{{ route('admin.faq.update', $faq->id) }}" method="POST">
+    <div class="py-4 text-end" style="margin-top: 30px; max-width: 800px; margin-right: auto; margin-left: auto;">
+        <h2 class="text-2xl font-bold mb-4 text-right">إضافة سؤال جديد</h2>
+        <form action="{{ route('admin.faq.store') }}" method="POST">
             @csrf
-            @method('PUT')
             <div class="mb-4">
-                <label for="question_ar" class="block text-sm font-medium text-gray-700">السؤال (عربي)</label>
-                <input type="text" name="question_ar" id="question_ar" value="{{ $faq->question_ar }}"
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-            </div>
-            <div class="mb-4">
-                            <label for="answer_ar" class="block text-sm font-medium text-gray-700">السؤال (عربي)</label>
-                            <input type="text" name="answer_ar" id="answer_ar" value="{{ $faq->answer_ar }}"
-                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                        </div>
-            <!-- Other fields (question_en, question_zh, answer_ar, etc.) -->
-            <div class="mb-4">
-                <label for="category" class="block text-sm font-medium text-gray-700">التصنيف</label>
+                <label for="category" class="text-right block text-sm font-medium text-gray-700">التصنيف</label>
                 <select name="category" id="category" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                     required>
-                    <option value="الطلب" {{ $faq->category == 'الطلب' ? 'selected' : '' }}>الطلب</option>
-                    <option value="الشحن" {{ $faq->category == 'الشحن' ? 'selected' : '' }}>الشحن</option>
-                    <option value="الأماكن" {{ $faq->category == 'الأماكن' ? 'selected' : '' }}>الأماكن</option>
-                    <option value="اخرى" {{ $faq->category == 'اخرى' ? 'selected' : '' }}>اخرى</option>
+                    <option value="الطلب">الطلب</option>
+                    <option value="الشحن">الشحن</option>
+                    <option value="الأماكن">الأماكن</option>
+                    <option value="اخرى">اخرى</option>
                 </select>
             </div>
             <div class="mb-4">
-                <label for="status" class="block text-sm font-medium text-gray-700">الحالة</label>
-                <select name="status" id="status" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                    required>
-                    <option value="نشط" {{ $faq->status == 'نشط' ? 'selected' : '' }}>نشط</option>
-                    <option value="غير نشط" {{ $faq->status == 'غير نشط' ? 'selected' : '' }}>غير نشط</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label for="order" class="block text-sm font-medium text-gray-700">الترتيب</label>
-                <input type="number" name="order" id="order" value="{{ $faq->order }}"
+                <label for="question_ar" class="text-right block text-sm font-medium text-gray-700">السؤال (عربي)</label>
+                <input type="text" name="question_ar" id="question_ar"
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
             </div>
+            <div class="mb-4">
+                <label for="question_en" class="text-right block text-sm font-medium text-gray-700">السؤال (إنجليزي)</label>
+                <input type="text" name="question_en" id="question_en"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            </div>
+            <div class="mb-4">
+                <label for="question_zh" class="text-right block text-sm font-medium text-gray-700">السؤال (صيني)</label>
+                <input type="text" name="question_zh" id="question_zh"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            </div>
+            <div class="mb-4">
+                <label for="answer_ar" class="text-right block text-sm font-medium text-gray-700">الإجابة (عربي)</label>
+                <textarea name="answer_ar" id="answer_ar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="answer_en" class="text-right block text-sm font-medium text-gray-700">الإجابة (إنجليزي)</label>
+                <textarea name="answer_en" id="answer_en" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="answer_zh" class="text-right block text-sm font-medium text-gray-700">الإجابة (صيني)</label>
+                <textarea name="answer_zh" id="answer_zh" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="status" class="text-right block text-sm font-medium text-gray-700">الحالة</label>
+                <select name="status" id="status" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                    required>
+                    <option value="نشط">نشط</option>
+                    <option value="غير نشط">غير نشط</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="order" class="text-right block text-sm font-medium text-gray-700">الترتيب</label>
+                <input type="number" name="order" id="order"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" value="0" required>
+            </div>
             <div class="text-center">
-                <button type="submit" class="bg-black text-white px-4 py-2 rounded-md">تحديث</button>
+                <button type="submit" class="bg-black text-white px-4 py-2 rounded-md">إضافة</button>
             </div>
         </form>
     </div>

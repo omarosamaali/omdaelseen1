@@ -11,12 +11,8 @@
         }
     </style>
     <div class="py-4 text-end" style="margin-top: 30px;">
-        {{-- <h3 class="mb-4">المستخدمون</h3> --}}
-        <div style="">
-
-
+        <div>
             <div style="display: flex; flex-direction: row-reverse; justify-content: space-between;">
-
                 <a href="{{ route('admin.users.create') }}" class=""
                     style="background: black; color: white;
                             padding: 10px 20px; border-radius: 5px; margin: 15px 0px; margin-left: 20px; ">إضافة
@@ -41,11 +37,8 @@
                                 placeholder="بحث" required>
                         </div>
                     </div>
-
                 </div>
-
             </div>
-
 
             <div style="display: flex; justify-content: space-between; max-width: 100%; margin: 30px 20px;">
                 <a style="background: rgb(201, 200, 200); text-align: center; width: 130px; color: black; font-weight:bold; border-radius: 10px; padding: 20px;"
@@ -58,30 +51,31 @@
                     class="filter-box {{ $currentFilter === 'user' ? 'active' : '' }}">
                     المستخدمين<br />{{ $usersCount }}
                 </a>
-                <div
+                
+                <a href="{{ route('admin.users.index', ['filter' => 'no_requests', 'user_search' => request('user_search')]) }}"
                     style="background: rgb(201, 200, 200); text-align: center; width: 130px; color: black; font-weight:bold; border-radius: 10px; padding: 20px;">
                     بدون طلبات
                     <br />
-                    123
-                </div>
+                    {{ $usersWithNoRequests }}
+                </a>
 
                 <a style="background: rgb(201, 200, 200); text-align: center; width: 130px; color: black; font-weight:bold; border-radius: 10px; padding: 20px;"
                     href="{{ route('admin.users.index', ['filter' => 'active', 'user_search' => request('user_search')]) }}"
                     class="filter-box {{ $currentFilter === 'active' ? 'active' : '' }}">
                     النشط<br />{{ $activeUsersCount }}
                 </a>
-                <div
+                <a href="{{ route('admin.users.index', ['filter' => 'banned', 'user_search' => request('user_search')]) }}"
                     style="background: rgb(201, 200, 200); text-align: center; width: 130px; color: black; font-weight:bold; border-radius: 10px; padding: 20px;">
                     المحظور
                     <br />
                     {{ $bannedUsersCount }}
-                </div>
-                <div
+                </a>
+                <a href="{{ route('admin.users.index', ['filter' => 'deleted', 'user_search' => request('user_search')]) }}"
                     style="background: rgb(201, 200, 200); text-align: center; width: 130px; color: black; font-weight:bold; border-radius: 10px; padding: 20px;">
                     المحذوف
                     <br />
                     {{ $deletedUsersCount }}
-                </div>
+                </a>
 
             </div>
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg" style="max-width: 100%; margin: 20px">
@@ -219,21 +213,18 @@
             </div>
 
         </div>
+        
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const searchInput = document.getElementById('user_search');
-
                 const table = document.getElementById('users_table');
                 const rows = table.querySelectorAll('tbody tr');
-
                 searchInput.addEventListener('input', function() {
                     const term = this.value.trim().toLowerCase();
-
                     rows.forEach(row => {
                         const nameCell = row.querySelectorAll('td')[
                             0];
                         if (!nameCell) return;
-
                         const name = nameCell.textContent.trim().toLowerCase();
                         if (name.includes(term) || term === '') {
                             row.style.display = '';

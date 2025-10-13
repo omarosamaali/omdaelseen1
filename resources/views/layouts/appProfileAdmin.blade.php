@@ -485,7 +485,7 @@
                                         <x-iconSub />
                                         المراسلات
                                     </a></li>
-                                <li><a href="#" class="{{ Route::is('interests') ? 'active' : '' }}">
+                                <li><a href="{{ route('admin.favorites.index') }}" class="{{ Route::is('favorites') ? 'active' : '' }}">
                                         <x-iconSub />
                                         الاهتمامات
                                     </a></li>

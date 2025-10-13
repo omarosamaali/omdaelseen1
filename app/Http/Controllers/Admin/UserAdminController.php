@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Rating;
 use App\Models\Trip;
+use App\Models\TripRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -43,6 +44,10 @@ class UserAdminController extends Controller
                 $query->where('status', 0);
             } elseif ($filter === 'banned') {
                 $query->where('status', 2);
+            } elseif($filter === 'no_requests') {
+                $query->whereDoesntHave('tripRequests')->WhereDoesntHave('products');
+            } elseif($filter === 'deleted') {
+                $query->onlyTrashed();
             }
         }
 
@@ -53,11 +58,12 @@ class UserAdminController extends Controller
         $inactiveUsersCount = User::where('status', 0)->count();
         $bannedUsersCount = User::where('status', 2)->count(); // Fixed inconsistency
         $deletedUsersCount = User::onlyTrashed()->count();
+        $usersWithNoRequests = User::whereDoesntHave('tripRequests')->WhereDoesntHave('products')->count();
 
         $currentFilter = $request->filter;
         $ratings_count = Rating::where('user_id', Auth::user()->id)->count();
         $trips_count = Trip::where('user_id', Auth::user()->id)->count(); // إضافة count()
-        return view('admin.omdaHome.users.index', compact('trips_count','users', 'adminsCount', 'usersCount', 'activeUsersCount', 'inactiveUsersCount', 'bannedUsersCount', 'deletedUsersCount', 'currentFilter'))
+        return view('admin.omdaHome.users.index', compact('usersWithNoRequests','trips_count','users', 'adminsCount', 'usersCount', 'activeUsersCount', 'inactiveUsersCount', 'bannedUsersCount', 'deletedUsersCount', 'currentFilter'))
             ->with('layout', $this->layout);
     }
 
