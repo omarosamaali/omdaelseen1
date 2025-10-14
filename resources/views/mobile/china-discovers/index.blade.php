@@ -108,13 +108,13 @@
                             style="font-size: 18px;"></i>
                     </div>
                     @endif
-                    <div class="rating-icon"
-                        style="bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
-                        <i class="fa-solid fa-star" style="font-size: 18px;"></i>
-                        <span style="font-size: 14px; font-weight: bold; color: #fff;">
-                            {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
-                        </span>
-                    </div>
+                <div class="rating-icon"
+                                        style="left: 31%; bottom: 16px; top: unset; position: absolute; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                                        <i class="fa-solid fa-star" style="font-size: 18px;"></i>
+                                        <span style="font-size: 14px; font-weight: bold; color: #fff;">
+                                            {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
+                                        </span>
+                                    </div>
                     <div class="category-tag">
                         @if ($place->mainCategory)
                         <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
@@ -176,8 +176,8 @@
                     </div>
                     @endif
 
-                    <div class="rating-icon"
-                        style="bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+<div class="rating-icon"
+                        style="left: 31%; bottom: 16px; top: unset; position: absolute; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
                         <span style="font-size: 14px; font-weight: bold; color: #fff;">
                             {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
@@ -196,9 +196,13 @@
                         <span>{{ __('بدون تصنيف') }}</span>
                         @endif
                     </div>
+                    <div class="place-name">
 
-                    <span style="bottom: 50px; position: relative;">
-                        {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }} @auth
+                        <span style="bottom: 50px; position: relative;">
+                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }} 
+                        </span>
+                        </div>
+                            @auth
                         {{-- @if(Auth::user()->status != 1) --}}
                         {{-- <button onclick="showActivationAlert()" class="explore-btn">
                             {{ __('messages.explore') }}
@@ -263,7 +267,7 @@
                     @endif
 
                     <div class="rating-icon"
-                        style="bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                        style="left: 31%; bottom: 16px; top: unset; position: absolute; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
                         <span style="font-size: 14px; font-weight: bold; color: #fff;">
                             {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
@@ -331,8 +335,8 @@
                     </div>
                     @endif
 
-                    <div class="rating-icon"
-                        style="bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+<div class="rating-icon"
+                        style="left: 31%; bottom: 16px; top: unset; position: absolute; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
                         <span style="font-size: 14px; font-weight: bold; color: #fff;">
                             {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
@@ -418,8 +422,8 @@
                     </div>
                     @endif
 
-                    <div class="rating-icon"
-                        style="bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+<div class="rating-icon"
+                        style="left: 31%; bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
                         <span style="font-size: 14px; font-weight: bold; color: #fff;">
                             {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
@@ -474,7 +478,6 @@
                 <div class="place-card">
                     <img src="{{ asset('storage/' . $place->avatar) }}"
                         alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
-
                     @php
                     $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
                     @endphp
@@ -487,8 +490,8 @@
                     </div>
                     @endif
 
-                    <div class="rating-icon"
-                        style="bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+<div class="rating-icon"
+                        style="left: 31%; bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
                         <span style="font-size: 14px; font-weight: bold; color: #fff;">
                             {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
@@ -549,6 +552,9 @@
 </div>
 
 <script>
+    const userStatus = {{ Auth::user()->status ?? 0 }};
+    const explorUrl = "{{ __('messages.explore') }}";
+    const authUserId = {{ auth()->id() ?? 'null' }}; // أضف هذا السطر
     document.addEventListener('DOMContentLoaded', function() {
     const sliderContainer = document.querySelector('.slider-container');
     const explorerLinks = document.querySelectorAll('.explorer-link');
@@ -629,38 +635,41 @@ const explorUrl = "{{ __('messages.explore') }}";
         }
 
         slider.innerHTML = places.map(place => `
-        <a href="{{ route('mobile.china-discovers.info_place', $place) }}">
-            <div class="place-card">
-                <img src="/storage/${place.avatar}" alt="${place.name_ar}">
-                
-                ${place.user_id !== {{ auth()->id() ?? 'null' }} ? `
-                    <div class="heart-icon ${place.is_favorited ? 'favorited' : ''}" data-place-id="${place.id}">
-                        <i class="fa ${place.is_favorited ? 'fa-solid' : 'fa-regular'} fa-heart" style="font-size: 18px;"></i>
-                    </div>
-                ` : ''}
-                
-                <div class="rating-icon" style="position: absolute; top: unset !important; bottom: 20px; right: 156px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
-                    <i class="fa-solid fa-star" style="font-size: 18px;"></i>
-                </div>
-                
-                <div class="category-tag">
-                    ${place.main_category ? `
-                        <img src="/storage/${place.main_category.avatar}" alt="${place.main_category.name_ar}">
-                        <span>${place.main_category.name_ar}</span>
-                    ` : `
-                        <img src="/storage/placeholders/no-category.png" alt="بدون تصنيف">
-                        <span>بدون تصنيف</span>
-                    `}
-                </div>
-                
-                <div class="place-name" >
-                    <span style="bottom: 50px; position: relative;"> 
-                        ${place.name_ar}
-                        </span>
-                    </div>
-                </div>
-            </a>
-                
+<a href="/mobile/info_place/${place.id}">
+    <div class="place-card">
+        <img src="/storage/${place.avatar}" alt="${place.name_ar}">
+        ${place.user_id !== authUserId ? `
+        <div class="heart-icon ${place.is_favorited ? 'favorited' : ''}" data-place-id="${place.id}">
+            <i class="fa ${place.is_favorited ? 'fa-solid' : 'fa-regular'} fa-heart" style="font-size: 18px;"></i>
+        </div>
+        ` : ''}
+
+        <div class="rating-icon"
+            style="left: 31%; bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+            <i class="fa-solid fa-star" style="font-size: 18px;"></i>
+            <span style="font-size: 14px; font-weight: bold; color: #fff;">
+                ${place.ratings_avg_rating ? Number(place.ratings_avg_rating).toFixed(1) : '0.0'} (${place.ratings_count
+                ?? 0})
+            </span>
+        </div>
+
+        <div class="category-tag">
+            ${place.main_category ? `
+            <img src="/storage/${place.main_category.avatar}" alt="${place.main_category.name_ar}">
+            <span>${place.main_category.name_ar}</span>
+            ` : `
+            <img src="/storage/placeholders/no-category.png" alt="بدون تصنيف">
+            <span>بدون تصنيف</span>
+            `}
+        </div>
+
+        <div class="place-name">
+            <span style="bottom: 50px; position: relative;">
+                ${place.name_ar}
+            </span>
+        </div>
+    </div>
+</a>                
 ${userStatus != 1 ? `
 ` : `
 `}

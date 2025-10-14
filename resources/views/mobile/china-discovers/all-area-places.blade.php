@@ -334,40 +334,56 @@
 <x-china-header
     :title="app()->getLocale() == 'en' ? $branch->name_en : (app()->getLocale() == 'zh' ? $branch->name_ch : $branch->name_ar)"
     :route="route('mobile.china-discovers.all--places')" />
-<div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white dark:bg-black" style="padding-top: 30px;">
+<div class="container min-h-dvh relative pb-8 dark:text-white dark:bg-black" style="overflow-y: auto !important; padding-top: 30px;">
     <div style="width: 100%; display: block;">
         @if ($banners->isNotEmpty())
         @foreach ($banners as $banner)
-        <img class="fav-image" src="{{ asset('storage/' . $banner->avatar) }}" alt="">
+        <img class="fav-image" style="width: 100%; padding-top: 31px;" src="{{ asset('storage/' . $banner->avatar) }}" alt="">
         @endforeach
         @endif
     </div>
     <div class="container--features" style="margin-bottom: 5px;">
         <div class="box-info">
-            <img src="{{ asset('storage/' . $places[0]->region?->avatar) }}" alt="">
+            <img style="border-radius: 50%;" src="{{ asset('storage/' . $places[0]->region?->avatar) }}" alt="">
             <p>{{ app()->getLocale() == 'en' ? $places[0]->region?->name_en : (app()->getLocale() == 'zh' ?
                 $places[0]->region?->name_ch : $places[0]->region?->name_ar) }}
             </p>
         </div>
         <div class="box-info">
-            <img src="{{ asset('storage/' . $branch?->avatar) }}" alt="">
+            <img style="border-radius: 50%;" src="{{ asset('storage/' . $branch?->avatar) }}" alt="">
             <p>{{ app()->getLocale() == 'en' ? $branch?->name_en : (app()->getLocale() == 'zh' ? $branch?->name_ch :
                 $branch?->name_ar) }}
             </p>
         </div>
         <div class="box-info">
-            <img src="{{ asset('storage/' . $branch->explorer?->avatar) }}" alt="">
+            <img style="border-radius: 50%;" src="{{ asset('storage/' . $branch->explorer?->avatar) }}" alt="">
             <p>{{ app()->getLocale() == 'en' ? $branch->explorer?->name_en : (app()->getLocale() == 'zh' ?
                 $branch->explorer?->name_ch : $branch->explorer?->name_ar) }}
             </p>
         </div>
     </div>
-    <div style="display: flex; gap: 10px; margin: 0px 10px; height: 221px; justify-content: center;">
+    <div style="display: grid; grid-template-columns: repeat(1, 1fr); gap: 10px; margin: 0px 10px; height: 221px; justify-content: center;">
         @foreach ($places as $place)
-        <a href="{{ route('mobile.china-discovers.info_place', $place) }}" style="width: 100%;">
+        <a href="{{ route('mobile.china-discovers.info_place', $place) }}" style="width: 100%; position: relative;">
             <img style="width: 100%; border-radius: 15px; border: 2px solid maroon; height: 200px;"
                 src="{{ asset('storage/' . $place->avatar) }}"
                 alt="{{ app()->getLocale() == 'en' ? $place->name_en : (app()->getLocale() == 'zh' ? $place->name_ch : $place->name_ar) }}">
+                <div class="rating-icon"
+                            style="left: 6%; bottom: 208px; top: unset; position: absolute; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                            <i class="fa-solid fa-star" style="font-size: 18px;"></i>
+                            <span style="font-size: 14px; font-weight: bold; color: #fff;">
+                                {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
+                            </span>
+                        </div>
+                        @php
+                        $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
+                        @endphp
+                        @if (auth()->check() && auth()->id() != $place->user_id)
+                        <div style="bottom: 193px; top: unset;" class="heart-icon @if ($isFavorited) favorited @endif"
+                            data-place-id="{{ $place->id }}">
+                            <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif" style="font-size: 18px;"></i>
+                        </div>
+                        @endif
             <p
                 style="text-align: center; padding: 9px 0px; font-size: 15px; position: relative; top: -60px; background-color: rgba(255, 255, 255, 0.5);">
                 {{ app()->getLocale() == 'en' ? $place->name_en : (app()->getLocale() == 'zh' ? $place->name_ch :
