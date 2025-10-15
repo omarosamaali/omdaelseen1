@@ -83,7 +83,7 @@
                 href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.11.2/build/css/intlTelInput.css">
             <div
                 class="flex justify-end items-center py-3 px-1 border border-color21 rounded-xl dark:border-color18 gap-3">
-                <input id="phone" type="tel" name="phone" value="{{ old('phone') }}" placeholder="رقم الهاتف المحترك"
+                <input id="phone" type="tel" name="phone" value="{{ old('phone') }}" placeholder="رقم الهاتف المتحرك"
                     class="outline-none bg-transparent text-n600 text-sm placeholder:text-sm w-full placeholder:text-bgColor18 dark:text-color18 dark:placeholder:text-color18">
             </div>
             <span id="error-msg" class="hide"></span>
@@ -104,8 +104,9 @@
                     class="flex justify-between items-center py-3 px-4 border border-color21 rounded-xl dark:border-color18 gap-3">
                     <select name="country"
                         class="outline-none bg-transparent text-n600 text-sm placeholder:text-sm w-full placeholder:text-bgColor18 dark:text-color18 dark:placeholder:text-color18">
+                        <option value="me">اختر الدولة</option>
                         @foreach (__('countries') as $code => $name)
-                        <option value="{{ $code }}" {{ old('country', 'AE' )==$code ? 'selected' : '' }}>
+                        <option value="{{ $code }}" {{ old('country', 'me' )==$code ? 'selected' : '' }}>
                             {{ $name }}
                         </option>
                         @endforeach
@@ -142,13 +143,13 @@
             </div>
 
             <div class="pt-4">
-                <label for="checkbox" class="flex justify-start items-center gap-3 text-sm cursor-pointer">
+                <label for="checkbox" class="flex justify-start items-center gap-1 text-sm cursor-pointer">
                     <input type="checkbox" name="terms" id="checkbox" class="peer hidden" />
                     <span
                         class="border border-color21 size-7 rounded-full flex justify-center items-center !leading-none text-white peer-checked:bg-p2 dark:border-color24">
                         <i class="ph ph-check"></i>
                     </span>
-                    الموافقة على <a href="#">الشروط والأحكام</a>
+                    الموافقة على<a href="#">الشروط والأحكام</a>
                 </label>
             </div>
         </div>
