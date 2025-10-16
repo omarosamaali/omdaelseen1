@@ -15,7 +15,7 @@ Schema::create('terms', function (Blueprint $table) {
     $table->id();
     $table->text('content_ar');
     $table->text('content_en')->nullable();
-    $table->text('content_zh')->nullable(); // الصيني
+    $table->text('content_zh')->nullable();
     $table->string('title_ar')->nullable();
     $table->string('title_en')->nullable();
     $table->string('title_zh')->nullable(); // الصيني

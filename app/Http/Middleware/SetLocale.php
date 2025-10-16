@@ -11,15 +11,12 @@ class SetLocale
 {
     public function handle(Request $request, Closure $next)
     {
-        // أول حاجة شوف لو في locale في الـ session
         $locale = Session::get('locale');
-
-        // لو مفيش، استعمل الـ default
+        
         if (!$locale) {
             $locale = config('app.locale', 'en');
         }
 
-        // تأكد إن الـ locale ده متاح
         if (in_array($locale, ['en', 'ar', 'zh'])) {
             App::setLocale($locale);
         }
