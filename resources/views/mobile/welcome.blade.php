@@ -33,7 +33,7 @@
     <img id="logo-img" src="{{ asset('assets/assets/images/sgin-logo.png') }}" alt=""
         class="absolute top-0 left-0 right-0 -mt-6" />
 
-    <div class="relative z-10 pb-20" style="direction: ltr;">
+    <div class=" z-10 pb-20" style="direction: ltr;">
 
         <div class="flex justify-between items-center gap-4 px-6 relative z-20">
             <div class="flex justify-start items-center gap-2">
