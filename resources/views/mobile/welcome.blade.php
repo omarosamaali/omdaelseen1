@@ -10,6 +10,12 @@
             margin-top: 129px !important;
         }
     }
+    html, body {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100%;
+        height: 100vh;
+        }
 </style>
 
 @section('content')
@@ -29,8 +35,9 @@
 
 <img src="{{ asset('assets/assets/images/pg3.png') }}" class="image-container" alt="">
 
-<div style="overflow: hidden !important;" class="container min-h-dvh relative overflow-hidden py-8 dark:text-white dark:bg-black">
-    <img id="logo-img" src="{{ asset('assets/assets/images/sgin-logo.png') }}" alt=""
+<div class="container relative py-8 dark:text-white dark:bg-black"
+    style="overflow: hidden !important; position: fixed; height: 100vh; width: 100vw; top: 0; left: 0;">
+        <img id="logo-img" src="{{ asset('assets/assets/images/sgin-logo.png') }}" alt=""
         class="absolute top-0 left-0 right-0 -mt-6" />
 
     <div class=" z-10 pb-20" style="direction: ltr;">
@@ -699,6 +706,50 @@
                         }
                     });
             }
+            // منع الـ scroll نهائياً
+            document.addEventListener('DOMContentLoaded', function() {
+            // منع scroll على الـ body
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+            
+            // منع الـ scroll بالماوس
+            window.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            }, { passive: false });
+            
+            // منع الـ scroll باللمس (للموبايل)
+            window.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+            }, { passive: false });
+            
+            // منع الـ scroll بالـ keyboard
+            window.addEventListener('keydown', function(e) {
+            // منع مفاتيح السهم والـ Page Up/Down
+            if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'PageUp', 'PageDown', 'Home', 'End', 'Space'].includes(e.key)) {
+            e.preventDefault();
+            }
+            });
+            
+            // منع الـ scroll programmatically
+            window.scrollTo(0, 0);
+            
+            // إصلاح الارتفاع للموبايل
+            function lockScreen() {
+            document.body.style.position = 'fixed';
+            document.body.style.top = '0';
+            document.body.style.left = '0';
+            document.body.style.right = '0';
+            document.body.style.bottom = '0';
+            document.body.style.width = '100%';
+            document.body.style.height = '100vh';
+            }
+            
+            lockScreen();
+            
+            // عند تغيير orientation أو resize
+            window.addEventListener('resize', lockScreen);
+            window.addEventListener('orientationchange', lockScreen);
+            });
 </script>
 
 @endsection
