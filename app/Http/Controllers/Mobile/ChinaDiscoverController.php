@@ -323,6 +323,26 @@ class ChinaDiscoverController extends Controller
         return view('mobile.china-discovers.all--places', compact('sub_categories', 'regions', 'banners', 'explorers', 'region_id'));
     }
 
+    public function newPlaces()
+    {
+        $banners = Banner::where('location', 'both')->orWhere('location', 'mobile_app')->get();
+        $places = Places::latest()->get();
+        return view('mobile.china-discovers.new-places', compact('places', 'banners'));
+    }
+
+
+    public function mostPlaces()
+    {
+        $banners = Banner::where('location', 'both')->orWhere('location', 'mobile_app')->get();
+
+        $places = Places::withAvg('ratings', 'rating') // حساب متوسط التقييم
+            ->withCount('ratings') // عدد التقييمات
+            ->orderBy('ratings_avg_rating', 'desc') // ترتيب حسب أعلى تقييم
+            ->orderBy('ratings_count', 'desc') // ثم حسب عدد التقييمات
+            ->has('ratings')
+            ->get();
+                    return view('mobile.china-discovers.most-fav-places', compact('places', 'banners'));
+    }
     /**
      * Display all sub-categories for a given explorer.
      *

@@ -240,7 +240,7 @@
     {{-- أحدث الأماكن --}}
     <div class="continaer--title" style="margin-top: 30px;">
         <h6 class="categories" style="color: maroon;">{{ __('messages.latest_places') }}</h6>
-        <a href="{{ route('mobile.china-discovers.all--places') }}" style="border: 0px;" class="show--all">{{
+        <a href="{{ route('mobile.china-discovers.new-places') }}" style="border: 0px;" class="show--all">{{
             __('messages.show_all')
             }}</a>
     </div>
@@ -397,7 +397,7 @@
     {{-- الأكثر تقييماً --}}
     <div class="continaer--title" style="margin-top: 30px;">
         <h6 class="categories" style="color: maroon;">{{ __('messages.most_rated') }}</h6>
-        <a href={{ route('mobile.china-discovers.all--places') }} style="border: 0px !important;" class="show--all">{{
+        <a href={{ route('mobile.china-discovers.most-fav-places') }} style="border: 0px !important;" class="show--all">{{
             __('messages.show_all') }}</a>
     </div>
 

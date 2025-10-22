@@ -281,6 +281,8 @@ return [
     'message_placeholder' => '消息',
     'all_places' => '所有地点',
     'العميل' => '客户',
+    'new_places' => '最新地点',
+    'الأكثر تقييما' => '最好的',
 
 
 

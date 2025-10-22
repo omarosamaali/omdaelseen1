@@ -505,7 +505,9 @@ Route::get('/mobile/order/success', function () {
 })->name('mobile.order.success');
 
 Route::get('/mobile/event', function () {
-    $events = Event::where('status', 'نشط')->where('end_date', '>', Carbon::now())->where('start_date', '<=', Carbon::now())->orderBy('start_date')->get();
+    $events = Event::where('status', 'نشط')
+    ->where('end_date', '>', Carbon::now())
+    ->where('start_date', '<=', Carbon::now())->orderBy('end_date')->get();
     return view('mobile.welcome.event', compact('events'));
 })->name('mobile.event');
 
@@ -743,9 +745,11 @@ Route::middleware('mobile_auth')->group(function () {
     // Route::get('mobile/china-discovers/all-places', [ChinaDiscoverController::class, 'allPlaces'])
     //     ->name('mobile.china-discovers.all--places');
     Route::get('/all-places/{region_id?}', [ChinaDiscoverController::class, 'allPlaces'])->name('mobile.china-discovers.all--places');
+    Route::get('/new-places', [ChinaDiscoverController::class, 'newPlaces'])
+    ->name('mobile.china-discovers.new-places');
+    Route::get('/most-fav-places', [ChinaDiscoverController::class, 'mostPlaces'])
+        ->name('mobile.china-discovers.most-fav-places');
 
-    // Profile Routes with Role-Based Redirection
-    // The mobile_auth middleware will handle the redirection logic for these two routes.
     Route::get('mobile/profile', function () {
         $count = Places::where('user_id', Auth::user()->id)->count();
         $countInterests = Favorites::where('user_id', Auth::user()->id)->count();

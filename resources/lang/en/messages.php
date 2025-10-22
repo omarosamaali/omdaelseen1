@@ -289,6 +289,8 @@ return [
     'message_placeholder' => 'Message',
     'all_places' => 'All Places',
     'العميل' => 'Customer',
+    'new_places' => 'New Places',
+    'الأكثر تقييما' => 'The Most Rated',
 
 
 
