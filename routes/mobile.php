@@ -506,8 +506,7 @@ Route::get('/mobile/order/success', function () {
 
 Route::get('/mobile/event', function () {
     $events = Event::where('status', 'نشط')
-    ->where('end_date', '>', Carbon::now())
-    ->where('start_date', '<=', Carbon::now())->orderBy('end_date')->get();
+    ->where('end_date', '>', Carbon::now())->orderBy('end_date')->get();
     return view('mobile.welcome.event', compact('events'));
 })->name('mobile.event');
 
