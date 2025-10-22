@@ -79,7 +79,7 @@
     <div style="width: 100%; display: block;">
         @if ($banners->isNotEmpty())
         @foreach ($banners as $banner)
-        <img class="fav-image" src="{{ asset('storage/' . $banner->avatar) }}" alt="">
+        <img class="fav-image" src="{{ asset('storage/' . $banner->avatar) }}" style="margin-top: 62px;" alt="">
         @endforeach
         @endif
     </div>

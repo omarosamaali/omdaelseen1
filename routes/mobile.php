@@ -527,7 +527,8 @@ Route::get('/mobile/trip-show1/{id}', function ($id) {
 })->name('mobile.trip-show1');
 
 Route::get('/mobile/trip-show/{id}', function ($id) {
-    $banner = Banner::where('is_active', 'نشط')->where('location', 'both', 'mobile_app')->first();
+    $banner = Banner::where('is_active', 'نشط')->where('location', 'both')
+    ->orWhere('location', 'mobile_app')->first();
     $trip = Trip::with('activities.place.subCategory')->findOrFail($id);
 
     // ترتيب الأنشطة حسب التاريخ ثم حسب الفترة
@@ -665,7 +666,8 @@ Route::get('mobile/info_place/{place}', function (Places $place) {
 Route::get('/all-area-places/{branch_id}', [ChinaDiscoverController::class, 'allAreaPlaces'])->name('all-area-places');
 Route::get('places/{place}/reviews', [RatingController::class, 'getReviews'])->name('places.reviews');
 Route::get('mobile', function () {
-    $banner = Banner::where('is_active', 'نشط')->where('location', 'both', 'mobile_app')->first();
+    $banner = Banner::where('is_active', 'نشط')->where('location', 'website_home')
+        ->orWhere('location', 'mobile_app')->first();
     $events = Event::where('status', 'نشط')->where('end_date', '>', Carbon::now())
     ->where('start_date', '<=', Carbon::now())->first();
     return view('mobile.welcome', compact('banner', 'events'));
