@@ -24,7 +24,6 @@ Route::get('/mobile/orders/admin-chat/{product_id}', [ChatOrderController::class
 Route::get('/mobile/orders/admin-chat-trip/{trip_id}', [ChatOrderController::class, 'adminChatTrip'])
     ->name('mobile.profile.actions.admin-chat-trip');
 
-
 Route::prefix('admin/orders')->name('admin.orders.')->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('index');
     Route::get('/user/{user}/places/count', [OrderController::class, 'getUserPlacesCount'])->name('user.places.count');

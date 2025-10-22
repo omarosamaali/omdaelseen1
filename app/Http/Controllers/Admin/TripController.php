@@ -21,6 +21,12 @@ class TripController extends Controller
         return view('admin.omdaHome.trip.index', compact('trips'));
     }
 
+    public function destroyTrip(Trip $trip){
+        $trip->delete();
+        return redirect()->route('admin.omdaHome.trip.index')
+            ->with('success', 'تم حذف الرحلة بنجاح.');
+    }
+    
     public function showTrip(Trip $trip)
     {
         return view('admin.omdaHome.trip.showTrip', compact('trip'));

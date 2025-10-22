@@ -73,7 +73,7 @@
                     </button>
                     <button style="max-width: 200px; margin: auto;"
                         class="filter-btn flex items-center justify-center w-full text-black text-md py-2 px-4 rounded-full dark:bg-p1"
-                        >
+                        data-filter="معرض">
                         {{ __('messages.المعارض') }}
                     </button>
                     <button style="max-width: 200px; margin: auto;"

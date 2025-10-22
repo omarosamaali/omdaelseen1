@@ -34,12 +34,38 @@
         flex-direction: column;
         text-align: center;
     }
-/* 
+
+    /* 
     #container-header {
         position: fixed;
         width: 100%;
         z-index: 999999;
     } */
+
+    #overlay {
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.774);
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        z-index: 9;
+    }
+
+    #overlay span {
+        color: white;
+        background: maroon;
+        width: 161%;
+        height: 50px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        rotate: -46deg;
+        position: absolute;
+        top: 132px;
+        left: -30%;
+    }
 </style>
 
 <x-china-header :title="__('messages.الرحلات التجارية والسياحية')" :route="route('mobile.welcome')" />
@@ -67,7 +93,15 @@
                     <div class="flex flex-col gap-4 trip-card" data-trip-type="{{ $trip->trip_type }}"
                         style="margin-bottom: 20px;">
                         <div class="rounded-2xl overflow-hidden quiz-link">
-                            <div class="p-5 bg-white dark:bg-color10">
+                            <div class="p-5 bg-white dark:bg-color10" style="position: relative">
+                                @if($trip->status == 'inactive')
+                                <div id="overlay">
+                                    <x-empty-trip />
+                                    <span>
+                                        رحلة مكتملة
+                                    </span>
+                                </div>
+                                @endif
                                 <div
                                     class="text-center pb-4 border-b border-dashed border-black dark:border-color24 border-opacity-10">
                                     <p class="font-semibold text-sm">

@@ -20,7 +20,7 @@
 
 @section('content')
 
-{{-- @if ($banner)
+@if ($banner)
 <div id="ad-banner" class="fixed inset-0 w-full h-full bg-black bg-opacity-90 flex items-center justify-center z-50">
     <img src="{{ asset('storage/' . $banner->avatar) }}" alt="Banner Ad" class="w-full h-full object-cover">
     <button id="skip-button" class="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-full hidden">
@@ -31,7 +31,7 @@
         تخطي <span id="seconds">3</span>
     </div>
 </div>
-@endif --}}
+@endif
 
 <img src="{{ asset('assets/assets/images/pg3.png') }}" class="image-container" alt="">
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Trip extends Model
 {
@@ -56,12 +57,45 @@ class Trip extends Model
         'tickets_included' => 'boolean',
     ];
 
+    // هنا الإضافة المهمة
+    protected static function booted()
+    {
+        // عند جلب أي رحلة، نتحقق من التاريخ ونحدث الحالة
+        static::retrieved(function ($trip) {
+            $trip->checkAndUpdateStatus();
+        });
+    }
+
+    /**
+     * التحقق من الحالة وتحديثها تلقائياً
+     */
+    public function checkAndUpdateStatus()
+    {
+        if ($this->status === 'active' && Carbon::parse($this->departure_date)->isPast()) {
+            // استخدام updateQuietly عشان ما يدخلش في loop لا نهائي
+            $this->updateQuietly(['status' => 'inactive']);
+        }
+    }
+
+    /**
+     * للحصول على الحالة الفعلية (للعرض فقط)
+     */
+    public function getActualStatusAttribute()
+    {
+        if ($this->status === 'active' && Carbon::parse($this->departure_date)->isPast()) {
+            return 'inactive';
+        }
+
+        return $this->status;
+    }
+
     public function activities()
     {
         return $this->hasMany(TripActivity::class);
     }
 
-    public function subCategory(){
+    public function subCategory()
+    {
         return $this->belongsTo(Branches::class);
     }
 

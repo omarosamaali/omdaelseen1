@@ -102,7 +102,10 @@ Route::get('admin.omdaHome.trip.create', [TripController::class, 'create'])->nam
 Route::get('admin.omdaHome.trip.adds', [TripController::class, 'adds'])->name('admin.omdaHome.trip.adds');
 Route::get('admin.omdaHome.trip.trip-table/{id}', [TripController::class, 'tripTable'])->name('admin.omdaHome.trip.trip-table');
 Route::get('admin.omdaHome.trip.create-table', [TripController::class, 'createTable'])->name('admin.omdaHome.trip.create-table');
-
+// Route::delete('admin.omdaHome.trip.destroyTrip', [TripController::class, 'destroyTrip'])
+// ->name('admin.omdaHome.trip.destroyTrip');
+Route::delete('admin/omdaHome/trip/{trip}', [TripController::class, 'destroyTrip'])
+    ->name('admin.omdaHome.trip.destroyTrip');
 Route::prefix('admin')->group(function () {
     Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
     Route::post('/reports', [ReportController::class, 'store'])->name('admin.reports.store');

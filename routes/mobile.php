@@ -504,18 +504,14 @@ Route::get('/mobile/order/success', function () {
     return view('mobile.order.success');
 })->name('mobile.order.success');
 
-
 Route::get('/mobile/event', function () {
-    $events = Event::where('status', 'نشط')->get();
+    $events = Event::where('status', 'نشط')->where('end_date', '>', Carbon::now())->where('start_date', '<=', Carbon::now())->orderBy('start_date')->get();
     return view('mobile.welcome.event', compact('events'));
 })->name('mobile.event');
-
 
 Route::get('/mobile/trip-show1/{id}', function ($id) {
     $banner = Banner::where('is_active', 'نشط')->where('location', 'both', 'mobile_app')->first();
     $trip = Trip::with('activities.place.subCategory')->findOrFail($id);
-
-    // ترتيب الأنشطة حسب التاريخ ثم حسب الفترة
     $activities = $trip->activities()
         ->with('place.subCategory')
         ->orderBy('date', 'asc')
@@ -549,7 +545,7 @@ Route::get('/mobile/trip-show/{id}', function ($id) {
 })->name('mobile.trip-show');
 
 Route::get('/mobile/trip', function () {
-    $trips = Trip::where('status', 'active')->get();
+    $trips = Trip::all();
     return view('mobile.welcome.trip', compact('trips'));
 })->name('mobile.trip');
 
