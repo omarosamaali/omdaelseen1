@@ -26,7 +26,6 @@
     <button id="skip-button" class="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-full hidden">
         ✕
     </button>
-
     <div id="countdown" class="absolute top-4 right-4 bg-gray-800 text-white px-3 py-1 rounded-full text-sm">
         تخطي <span id="seconds">3</span>
     </div>
