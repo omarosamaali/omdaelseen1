@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Trip;
+use App\Models\TripRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -13,74 +14,56 @@ use Illuminate\Support\Str;
 
 class TripRegistrationController extends Controller
 {
+    /**
+     * تسجيل سريع ودفع مباشر
+     */
     public function quickRegisterAndPay(Request $request)
     {
         try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email',
-                'phone' => 'required|string|max:20',
-                'trip_id' => 'required|exists:trips,id',
-                'room_type' => 'nullable|string|in:shared,private',
-            ], [
-                'name.required' => 'الاسم مطلوب',
-                'email.required' => 'البريد الإلكتروني مطلوب',
-                'email.unique' => 'البريد الإلكتروني مستخدم مسبقاً',
-                'phone.required' => 'رقم الهاتف مطلوب',
-                'trip_id.exists' => 'الرحلة غير موجودة',
-            ]);
-
             $trip = Trip::findOrFail($request->trip_id);
 
             return DB::transaction(function () use ($request, $trip) {
-                $user = User::create([
-                    'name' => $request->name,
-                    'email' => $request->email,
-                    'phone' => $request->phone,
-                    'password' => Hash::make(Str::random(16)),
-                    'status' => 1,
-                    'email_verified_at' => now(),
-                    'country' => 'EG'
-                ]);
-                Auth::login($user);
-
                 $selectedRoom = $request->room_type ?? 'shared';
                 session(['selected_room_type' => $selectedRoom]);
 
-                // حساب السعر حسب نوع الغرفة
-                $basePrice = ($selectedRoom === 'shared') ? ($trip->shared_room_price ?? $trip->price)
-                    : (($selectedRoom === 'private') ? ($trip->private_room_price ?? $trip->price) : $trip->price);
+                $basePrice = $this->getRoomPrice($trip, $selectedRoom);
 
-                // إضافة 2.9% رسوم بوابة الدفع
-                $feePercent = 0.029;
-                $totalPrice = $basePrice * (1 + $feePercent);
+                // الرسوم: 7.9% + 1 درهم
+                $feePercent = 7.9 / 100;
+                $fixedFee = 1;
+                $totalPrice = ($basePrice * (1 + $feePercent)) + $fixedFee;
 
-                Log::info('Quick registration successful', [
+                // ✅ لو المستخدم مسجل دخول
+                $user = Auth::user();
+                if (!$user) {
+                    throw new \Exception('User not authenticated.');
+                }
+
+                // ✅ إنشاء التسجيل في قاعدة البيانات
+                $registration = TripRegistration::create([
                     'user_id' => $user->id,
                     'trip_id' => $trip->id,
-                    'email' => $user->email,
-                    'selected_room' => $selectedRoom,
-                    'base_price' => $basePrice,
-                    'total_price_with_fee' => $totalPrice,
+                    'room_type' => $selectedRoom,
+                    'amount' => $totalPrice,
+                    'status' => 'pending',
                 ]);
 
-                // مرر السعر الإجمالي مباشرة
-                return $this->redirectToPayment($trip, $totalPrice);
+                // ✅ أرسل الـ registration_id مع الريدايركت
+                return $this->redirectToPayment($trip, $totalPrice, $selectedRoom, $registration->id);
             });
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
             Log::error('Quick registration failed', [
                 'error' => $e->getMessage(),
                 'trip_id' => $request->trip_id ?? 'unknown'
             ]);
-            return back()
-                ->withInput()
-                ->with('error', 'حدث خطأ، يرجى المحاولة مرة أخرى');
+            return back()->with('error', 'حدث خطأ أثناء التسجيل.');
         }
     }
 
 
+    /**
+     * إنشاء مستخدم جديد وتسجيل الرحلة
+     */
     public function submitRegistration(Request $request)
     {
         try {
@@ -90,18 +73,13 @@ class TripRegistrationController extends Controller
                 'phone' => 'required|string|max:20',
                 'trip_id' => 'required|exists:trips,id',
                 'room_type' => 'nullable|string|in:shared,private',
-                'selected_price' => 'nullable|numeric|min:0', // السعر المحسوب من الفرونت إند
-            ], [
-                'name.required' => 'الاسم مطلوب',
-                'email.required' => 'البريد الإلكتروني مطلوب',
-                'email.unique' => 'البريد الإلكتروني مستخدم مسبقاً',
-                'phone.required' => 'رقم الهاتف مطلوب',
-                'trip_id.exists' => 'الرحلة غير موجودة',
+                'selected_price' => 'nullable|numeric|min:0',
             ]);
 
             $trip = Trip::findOrFail($request->trip_id);
 
             return DB::transaction(function () use ($request, $trip) {
+                // إنشاء المستخدم
                 $user = User::create([
                     'name' => $request->name,
                     'email' => $request->email,
@@ -114,98 +92,77 @@ class TripRegistrationController extends Controller
 
                 Auth::login($user);
 
-                // تحديد نوع الغرفة والسعر
+                // نوع الغرفة والسعر
                 $selectedRoom = $request->room_type ?? 'shared';
                 session(['selected_room_type' => $selectedRoom]);
 
-                // استخدام السعر المحسوب من الفرونت إند أو حسابه هنا
-                $totalPrice = $request->selected_price;
+                $basePrice = $this->getRoomPrice($trip, $selectedRoom);
+                $feePercent = 7.9 / 100;
+                $fixedFee = 1;
+                $totalPrice = ($basePrice * (1 + $feePercent)) + $fixedFee;
 
-                // إذا لم يكن السعر موجود، احسبه مرة أخرى
-                if (!$totalPrice) {
-                    $basePrice = $this->getRoomPrice($trip, $selectedRoom);
-                    $feePercent = 0.029; // 2.9%
-                    $totalPrice = $basePrice * (1 + $feePercent);
-                }
-
-                Log::info('Quick registration successful', [
+                // إنشاء سجل في جدول التسجيلات
+                $registration = TripRegistration::create([
                     'user_id' => $user->id,
                     'trip_id' => $trip->id,
-                    'email' => $user->email,
-                    'selected_room' => $selectedRoom,
-                    'total_price_with_fee' => $totalPrice,
+                    'room_type' => $selectedRoom,
+                    'amount' => $totalPrice,
+                    'status' => 'pending',
+                ]);
+                DB::commit(); // نحفظ الترانزاكشن قبل الريدايركت
+
+                Log::info('Trip registration created', [
+                    'registration_id' => $registration->id,
+                    'user_id' => $user->id,
+                    'trip_id' => $trip->id,
+                    'total_price' => $totalPrice,
                 ]);
 
-                // مرر السعر الإجمالي مباشرة إلى الدفع
-                return $this->redirectToPayment($trip, $totalPrice, $selectedRoom);
+                // توجيه إلى بوابة الدفع
+                return $this->redirectToPayment($trip, $totalPrice, $selectedRoom, $registration->id);
             });
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
-            Log::error('Quick registration failed', [
-                'error' => $e->getMessage(),
-                'trip_id' => $request->trip_id ?? 'unknown'
-            ]);
-            return back()
-                ->withInput()
-                ->with('error', 'حدث خطأ، يرجى المحاولة مرة أخرى');
+            Log::error('Trip registration failed', ['error' => $e->getMessage()]);
+            return back()->with('error', 'حدث خطأ أثناء التسجيل.');
         }
     }
 
     /**
-     * دالة مساعدة لحساب سعر الغرفة
+     * تحديد سعر الغرفة
      */
     private function getRoomPrice($trip, $roomType)
     {
-        if ($trip->private_room_price && $roomType) {
-            switch ($roomType) {
-                case 'shared':
-                    return $trip->shared_room_price ?? $trip->price;
-                case 'private':
-                    return $trip->private_room_price;
-                default:
-                    return $trip->price;
-            }
-        }
-
-        return $trip->price;
+        return match ($roomType) {
+            'shared' => $trip->shared_room_price ?? $trip->price,
+            'private' => $trip->private_room_price ?? $trip->price,
+            default => $trip->price,
+        };
     }
-// في الـ Controller اللي بيعالج submitRegistration
-private function redirectToPayment($trip, $totalPrice, $roomType = null)
-{
-    Log::info('Redirecting to payment', [
-        'trip_id' => $trip->id,
-        'total_price' => $totalPrice,
-        'room_type' => $roomType
-    ]);
 
-    // تمرير السعر النهائي ونوع الغرفة كـ query parameters
-    return redirect()->route('trip.payment', [
-        'id' => $trip->id
-    ])->with([
-        'total_price' => $totalPrice,
-        'room_type' => $roomType
-    ]);
-}
+    /**
+     * التوجيه إلى الدفع
+     */
+    private function redirectToPayment($trip, $totalPrice, $roomType = null, $registrationId = null)
+    {
+        Log::info('Redirecting to payment', [
+            'trip_id' => $trip->id,
+            'total_price' => $totalPrice,
+            'room_type' => $roomType,
+            'registration_id' => $registrationId,
+        ]);
 
-// أو إذا كنت بتستخدم GET parameters:
-// private function redirectToPayment($trip, $totalPrice, $roomType = null)
-// {
-//     Log::info('Redirecting to payment', [
-//         'trip_id' => $trip->id,
-//         'total_price' => $totalPrice,
-//         'room_type' => $roomType
-//     ]);
+        return redirect()->route('trip.payment', [
+            'id' => $trip->id,
+            'registration_id' => $registrationId
+        ])->with([
+            'total_price' => $totalPrice,
+            'room_type' => $roomType
+        ]);
+    }
 
-//     return redirect()->route('trip.payment', [
-//         'id' => $trip->id,
-//         'total_price' => $totalPrice,
-//         'room_type' => $roomType
-//     ]);
-// }
-
-// في الـ route للدفع:
-
+    /**
+     * عرض صفحة التسجيل
+     */
     public function showRegistrationForm($tripId)
     {
         $trip = Trip::findOrFail($tripId);

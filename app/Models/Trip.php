@@ -108,4 +108,9 @@ class Trip extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function registrations()
+    {
+        return $this->hasMany(TripRegistration::class, 'trip_id');
+    }
 }

@@ -114,10 +114,10 @@
                                     {{ $trip_type }}
                                 </td>
                                 <td class="th">
-                                    2
+                                    {{ $trip->registrations->where('status', 'paid')->count() }}
                                 </td>
                                 <td class="th">
-                                    2
+                                    {{ $trip->registrations->where('status', 'pending')->count() }}
                                 </td>
                                 <td class="th">
                                     {{ $trip->status == 'active' ? 'نشط' : 'غير نشط' }}

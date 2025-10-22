@@ -245,7 +245,9 @@
                 @empty
                 @if(!$trip_requests->count())
                 <div class="text-center py-8">
-                    <p class="text-gray-500">لا توجد طلبات {{ $status ? 'بحالة: ' . $status : '' }}</p>
+                    <p class="text-gray-500">
+                        <x-empty />
+                    </p>
                 </div>
                 @endif
                 @endforelse

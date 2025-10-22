@@ -192,6 +192,69 @@
                     </div>
                     @endif
                     
+                    {{-- قسم المشتركين في الرحلة --}}
+                    @if($participants->count() > 0)
+                    <div class="mt-8 bg-gray-100 p-4 rounded-lg shadow-sm">
+                        <h3 class="font-semibold text-lg mb-4 text-right text-gray-700 border-b pb-2">المشتركين في الرحلة</h3>
+                    
+                        <table class="min-w-full border border-gray-300 text-right">
+                            <thead class="bg-gray-200">
+                                <tr>
+                                    <th class="py-2 px-3 border-b">#</th>
+                                    <th class="py-2 px-3 border-b">الاسم</th>
+                                    <th class="py-2 px-3 border-b">البريد الإلكتروني</th>
+                                    <th class="py-2 px-3 border-b">رقم الهاتف</th>
+                                    <th class="py-2 px-3 border-b">نوع الغرفة</th>
+                                    <th class="py-2 px-3 border-b">المبلغ</th>
+                                    <th class="py-2 px-3 border-b">الحالة</th>
+                                    <th class="py-2 px-3 border-b">تاريخ الدفع</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($participants as $index => $registration)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="py-2 px-3 border-b">{{ $index + 1 }}</td>
+                                    <td class="py-2 px-3 border-b">{{ $registration->user->name ?? 'غير معروف' }}</td>
+                                    <td class="py-2 px-3 border-b">{{ $registration->user->email ?? '-' }}</td>
+                                    <td class="py-2 px-3 border-b">{{ $registration->user->phone ?? '-' }}</td>
+                                    <td class="py-2 px-3 border-b">
+                                        @if($registration->room_type == 'shared')
+                                        مشتركة
+                                        @elseif($registration->room_type == 'private')
+                                        خاصة
+                                        @else
+                                        غير محدد
+                                        @endif
+                                    </td>
+                                    <td class="py-2 px-3 border-b flex">{{ $registration->amount }} <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5"
+                                            stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                        <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg></td>
+                                    <td class="py-2 px-3 border-b">
+                                        @if($registration->status == 'paid')
+                                        <span class="text-green-600 font-semibold">مدفوع</span>
+                                        @elseif($registration->status == 'pending')
+                                        <span class="text-yellow-600 font-semibold">بانتظار الدفع</span>
+                                        @else
+                                        <span class="text-red-600 font-semibold">فشل</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $registration->created_at->format('Y-m-d') }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @else
+                    <div class="mt-8 bg-gray-100 p-4 rounded-lg shadow-sm">
+                        <h3 class="font-semibold text-lg mb-4 text-right text-gray-700 border-b pb-2">المشتركين في الرحلة</h3>
+                        <p class="text-gray-600 text-right">لا يوجد مشتركين بعد.</p>
+                    </div>
+                    @endif
                     <div class="mt-8 flex justify-end">
                         <a href="{{ url()->previous() }}"
                             class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-150 ease-in-out">

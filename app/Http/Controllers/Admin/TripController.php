@@ -26,10 +26,15 @@ class TripController extends Controller
         return redirect()->route('admin.omdaHome.trip.index')
             ->with('success', 'تم حذف الرحلة بنجاح.');
     }
-    
+
     public function showTrip(Trip $trip)
     {
-        return view('admin.omdaHome.trip.showTrip', compact('trip'));
+        // نجيب المشتركين المرتبطين بالرحلة
+        $participants = \App\Models\TripRegistration::with('user')
+            ->where('trip_id', $trip->id)
+            ->get();
+
+        return view('admin.omdaHome.trip.showTrip', compact('trip', 'participants'));
     }
 
     public function editTrip(Trip $trip)

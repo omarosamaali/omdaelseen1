@@ -51,6 +51,11 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\TripRegistrationController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\PaymentController;
+
+
+Route::post('/mobile/payment/start', [PaymentController::class, 'startPayment'])->name('mobile.payment.start');
+Route::get('/payment/callback', [PaymentController::class, 'handleCallback'])->name('payment.callback');
 
 Route::get('/mobile/trip-chat/{user_id}/{trip_id}', [OrderController::class, 'tripMessages'])->name('mobile.profile.actions.trip-chat');
 Route::post('/mobile/trip-chat/send', [OrderController::class, 'sendTripMessage'])->name('mobile.trip-chat.send');
@@ -118,16 +123,25 @@ Route::get('/payment/cancel', function (Request $request) {
 // صفحة التسجيل للرحلة
 Route::get('mobile/trip-register/{trip_id}', [TripRegistrationController::class, 'showRegistrationForm'])
     ->name('mobile.trip.register');
+
 Route::match(['get', 'post'], '/trip/{id}/payment', [TripController::class, 'initiatePayment'])
     ->name('trip.payment');
 
 // معالجة التسجيل والتوجه للدفع
 Route::post('mobile/trip-register', [TripRegistrationController::class, 'quickRegisterAndPay'])
     ->name('mobile.trip.register.submit');
+Route::get('payment/success', function (Request $request) {
+    // معالجة الدفع الناجح
+    return redirect()->route('home')->with('success', 'تم الدفع بنجاح!');
+})->name('payment.success');
 
+Route::get('payment/cancel', function (Request $request) {
+    // معالجة الإلغاء
+    return redirect()->route('home')->with('error', 'تم إلغاء الدفع');
+})->name('payment.cancel');
 
-Route::get('mobile/step2/{id}', function ($id) {
-    $trip = App\Models\Trip::findOrFail($id);
+Route::get('mobile/step2/{trip_id}', function ($trip_id) {
+    $trip = App\Models\Trip::findOrFail($trip_id);
     return view('mobile.auth.step2', compact('trip'));
 })->name('mobile.auth.step2');
 
