@@ -466,11 +466,9 @@ Route::get('/mobile/orders/orders-user-trip/{trip}', function (App\Models\TripRe
     return view('mobile.profile.order-display-trip', compact('trip'));
 })->name('mobile.orders.show-trip');
 Route::middleware(['auth'])->group(function () {
-    // للشات العادي
     Route::post('/mobile/chat/send', [ChatController::class, 'sendMessage'])
         ->name('mobile.chat.send');
 
-    // للشات الخاص بالطلبات
     Route::post('/mobile/chat/send', [ChatOrderController::class, 'sendMessage'])
         ->name('mobile.chat.order.send');
 });
@@ -536,8 +534,7 @@ Route::get('/mobile/trip-show1/{id}', function ($id) {
             WHEN period = 'evening' THEN 3 
             ELSE 4 END")
         ->get()
-        ->groupBy('date'); // تجميع الأنشطة حسب التاريخ
-
+        ->groupBy('date'); 
     return view('mobile.welcome.trip-show1', compact('trip', 'banner', 'activities'));
 })->name('mobile.trip-show1');
 
@@ -545,8 +542,6 @@ Route::get('/mobile/trip-show/{id}', function ($id) {
     $banner = Banner::where('is_active', 'نشط')->where('location', 'both')
     ->orWhere('location', 'mobile_app')->first();
     $trip = Trip::with('activities.place.subCategory')->findOrFail($id);
-
-    // ترتيب الأنشطة حسب التاريخ ثم حسب الفترة
     $activities = $trip->activities()
         ->with('place.subCategory')
         ->orderBy('date', 'asc')
@@ -556,7 +551,7 @@ Route::get('/mobile/trip-show/{id}', function ($id) {
             WHEN period = 'evening' THEN 3 
             ELSE 4 END")
         ->get()
-        ->groupBy('date'); // تجميع الأنشطة حسب التاريخ
+        ->groupBy('date');
     return view('mobile.welcome.trip-show', compact('trip', 'banner', 'activities'));
 })->name('mobile.trip-show');
 
@@ -571,21 +566,17 @@ Route::get('/mobile/order', function () {
 })->name('mobile.order');
 
 Route::get('/mobile/helpWords/{word_type?}', function ($word_type = 'تحية وتعريف') {
-
-    // هنا نقوم بتعيين "تحية وتعريف" كقيمة افتراضية إذا لم يتم تمرير أي شيء في الـ URL
-    // {word_type?} يجعل المعامل اختياريًا، والقيمة الافتراضية داخل الدالة هي التي تُطبق
     if ($word_type) {
         $helpWords = HelpWord::where('status', 'نشط')
             ->where('word_type', $word_type)
             ->orderBy('order', 'asc')
             ->get();
     } else {
-        // هذا الجزء قد لا يُنفذ طالما تم تعيين قيمة افتراضية
         $helpWords = HelpWord::where('status', 'نشط')->get();
     };
-
     return view('mobile.welcome.helpWords', compact('helpWords', 'word_type'));
 })->name('mobile.helpWords');
+
 Route::get('/mobile/howWeWork', function () {
     $howWeWork = Work::where('status', 'نشط')->first();
     return view('mobile.welcome.howWeWork', compact('howWeWork'));
