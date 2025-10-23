@@ -90,7 +90,7 @@ $total = $order->price + $paymentGatewayFee;    @endphp
         {{ __('messages.value') }} {{ $order->price }}
     </button>
 </form>
-
+ 
 </div>
 
                         </div>
