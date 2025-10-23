@@ -60,7 +60,9 @@ class ZiinaPaymentHandler
             $title = $trip->title_ar ?? $trip->title ?? 'رحلة';
             $title = mb_substr($title, 0, 80);
 
-            $message = "حجز رحلة: {$title}";
+            $message = "{$title}";
+            $roomType = $roomType ?? '';
+
             if ($roomType) {
                 $roomTypeAr = $roomType === 'shared' ? 'غرفة مشتركة' : 'غرفة خاصة';
                 $message .= " - {$roomTypeAr}";
