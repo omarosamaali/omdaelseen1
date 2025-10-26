@@ -26,9 +26,10 @@
     <button id="skip-button" class="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-full hidden">
         ✕
     </button>
-    <div id="countdown" class="absolute top-4 right-4 bg-gray-800 text-white px-3 py-1 rounded-full text-sm">
-        تخطي <span id="seconds">3</span>
-    </div>
+<div id="countdown"
+    class="absolute top-4 right-4 bg-gray-800 text-white px-3 py-1 rounded-full text-sm cursor-pointer hover:bg-gray-700">
+    تخطي <span id="seconds">3</span>
+</div>
 </div>
 @endif
 
@@ -615,29 +616,28 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-                let seconds = 3;
-                let countdown = document.getElementById("seconds");
-                let skipButton = document.getElementById("skip-button");
-                let countdownBox = document.getElementById("countdown");
-                let banner = document.getElementById("ad-banner");
+document.addEventListener("DOMContentLoaded", function() {
+    let seconds = 3;
+    let countdown = document.getElementById("seconds");
+    let countdownBox = document.getElementById("countdown"); // 👈 ده الـ div الكبير
+    let banner = document.getElementById("ad-banner");
     
-                let timer = setInterval(function() {
-                    seconds--;
-                    countdown.textContent = seconds;
+    let timer = setInterval(function() {
+        seconds--;
+        countdown.textContent = seconds;
+        
+        if (seconds <= 0) {
+            clearInterval(timer);
+            banner.style.display = "none";
+        }
+    }, 1000);
     
-                    if (seconds <= 0) {
-                        clearInterval(timer);
-                        countdownBox.style.display = "none";
-                        skipButton.classList.remove("hidden");
-                    }
-                }, 1000);
-    
-                skipButton.addEventListener("click", function() {
-                    banner.style.display = "none";
-                });
-            });
-
+    // 👇 اعمل click event على الـ div كله (مش على skipButton)
+    countdownBox.addEventListener("click", function() {
+        clearInterval(timer);
+        banner.style.display = "none";
+    });
+});
         function changeLanguage(locale) {
                 fetch('/set-language', {
                         method: 'POST',

@@ -78,9 +78,9 @@
                             </svg>
                         </a>
                         <!-- Existing Invoice Button -->
-                        <button class="text-yellow-600">
+                        {{-- <button class="text-yellow-600">
                             <i class="fa-solid fa-file-invoice" style="font-size: 18px;"></i>
-                        </button>
+                        </button> --}}
                     </td>
                 </tr>
                 @endforeach

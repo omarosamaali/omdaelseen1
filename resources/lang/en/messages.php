@@ -291,7 +291,7 @@ return [
     'العميل' => 'Customer',
     'new_places' => 'New Places',
     'الأكثر تقييما' => 'The Most Rated',
-
+    'request' => 'Request',
 
 
 

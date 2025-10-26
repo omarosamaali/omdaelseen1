@@ -76,22 +76,44 @@
                             </div>
                             <div style="position: relative; top: -4px;" class="flex flex-col gap-2 items-center">
 
-<form action="{{ route('mobile.payment.start') }}" method="POST" style="width: 100%;">
-    @csrf
-    <input type="hidden" name="order_id" value="{{ $order->id }}">
-    @php
-$feePercent = 7.9 / 100;
-$fixedFee = 1;
-$paymentGatewayFee = ($order->price * $feePercent) + $fixedFee;
-$total = $order->price + $paymentGatewayFee;    @endphp
-    <input type="hidden" name="amount" value="{{ $total }}">
-    <button type="submit"
-        class="flex items-center justify-center w-full text-white text-md bg-p2 py-2 px-4 rounded-full dark:bg-p1">
-        {{ __('messages.value') }} {{ $order->price }}
-    </button>
-</form>
- 
-</div>
+                                @php
+                                $userPayment = \App\Models\Payment::where('user_id', auth()->id())
+                                ->where('order_id', $order->id)
+                                ->where('order_type', 'adds')
+                                ->first();
+                                @endphp
+
+                                @if($userPayment)
+                                <button type="button"
+                                    style="background-color: green;"
+                                    class="flex items-center justify-center w-full text-white text-md py-2 px-4 rounded-full cursor-not-allowed"
+                                    disabled>
+                                    تم التقديم ✅
+                                </button>
+                                @else
+
+                                <form action="{{ route('mobile.payment.start') }}" method="POST" style="width: 100%;">
+                                    @csrf
+                                    <input type="hidden" name="order_id" value="{{ $order->id }}">
+                                    @php
+                                    $feePercent = 7.9 / 100;
+                                    $fixedFee = 1;
+                                    $paymentGatewayFee = ($order->price * $feePercent) + $fixedFee;
+                                    $total = $order->price + $paymentGatewayFee;
+                                    @endphp
+                                    <input type="hidden" name="amount" value="{{ $total }}">
+                                    <button type="submit"
+                                        class="flex items-center justify-center w-full text-white text-md bg-p2 py-2 px-4 rounded-full dark:bg-p1">
+                                        @if($order->price != 0)
+                                        {{ __('messages.value') }} {{ $order->price }}
+                                        @else
+                                        {{ __('messages.request') }}
+                                        @endif
+                                    </button>
+                                </form>
+                                @endif
+
+                            </div>
 
                         </div>
                     </div>

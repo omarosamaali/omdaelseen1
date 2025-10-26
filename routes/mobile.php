@@ -52,13 +52,21 @@ use App\Http\Controllers\TripRegistrationController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\PaymentController;
+use App\Models\TripRegistration;
+use App\Models\UnpaidTripRequests;
 
+Route::post('/mobile/payment/start', [PaymentController::class, 'startPayment'])
+    ->name('mobile.payment.start')
+    ->middleware('auth');
 
-Route::post('/mobile/payment/start', [PaymentController::class, 'startPayment'])->name('mobile.payment.start');
-Route::get('/payment/callback', [PaymentController::class, 'handleCallback'])->name('payment.callback');
+// ✅ اعمل support لـ GET و POST معاً
+Route::match(['get', 'post'], '/payment/callback', [PaymentController::class, 'handleCallback'])
+    ->name('payment.callback');
+Route::get('/mobile/trip-chat/{user_id}/{order_id}/{order_type}', [OrderController::class, 'tripMessages'])
+    ->name('mobile.profile.actions.trip-chat');
 
-Route::get('/mobile/trip-chat/{user_id}/{trip_id}', [OrderController::class, 'tripMessages'])->name('mobile.profile.actions.trip-chat');
-Route::post('/mobile/trip-chat/send', [OrderController::class, 'sendTripMessage'])->name('mobile.trip-chat.send');
+Route::post('/mobile/trip-chat/send', [OrderController::class, 'sendTripMessage'])
+    ->name('mobile.trip-chat.send');
 
 Route::post('mobile/invoice/{invoiceId}/pay', [InvoiceController::class, 'initiatePayment'])
     ->name('mobile.invoice.pay');
@@ -192,6 +200,22 @@ Route::get('/mobile/orders/trip-user/{trip_requests}', function (App\Models\Trip
     $trip_requests->load('approvals', 'notes');
     return view('mobile.profile.trip-display', compact('trip_requests'));
 })->name('mobile.orders.trip-display');
+Route::get('/mobile/orders/trip-show-client/{id}', function ($id) {
+    // ابحث في UnpaidTripRequests الأول
+    $trip_requests = App\Models\UnpaidTripRequests::with('user')->find($id);
+
+    // لو مش موجود، ابحث في TripRegistration
+    if (!$trip_requests) {
+        $trip_requests = App\Models\TripRegistration::with('user')->find($id);
+    }
+
+    // لو مش موجود في الاتنين، ارجع 404
+    if (!$trip_requests) {
+        abort(404, 'الطلب غير موجود');
+    }
+
+    return view('mobile.profile.trip-show-client', compact('trip_requests'));
+})->name('mobile.orders.trip-show-client');
 
 Route::delete('mobile/delete-note/{id}', function ($id) {
     try {
@@ -271,49 +295,45 @@ Route::get('/mobile/orders/orders-admin', function (Request $request) {
 
     $productsQuery = Product::with('approvals', 'notes');
     $tripRequestsQuery = TripRequest::query();
-
+    $unPaidTripsQuery = UnpaidTripRequests::query();
+    $trip_registers = TripRegistration::query();
     if ($status) {
         $productsQuery->where('status', $status);
         $tripRequestsQuery->where('status', $status);
+        $unPaidTripsQuery->where('status', $status);
+        $trip_registers->where('status', $status);
     }
 
     $products = $productsQuery->get();
     $trip_requests = $tripRequestsQuery->get();
+    $unPaidTrips = $unPaidTripsQuery->get();
+    $trip_registers = $trip_registers->get();
 
     return view(
         'mobile.profile.orders-admin',
-        compact('products', 'trip_requests', 'productStats', 'status')
+        compact('products', 'trip_requests', 'productStats', 'status', 'unPaidTrips', 'trip_registers')
     );
 })->name('mobile.admin-orders');
 
 // في ملف routes/web.php
 Route::get('/mobile/orders/orders-user', function () {
     $userId = Auth::user()->id;
-
-    // حساب إحصائيات الرحلات من الداتابيز
     $tripsFinished = TripRequest::where('user_id', $userId)
         ->where('status', 'منتهية')
         ->count();
-
     $tripsUnfinished = TripRequest::where('user_id', $userId)
         ->where('status', '!=', 'منتهية')
         ->count();
-
-    // حساب إحصائيات المنتجات من الداتابيز
     $productsFinished = Product::where('user_id', $userId)
         ->where('status', 'منتهية')
         ->count();
-
     $productsUnfinished = Product::where('user_id', $userId)
         ->where('status', '!=', 'منتهية')
         ->count();
-
-    // الطلبات الخاصة - Static مؤقتاً
+    $unpaidTripRequests = UnpaidTripRequests::where('user_id', $userId)->get();
+    $tripRegisters = TripRegistration::where('user_id', $userId)->get();
     $specialOrdersFinished = 0;
     $specialOrdersUnfinished = 0;
-
-
-    // جلب البيانات للعرض (مع الفلتر إذا موجود)
     $filter = request('filter', 'all');
 
     $productsQuery = Product::where('user_id', $userId)
@@ -326,27 +346,26 @@ Route::get('/mobile/orders/orders-user', function () {
     switch ($filter) {
         case 'trips_finished':
             $tripRequestsQuery->where('status', 'منتهية');
-            $productsQuery->whereRaw('1 = 0'); // إخفاء المنتجات
+            $productsQuery->whereRaw('1 = 0');
             break;
 
         case 'trips_unfinished':
             $tripRequestsQuery->where('status', '!=', 'منتهية');
-            $productsQuery->whereRaw('1 = 0'); // إخفاء المنتجات
+            $productsQuery->whereRaw('1 = 0');
             break;
 
         case 'products_finished':
             $productsQuery->where('status', 'منتهية');
-            $tripRequestsQuery->whereRaw('1 = 0'); // إخفاء الرحلات
+            $tripRequestsQuery->whereRaw('1 = 0');
             break;
 
         case 'products_unfinished':
             $productsQuery->where('status', '!=', 'منتهية');
-            $tripRequestsQuery->whereRaw('1 = 0'); // إخفاء الرحلات
+            $tripRequestsQuery->whereRaw('1 = 0');
             break;
 
         case 'all':
         default:
-            // عرض الكل بدون فلتر
             break;
     }
 
@@ -354,6 +373,7 @@ Route::get('/mobile/orders/orders-user', function () {
     $trip_requests = $tripRequestsQuery->get();
 
     return view('mobile.profile.orders-user', compact(
+        'unpaidTripRequests',
         'products',
         'trip_requests',
         'tripsFinished',
@@ -362,6 +382,7 @@ Route::get('/mobile/orders/orders-user', function () {
         'productsUnfinished',
         'specialOrdersFinished',
         'specialOrdersUnfinished',
+        'tripRegisters',
         'filter'
     ));
 })->name('mobile.orders');
@@ -378,16 +399,45 @@ Route::get('/mobile/orders/note/{id}', function ($id) {
 })->name('mobile.profile.actions.note');
 
 Route::get('/mobile/orders/note/{tripId}/show-trip/{noteId}', function ($tripId, $noteId) {
-    $trip = TripRequest::findOrFail($tripId);
+    $trip = TripRequest::find($tripId);
+    if(!$trip){
+        $trip = UnpaidTripRequests::find($tripId);
+    }
+    if(!$trip) {
+        $trip = TripRegistration::find($tripId);
+    }
     $note = Note::findOrFail($noteId);
     return view('mobile.profile.actions.show_note-trip', compact('trip', 'note'));
 })->name('mobile.profile.actions.show_note-trip');
 
+Route::get('/mobile/orders/note/{tripId}/show-trip-client/{noteId}', function ($tripId, $noteId) {
+    $trip = UnpaidTripRequests::find($tripId);
+    if (!$trip) {
+        $trip = TripRegistration::find($tripId);
+    }
+    $note = Note::findOrFail($noteId);
+    return view('mobile.profile.actions.show_note-trip-client', compact('trip', 'note'));
+})->name('mobile.profile.actions.show_note-trip-client');
+
 Route::get('/mobile/orders/note-trip/{id}', function ($id) {
-    $trip = TripRequest::findOrFail($id)->load('notes');
+    $trip = TripRequest::with('notes')->find($id);
+    if(!$trip){
+        $trip = UnpaidTripRequests::with('notes')->find($id);
+    }
+    if(!$trip){
+        $trip = TripRegistration::with('notes')->find($id);
+    }
     return view('mobile.profile.actions.note-trip', compact('trip'));
 })->name('mobile.profile.actions.note-trip');
 
+Route::get('/mobile/orders/note-trip-client/{id}', function ($id) {
+    $trip = UnpaidTripRequests::with('notes')->find($id);
+    if (!$trip) {
+        $trip = TripRegistration::with('notes')->find($id);
+    }
+
+    return view('mobile.profile.actions.note-trip-client', compact('trip'));
+})->name('mobile.profile.actions.note-trip-client');
 
 Route::get('/mobile/orders/approve/{productId}/show/{approveId}', function ($productId, $approveId) {
     $product = Product::findOrFail($productId);
@@ -396,10 +446,26 @@ Route::get('/mobile/orders/approve/{productId}/show/{approveId}', function ($pro
 })->name('mobile.profile.actions.show_approve');
 
 Route::get('/mobile/orders/approve/{tripId}/show-trip/{approveId}', function ($tripId, $approveId) {
-    $trip = TripRequest::findOrFail($tripId);
+    $trip = UnpaidTripRequests::with('approvals', 'notes')->find($tripId);
+    if (!$trip) {
+        $trip = TripRegistration::with('approvals', 'notes')->find($tripId);
+    }
+    if (!$trip) {
+        $trip = TripRequest::with('approvals', 'notes')->find($tripId);
+    }
+    // $trip = TripRequest::findOrFail($tripId);
     $approve = Approval::findOrFail($approveId);
     return view('mobile.profile.actions.show_approve-trip', compact('trip', 'approve'));
 })->name('mobile.profile.actions.show_approve-trip');
+
+Route::get('/mobile/orders/approve/{tripId}/show-trip-client/{approveId}', function ($tripId, $approveId) {
+    $trip = UnpaidTripRequests::find($tripId);
+    if (!$trip) {
+        TripRegistration::find($tripId);
+    }
+    $approve = Approval::findOrFail($approveId);
+    return view('mobile.profile.actions.show_approve-trip-client', compact('trip', 'approve'));
+})->name('mobile.profile.actions.show_approve-trip-client');
 
 Route::get('/mobile/orders/approve/{id}', function ($id) {
     $product = Product::findOrFail($id)->load('approvals', 'notes');
@@ -407,9 +473,24 @@ Route::get('/mobile/orders/approve/{id}', function ($id) {
 })->name('mobile.profile.actions.approve');
 
 Route::get('/mobile/orders/approve-trip/{id}', function ($id) {
-    $trip = TripRequest::findOrFail($id)->load('approvals', 'notes');
+    $trip = UnpaidTripRequests::with('approvals', 'notes')->find($id);
+    if (!$trip) {
+        $trip = TripRegistration::with('approvals', 'notes')->find($id);
+    }
+    if (!$trip) {
+        $trip = TripRequest::with('approvals', 'notes')->find($id);
+    }
     return view('mobile.profile.actions.approve-trip', compact('trip'));
 })->name('mobile.profile.actions.approve-trip');
+
+Route::get('/mobile/orders/approve-trip-client/{id}', function ($id) {
+    $trip = UnpaidTripRequests::with('approvals', 'notes')->find($id);
+    if (!$trip) {
+        $trip = TripRegistration::with('approvals', 'notes')->find($id);
+    }
+    return view('mobile.profile.actions.approve-trip-client', compact('trip'));
+})->name('mobile.profile.actions.approve-trip-client');
+
 
 Route::get('/mobile/orders/invoice/{productId}/show/{invoiceId}', function ($productId, $invoiceId) {
     $product = Product::findOrFail($productId);
@@ -418,10 +499,30 @@ Route::get('/mobile/orders/invoice/{productId}/show/{invoiceId}', function ($pro
 })->name('mobile.profile.actions.show_invoice');
 
 Route::get('/mobile/orders/invoice/{tripId}/show-trip/{invoiceId}', function ($tripId, $invoiceId) {
-    $trip = TripRequest::findOrFail($tripId);
+    $trip = UnpaidTripRequests::with('invoices')->find($tripId);
+    if (!$trip) {
+        $trip = TripRegistration::with('invoices')->find($tripId);
+    }
+    if (!$trip) {
+        $trip = TripRequest::with('invoices')->find($tripId);
+    }
     $invoice = Invoice::findOrFail($invoiceId);
     return view('mobile.profile.actions.show_invoice-trip', compact('trip', 'invoice'));
 })->name('mobile.profile.actions.show_invoice-trip');
+
+Route::get('/mobile/orders/invoice/{tripId}/show-trip-client/{invoiceId}', function ($tripId, $invoiceId) {
+    $trip = UnpaidTripRequests::find($tripId);
+    if (!$trip) {
+        $trip = TripRegistration::find($tripId);
+    }
+    if (!$trip) {
+        // abort(404, 'الطلب غير موجود');
+        $trip = TripRequest::find($tripId);
+    }
+    $invoice = Invoice::findOrFail($invoiceId);
+
+    return view('mobile.profile.actions.show_invoice-trip-client', compact('trip', 'invoice'));
+})->name('mobile.profile.actions.show_invoice-trip-client');
 
 Route::get('/mobile/orders/invoice/{id}', function ($id) {
     $product = Product::findOrFail($id)->load('invoices', 'notes');
@@ -429,16 +530,40 @@ Route::get('/mobile/orders/invoice/{id}', function ($id) {
 })->name('mobile.profile.actions.invoice');
 
 Route::get('/mobile/orders/invoice-trip/{id}', function ($id) {
-    $trip = TripRequest::findOrFail($id)->load('invoices', 'notes');
+    $trip = UnpaidTripRequests::with('invoices')->find($id);
+    if (!$trip) {
+        $trip = TripRegistration::with('invoices')->find($id);
+    }
+    if (!$trip) {
+        $trip = TripRequest::with('invoices')->find($id);
+    }
+
     return view('mobile.profile.actions.invoice-trip', compact('trip'));
 })->name('mobile.profile.actions.invoice-trip');
 
+Route::get('/mobile/orders/invoice-trip-client/{id}', function ($id) {
+    $trip = UnpaidTripRequests::with('invoices')->find($id)
+        ?? TripRegistration::with('invoices')->find($id)
+        ?? abort(404, 'الطلب غير موجود');
+
+    return view('mobile.profile.actions.invoice-trip-client', compact('trip'));
+})->name('mobile.profile.actions.invoice-trip-client');
 
 Route::get('/mobile/orders/documents/{tripId}/show-trip/{documentId}', function ($tripId, $documentId) {
-    $trip = TripRequest::findOrFail($tripId);
+    $trip = TripRequest::find($tripId);
+
     $document = Document::findOrFail($documentId);
     return view('mobile.profile.actions.show_document-trip', compact('trip', 'document'));
 })->name('mobile.profile.actions.show_document-trip');
+
+Route::get('/mobile/orders/documents/{tripId}/show-trip-client/{documentId}', function ($tripId, $documentId) {
+    $trip = UnpaidTripRequests::find($tripId);
+    if (!$trip) {
+        $trip = TripRegistration::find($tripId);
+    }
+    $document = Document::findOrFail($documentId);
+    return view('mobile.profile.actions.show_document-trip-client', compact('trip', 'document'));
+})->name('mobile.profile.actions.show_document-trip-client');
 
 Route::get('/mobile/orders/documents/{productId}/show/{documentId}', function ($productId, $documentId) {
     $product = Product::findOrFail($productId);
@@ -446,32 +571,63 @@ Route::get('/mobile/orders/documents/{productId}/show/{documentId}', function ($
     return view('mobile.profile.actions.show_document', compact('product', 'document'));
 })->name('mobile.profile.actions.show_document');
 
-
 Route::get('/mobile/orders/documents/{id}', function ($id) {
     $product = Product::findOrFail($id)->load('documents', 'notes');
     return view('mobile.profile.actions.doc', compact('product'));
 })->name('mobile.profile.actions.doc');
 
 Route::get('/mobile/orders/documents-trip/{id}', function ($id) {
-    $trip = TripRequest::findOrFail($id)->load('documents', 'notes');
+    // $trip = TripRequest::findOrFail($id)->load('documents', 'notes');
+    $trip = UnpaidTripRequests::with('documents')->find($id);
+    if (!$trip) {
+        $trip = TripRegistration::with('documents')->find($id);
+    }
+    if (!$trip) {
+        $trip = TripRequest::with('documents')->find($id);
+    }
+
     return view('mobile.profile.actions.doc-trip', compact('trip'));
 })->name('mobile.profile.actions.doc-trip');
+
+Route::get('/mobile/orders/documents-trip-client/{id}', function ($id) {
+
+    $trip = UnpaidTripRequests::with('documents')->find($id);
+    if (!$trip) {
+        $trip = TripRegistration::with('documents')->find($id);
+    }
+
+    return view('mobile.profile.actions.doc-trip-client', compact('trip'));
+})->name('mobile.profile.actions.doc-trip-client');
 
 Route::get('/mobile/orders/orders-user/{product}', function (App\Models\Product $product) {
     $product->load('approvals', 'notes');
     return view('mobile.profile.order-display', compact('product'));
 })->name('mobile.orders.show');
-Route::get('/mobile/orders/orders-user-trip/{trip}', function (App\Models\TripRequest $trip) {
-    $trip->load('approvals', 'notes');
+
+Route::get('/mobile/orders/orders-user-trip/{trip}', function ($tripId) {
+    $trip = TripRequest::with('approvals', 'notes')->find($tripId);
+    if (!$trip) {
+        $trip = UnpaidTripRequests::with('approvals', 'notes')->find($tripId);
+    }
+    if (!$trip) {
+        $trip = TripRegistration::with('approvals', 'notes')->find($tripId);
+    }
+    if (!$trip) {
+        abort(404, 'الرحلة غير موجودة');
+    }
     return view('mobile.profile.order-display-trip', compact('trip'));
 })->name('mobile.orders.show-trip');
+
 Route::middleware(['auth'])->group(function () {
     Route::post('/mobile/chat/send', [ChatController::class, 'sendMessage'])
         ->name('mobile.chat.send');
-
-    Route::post('/mobile/chat/send', [ChatOrderController::class, 'sendMessage'])
-        ->name('mobile.chat.order.send');
 });
+
+Route::post('/mobile/trip-chat/send', [ChatOrderController::class, 'sendTripMessage'])
+    ->name('mobile.trip-chat.send');
+
+Route::post('/mobile/chat/send', [ChatOrderController::class, 'sendMessage'])
+    ->name('mobile.chat.order.send');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/mobile/chat', [ChatController::class, 'showUserChat'])->name('mobile.user.chat');
@@ -518,7 +674,7 @@ Route::get('/mobile/order/success', function () {
 
 Route::get('/mobile/event', function () {
     $events = Event::where('status', 'نشط')
-    ->where('end_date', '>', Carbon::now())->orderBy('end_date')->get();
+        ->where('end_date', '>', Carbon::now())->orderBy('end_date')->get();
     return view('mobile.welcome.event', compact('events'));
 })->name('mobile.event');
 
@@ -534,13 +690,13 @@ Route::get('/mobile/trip-show1/{id}', function ($id) {
             WHEN period = 'evening' THEN 3 
             ELSE 4 END")
         ->get()
-        ->groupBy('date'); 
+        ->groupBy('date');
     return view('mobile.welcome.trip-show1', compact('trip', 'banner', 'activities'));
 })->name('mobile.trip-show1');
 
 Route::get('/mobile/trip-show/{id}', function ($id) {
     $banner = Banner::where('is_active', 'نشط')->where('location', 'both')
-    ->orWhere('location', 'mobile_app')->first();
+        ->orWhere('location', 'mobile_app')->first();
     $trip = Trip::with('activities.place.subCategory')->findOrFail($id);
     $activities = $trip->activities()
         ->with('place.subCategory')
@@ -649,8 +805,8 @@ Route::get('mobile/my-following', [
 
 Route::get('mobile/profile/discovers', function () {
     $users = User::withCount('followers')
-    ->withCount('favorites')->withCount('ratings')->where('status', 1)
-    ->where('role', 'user')->get();
+        ->withCount('favorites')->withCount('ratings')->where('status', 1)
+        ->where('role', 'user')->get();
     return view('mobile.profile.discovers', compact('users'));
 })->name('mobile.profile.discovers')->middleware('mobile_auth');
 
@@ -675,7 +831,7 @@ Route::get('mobile', function () {
     $banner = Banner::where('is_active', 'نشط')->where('location', 'website_home')
         ->orWhere('location', 'mobile_app')->first();
     $events = Event::where('status', 'نشط')->where('end_date', '>', Carbon::now())
-    ->where('start_date', '<=', Carbon::now())->first();
+        ->where('start_date', '<=', Carbon::now())->first();
     return view('mobile.welcome', compact('banner', 'events'));
 })->name('mobile.welcome');
 Route::get('mobile1', function () {
@@ -750,7 +906,7 @@ Route::middleware('mobile_auth')->group(function () {
     //     ->name('mobile.china-discovers.all--places');
     Route::get('/all-places/{region_id?}', [ChinaDiscoverController::class, 'allPlaces'])->name('mobile.china-discovers.all--places');
     Route::get('/new-places', [ChinaDiscoverController::class, 'newPlaces'])
-    ->name('mobile.china-discovers.new-places');
+        ->name('mobile.china-discovers.new-places');
     Route::get('/most-fav-places', [ChinaDiscoverController::class, 'mostPlaces'])
         ->name('mobile.china-discovers.most-fav-places');
 
@@ -765,7 +921,7 @@ Route::middleware('mobile_auth')->group(function () {
 
         // عدد اللي بيتابعوا المستخدم الحالي
         $UsersFollowMe = Followers::where('following_id', $user->id)->count();
-        return view('mobile.profile.profile', compact('UsersFollowMe','all_orders', 'activeUsers', 'count', 'countInterests', 'myFollowers', 'iFollow'));
+        return view('mobile.profile.profile', compact('UsersFollowMe', 'all_orders', 'activeUsers', 'count', 'countInterests', 'myFollowers', 'iFollow'));
     })->name('mobile.profile.profile');
 
 
@@ -781,7 +937,7 @@ Route::middleware('mobile_auth')->group(function () {
         $review_reports = ReviewReport::where('status', 'pending')->get();
         $all_orders = Product::count() + TripRequest::count();
         $all_conversations = Message::count();
-        return view('mobile.profile.profileAdmin', compact('all_conversations','all_orders', 'review_reports', 'reports', 'all_reports', 'all_users', 'all_places', 'count', 'countInterests', 'myFollowers', 'iFollow'));
+        return view('mobile.profile.profileAdmin', compact('all_conversations', 'all_orders', 'review_reports', 'reports', 'all_reports', 'all_users', 'all_places', 'count', 'countInterests', 'myFollowers', 'iFollow'));
     })->name('mobile.profile.profileAdmin');
 
     // Admin-specific routes

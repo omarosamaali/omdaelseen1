@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\InvoicePaidAdmin;
 use App\Mail\InvoicePaidUser;
-use App\Models\User; // أضفها في أعلى الملف
+use App\Models\User;
 
 class InvoiceController extends Controller
 {
@@ -26,10 +26,8 @@ class InvoiceController extends Controller
             }
 
             $ziinaHandler = new ZiinaPaymentHandler();
-
-            // حساب رسوم البوابة
-            $feePercent = 7.9 / 100; // نسبة العمولة
-            $fixedFee = 1; // الرسوم الثابتة
+            $feePercent = 7.9 / 100;
+            $fixedFee = 1;
             $finalAmount = ($invoice->amount * (1 + $feePercent)) + $fixedFee;
 
             Log::info('حساب الرسوم', [
@@ -39,7 +37,6 @@ class InvoiceController extends Controller
                 'final_amount' => $finalAmount
             ]);
 
-            // إنشاء كائن بيانات الفاتورة بعد إضافة الرسوم
             $invoiceData = (object)[
                 'id' => $invoice->id,
                 'title' => $invoice->title,
@@ -58,7 +55,6 @@ class InvoiceController extends Controller
                 $finalAmount
             );
 
-            // حفظ payment_intent_id في الفاتورة
             $invoice->update([
                 'payment_intent_id' => $paymentIntent['id'] ?? null
             ]);
@@ -142,7 +138,6 @@ class InvoiceController extends Controller
                     ->with('success', 'تم الدفع بنجاح! شكراً لك.');
             }
 
-            // إذا كانت الفاتورة قيد المعالجة
             if ($invoice->product_id) {
                 return redirect()->route('mobile.profile.actions.invoice.show', [
                     'id' => $invoice->product_id,

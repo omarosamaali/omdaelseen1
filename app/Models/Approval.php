@@ -19,6 +19,7 @@ class Approval extends Model
         'details',
         'file_path',
         'status',
+        'trip_id',
     ];
 
     public function order()

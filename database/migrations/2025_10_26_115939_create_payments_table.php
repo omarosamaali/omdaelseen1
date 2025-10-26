@@ -9,8 +9,8 @@ return new class extends Migration {
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->nullable(); // المستخدم اللي دفع
-            $table->unsignedBigInteger('order_id')->nullable(); // ID العنصر (مثلاً إعلان)
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // المستخدم اللي دفع
+            $table->foreignId('order_id')->constrained('adds')->onDelete('cascade'); // ID العنصر (مثلاً إعلان)
             $table->string('order_type')->nullable(); // نوع العنصر (adds, trip, subscription...)
             $table->decimal('amount', 10, 2); // المبلغ
             $table->string('currency', 10)->default('AED');
@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->string('status')->default('pending'); // pending / paid / failed
             $table->string('payment_method')->nullable(); // بطاقة / Apple Pay / إلخ
             $table->json('gateway_response')->nullable(); // البيانات القادمة من Ziina
+            $table->string('reference_number')->nullable();
             $table->timestamps();
         });
     }

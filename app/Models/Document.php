@@ -18,6 +18,7 @@ class Document extends Model
         'details',
         'file_path',
         'user_id',
+        'trip_id',
     ];
 
     public function order()

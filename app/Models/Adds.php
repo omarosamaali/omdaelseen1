@@ -25,4 +25,13 @@ class Adds extends Model
         return $query->where('status', 'active');
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'order_id');
+    }
 }

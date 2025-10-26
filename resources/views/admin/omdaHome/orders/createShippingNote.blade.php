@@ -10,15 +10,28 @@
         text-align: right;
     }
 </style>
-
 <div style="display: flex; flex-direction: row-reverse; margin: 0 20px;">
     <div class="container py-4 mx-auto max-w-4xl"
-        style="margin-top: 100px; background: white; border-radius: 10px; padding: 20px;">
-        <h2 class="text-right mb-4 font-bold text-xl">إنشاء ملاحظة شحن جديدة</h2>
+    style="margin-top: 100px; background: white; border-radius: 10px; padding: 20px;">
+    <h2 class="text-right mb-4 font-bold text-xl">إنشاء ملاحظة شحن جديدة</h2>
+    @if ($errors->any())
+    <div class="bg-red-100 text-red-700 p-3 rounded mb-3">
+        <ul>
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
         <form action="{{ route('admin.orders.storeShippingNote', $order->id) }}" method="POST"
             enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="order_type" value="{{ $orderType }}">
+@if (($orderType == App\Models\UnpaidTripRequests::class || $orderType == App\Models\TripRegistration::class) &&
+isset($order->trip) && $order->trip && $order->trip->id)
+<input type="hidden" name="trip_id" value="{{ $order->trip->id }}">
+@endif
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">رقم الملاحظة</label>

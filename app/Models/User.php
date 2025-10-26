@@ -109,5 +109,22 @@ class User extends Authenticatable
         return $this->places()->count();
     }
 
-    
+    public function tripRegistrations(){
+        return $this->hasMany(TripRegistration::class);
+    }
+
+    public function trip()
+    {
+        return $this->belongsTo(\App\Models\TripRequest::class, 'trip_id');
+    }
+
+
+    public function adds()
+    {
+        return $this->belongsToMany(Adds::class);
+    }
+
+    public function payments() {
+        return $this->hasMany(Payment::class);
+    }
 }

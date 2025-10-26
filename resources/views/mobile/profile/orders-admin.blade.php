@@ -63,7 +63,7 @@
                     <a href="{{ route('mobile.admin-orders', ['status' => 'في المراجعة']) }}"
                         class="status-box {{ $status == 'في المراجعة' ? 'active' : '' }}"
                         style="text-decoration: none;">
-                        <p class="text-xs">في المراجعة 
+                        <p class="text-xs">في المراجعة
                             <span style="color: maroon;">
                                 {{ $productStats['في المراجعة']}}
                             </span>
@@ -89,7 +89,7 @@
                     <a href="{{ route('mobile.admin-orders', ['status' => 'تم الاستلام من قبل العميل']) }}"
                         class="status-box {{ $status == 'تم الاستلام من قبل العميل' ? 'active' : '' }}"
                         style="text-decoration: none;">
-                        <p class="text-xs">تم الاستلام من قبل العميل 
+                        <p class="text-xs">تم الاستلام من قبل العميل
                             <span style="color: maroon;">{{ $productStats['تم الاستلام من قبل العميل'] }}</span>
                         </p>
                     </a>
@@ -157,7 +157,196 @@
             @endif
 
             <div class="flex flex-col gap-4 pt-8" style="direction: rtl;">
-                @forelse ($products as $product)
+                <p>طلبات الرحلات  القابلة للدفع</p>
+                @foreach ($trip_registers as $trip)
+                <div class="bg-white dark:bg-color9 py-4 px-5 rounded-2xl shadow-md border relative"
+                    style="overflow: hidden; height: 163px;">
+                    <div class="relative gap-3 flex justify-between">
+                        <div class="flex justify-between items-center" style="width: 106px;">
+                            <div class="flex justify-start items-center gap-2">
+                                <div class="text-center" style="border: 1px solid maroon; border-radius: 13%;">
+                                    <span class="text-xs">
+                                        @php
+                                        $lang = session('locale', 'ar');
+                                        $dayName = $trip->created_at->locale($lang)->translatedFormat('l');
+                                        @endphp
+                                        {{ $dayName }}
+                                    </span>
+                                    <div style="background-color: white;" class="py-1 px-2 bg-p2 rounded-lg">
+                                        <p class="font-semibold text-lg">
+                                            {{ $trip->created_at->format('m/d') }}
+                                        </p>
+                                        <p class="text-[19px] font-bold">
+                                            {{ $trip->created_at->format('Y') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs font-semibold gap-1" style="color: maroon;">
+                                {{ $trip->reference_number }}
+                            </p>
+                            <p class="text-xs font-semibold gap-1" style="color: rgb(0, 0, 0);">
+                                {{ $trip->trip->title_ar }}
+                            </p>
+                            <p class="text-xs font-semibold gap-1" style="color: green;">
+
+                                @if($trip->status == 'pending')
+                                في المراجعة
+                                @elseif($trip->status == 'approved')
+                                موافقة
+                                @elseif($trip->status == 'rejected')
+                                رفض
+                                @elseif($trip->status == 'paid')
+                                تم الدفع
+                                @else
+                                {{ $trip->status }}
+                                @endif
+                            </p>
+                        </div>
+                        <div id="container-type">
+                            <span>إضافة</span>
+                        </div>
+                    </div>
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; position: absolute; bottom: 5px; gap: 2px; width: 91%;">
+
+                        <a href="{{ route('mobile.orders.show-trip', $trip) }}" class="btns"><span><svg
+                                    class="w-6 h-6 text-green-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-width="2"
+                                        d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"></path>
+                                    <path stroke="currentColor" stroke-width="2"
+                                        d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"></path>
+                                </svg>
+                            </span>
+                            عرض
+                        </a>
+
+                        <a href="{{ route('mobile.profile.actions.invoice-trip', $trip->id) }}"
+                            class="{{ $trip->invoices()->exists() ? 'rainbow btns' : 'btns' }}"><span><i
+                                    class="fa-solid fa-file-invoice" style="font-size: 18px;"></i></span>
+                            فواتير
+                        </a>
+
+                        <a href="{{ route('mobile.profile.actions.doc-trip', $trip->id) }}" class="btns"><span><i
+                                    class="fa-regular fa-folder-open" style="font-size: 18px;"></i></span> مستندات
+                        </a>
+
+                        <a href="{{ route('mobile.profile.actions.approve-trip', $trip->id) }}"
+                            class="{{ $trip->approvals()->exists() ? 'rainbow btns' : 'btns' }}"><span><i
+                                    class="fa-solid fa-check-circle" style="font-size: 18px;"></i></span> موافقة
+                        </a>
+                        @if(Auth::user()->role == 'admin')
+                        <a href="{{ route('mobile.profile.actions.admin-chat-trip', ['trip_id' => $trip->id]) }}"
+                            class="btns">
+                            <span><i class="fa-regular fa-envelope" style="font-size: 18px;"></i></span>
+                            مراسلة
+                        </a>
+                        @endif
+                        <a href="{{ route('mobile.profile.actions.note-trip', $trip->id) }}" class="btns"><span><i
+                                    class="fa-solid fa-sticky-note" style="font-size: 18px;"></i></span>
+                            ملاحظات
+                        </a>
+                    </div>
+                </div>
+                @endforeach
+                <p>طلبات الرحلات الغير قابلة للدفع</p>
+                @foreach ($unPaidTrips as $trip)
+                <div class="bg-white dark:bg-color9 py-4 px-5 rounded-2xl shadow-md border relative"
+                    style="overflow: hidden; height: 163px;">
+                    <div class="relative gap-3 flex justify-between">
+                        <div class="flex justify-between items-center" style="width: 106px;">
+                            <div class="flex justify-start items-center gap-2">
+                                <div class="text-center" style="border: 1px solid maroon; border-radius: 13%;">
+                                    <span class="text-xs">
+                                        @php
+                                        $lang = session('locale', 'ar');
+                                        $dayName = $trip->created_at->locale($lang)->translatedFormat('l');
+                                        @endphp
+                                        {{ $dayName }}
+                                    </span>
+                                    <div style="background-color: white;" class="py-1 px-2 bg-p2 rounded-lg">
+                                        <p class="font-semibold text-lg">
+                                            {{ $trip->created_at->format('m/d') }}
+                                        </p>
+                                        <p class="text-[19px] font-bold">
+                                            {{ $trip->created_at->format('Y') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs font-semibold gap-1" style="color: maroon;">
+                                {{ $trip->reference_number }}
+                            </p>
+                            <p class="text-xs font-semibold gap-1" style="color: rgb(0, 0, 0);">
+                                {{ $trip->trip->title_ar }}
+                            </p>
+                            <p class="text-xs font-semibold gap-1" style="color: green;">
+
+                                @if($trip->status == 'pending')
+                                في المراجعة
+                                @elseif($trip->status == 'approved')
+                                موافقة
+                                @elseif($trip->status == 'rejected')
+                                رفض
+                                @else
+                                {{ $trip->status }}
+                                @endif
+                            </p>
+                        </div>
+                        <div id="container-type">
+                            <span>إضافة</span>
+                        </div>
+                    </div>
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; position: absolute; bottom: 5px; gap: 2px; width: 91%;">
+
+                        <a href="{{ route('mobile.orders.show-trip', $trip) }}" class="btns"><span><svg
+                                    class="w-6 h-6 text-green-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-width="2"
+                                        d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"></path>
+                                    <path stroke="currentColor" stroke-width="2"
+                                        d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"></path>
+                                </svg>
+                            </span>
+                            عرض
+                        </a>
+
+                        <a href="{{ route('mobile.profile.actions.invoice-trip', $trip->id) }}"
+                            class="{{ $trip->invoices()->exists() ? 'rainbow btns' : 'btns' }}"><span><i
+                                    class="fa-solid fa-file-invoice" style="font-size: 18px;"></i></span>
+                            فواتير
+                        </a>
+
+                        <a href="{{ route('mobile.profile.actions.doc-trip', $trip->id) }}" class="btns"><span><i
+                                    class="fa-regular fa-folder-open" style="font-size: 18px;"></i></span> مستندات
+                        </a>
+
+                        <a href="{{ route('mobile.profile.actions.approve-trip', $trip->id) }}"
+                            class="{{ $trip->approvals()->exists() ? 'rainbow btns' : 'btns' }}"><span><i
+                                    class="fa-solid fa-check-circle" style="font-size: 18px;"></i></span> موافقة
+                        </a>
+                        @if(Auth::user()->role == 'admin')
+                        <a href="{{ route('mobile.profile.actions.admin-chat-trip', ['trip_id' => $trip->id]) }}"
+                            class="btns">
+                            <span><i class="fa-regular fa-envelope" style="font-size: 18px;"></i></span>
+                            مراسلة
+                        </a>
+                        @endif
+                        <a href="{{ route('mobile.profile.actions.note-trip', $trip->id) }}" class="btns"><span><i
+                                    class="fa-solid fa-sticky-note" style="font-size: 18px;"></i></span>
+                            ملاحظات
+                        </a>
+                    </div>
+                </div>
+                @endforeach
+                <p>طلبات المنتجات</p>
+                @foreach ($products as $product)
                 <div class="bg-white dark:bg-color9 py-4 px-5 rounded-2xl shadow-md border relative"
                     style="overflow: hidden; height: 163px;">
                     <div class="relative gap-3 flex justify-between">
@@ -200,9 +389,9 @@
                     <div
                         style="display: flex; align-items: center; justify-content: space-between; position: absolute; bottom: 5px; gap: 2px; width: 91%;">
                         <a href="{{ route('mobile.orders.show', $product) }}" class="btns"><span>
-                            <svg
-                                    class="w-6 h-6 text-green-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <svg class="w-6 h-6 text-green-800" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                    viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-width="2"
                                         d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"></path>
                                     <path stroke="currentColor" stroke-width="2"
@@ -242,16 +431,8 @@
                             ملاحظات</a>
                     </div>
                 </div>
-                @empty
-                @if(!$trip_requests->count())
-                <div class="text-center py-8">
-                    <p class="text-gray-500">
-                        <x-empty />
-                    </p>
-                </div>
-                @endif
-                @endforelse
-
+                @endforeach
+                <p>طلبات الرحلات الخاصة</p>
                 @foreach ($trip_requests as $trip)
                 <div class="bg-white dark:bg-color9 py-4 px-5 rounded-2xl shadow-md border relative"
                     style="overflow: hidden; height: 163px;">
@@ -303,7 +484,7 @@
                                     <path stroke="currentColor" stroke-width="2"
                                         d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"></path>
                                 </svg>
-                            </span> 
+                            </span>
                             عرض
                         </a>
 
@@ -322,11 +503,12 @@
                                     class="fa-solid fa-check-circle" style="font-size: 18px;"></i></span> موافقة
                         </a>
                         @if(Auth::user()->role == 'admin')
-<a href="{{ route('mobile.profile.actions.admin-chat-trip', ['trip_id' => $trip->id]) }}" class="btns">
+                        <a href="{{ route('mobile.profile.actions.admin-chat-trip', ['trip_id' => $trip->id]) }}"
+                            class="btns">
                             <span><i class="fa-regular fa-envelope" style="font-size: 18px;"></i></span>
                             مراسلة
                         </a>
-@endif
+                        @endif
                         <a href="{{ route('mobile.profile.actions.note-trip', $trip->id) }}" class="btns"><span><i
                                     class="fa-solid fa-sticky-note" style="font-size: 18px;"></i></span>
                             ملاحظات

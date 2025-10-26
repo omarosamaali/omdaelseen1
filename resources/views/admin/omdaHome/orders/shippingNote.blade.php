@@ -79,8 +79,7 @@
                     <select name="status" id="status-filter" onchange="this.form.submit()"
                         style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 30px; background-color: transparent; text-align: center;">
                         <option value="">جميع الحالات</option>
-                        <option value="التجهيز للشحن" {{ request('status')=='التجهيز للشحن' ? 'selected' : '' }}>التجهيز
-                            للشحن</option>
+                        <option value="التجهيز للشحن" {{ request('status')=='التجهيز للشحن' ? 'selected' : '' }}>التجهيز للشحن</option>
                         <option value="تم الشحن" {{ request('status')=='تم الشحن' ? 'selected' : '' }}>تم الشحن</option>
                     </select>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="بحث"

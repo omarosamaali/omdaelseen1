@@ -341,6 +341,18 @@
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
+
+                        <div class="mb-4 text-right">
+                            <label for="is_paid" class="block text-gray-700 font-bold mb-2">قابلة للدفع *</label>
+                            <select name="is_paid" id="is_paid" class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
+                                <option value="yes" {{ old('is_paid')=='active' ? 'selected' : '' }}>نعم</option>
+                                <option value="no" {{ old('is_paid')=='inactive' ? 'selected' : '' }}>لا
+                                </option>
+                            </select>
+                            @error('status')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
 
                     <div class="flex justify-end gap-2">

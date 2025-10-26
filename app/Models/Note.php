@@ -18,7 +18,8 @@ class Note extends Model
         'details',
         'file_path',
         'status',
-        'user_id'
+        'user_id',
+        'trip_id',
     ];
 
     public function order()

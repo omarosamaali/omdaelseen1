@@ -18,6 +18,10 @@
         <form action="{{ route('admin.orders.storeNote', $order->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="order_type" value="{{ $orderType }}">
+@if (($orderType == App\Models\UnpaidTripRequests::class || $orderType == App\Models\TripRegistration::class) &&
+isset($order->trip) && $order->trip && $order->trip->id)
+<input type="hidden" name="trip_id" value="{{ $order->trip->id }}">
+@endif
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">رقم الملاحظة</label>
@@ -43,7 +47,6 @@
                     <label class="block text-sm font-medium text-gray-700">العنوان</label>
                     <input type="text" id="title" name="title"
                         class="input-field @error('title') border-red-500 @enderror"
-                        value="{{ old('title', $orderType == App\Models\TripRequest::class ? 'ملاحظة حول الرحلة' : 'ملاحظة حول المنتج') }}"
                         required>
                     @error('title')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>

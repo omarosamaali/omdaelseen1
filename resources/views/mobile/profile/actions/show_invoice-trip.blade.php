@@ -32,7 +32,12 @@
                             <span class="font-bold">السعر:</span> {{ $invoice->amount?? 'بدون تفاصيل' }}
                         </p>
                         <p class="text-xs font-semibold">
-                            <span class="font-bold">الحالة:</span> {{ $invoice->status ?? 'بدون تفاصيل' }}
+                            <span class="font-bold">الحالة:</span>
+                            @if($invoice->status == 'paid')
+                            مدفوعة
+                            @else
+                            {{ $invoice->status ?? 'بدون تفاصيل' }}
+                            @endif
                         </p>
                         <p class="text-xs font-semibold">
                             <span class="font-bold">المستخدم:</span> {{ $invoice->user ? $invoice->user->name : 'غير
@@ -48,29 +53,44 @@
                         @else
                         <p class="text-xs font-semibold text-gray-500">لا يوجد ملف مرفق</p>
                         @endif
-                        @if ($invoice->status !== 'paid')
-                            <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                              
-                                <form action="{{ route('mobile.invoice.pay', $invoice->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit"
-                                        class="w-full bg-green-600 hover:bg-green-700 text-black py-2.5 px-4 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2">
-                                        <i class="fas fa-credit-card"></i>
-                                        ادفع الآن ({{ number_format($invoice->amount, 2) }} درهم)
-                                    </button>
-                                </div>
-                            </form>
-                            <p style="font-size: 12px; color: red; text-align: center; margin-bottom: 5px;">المبلغ شامل رسوم بوابة الدفع</p>
-                            @else
-                            <div class="mt-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                                <p class="text-xs text-green-800 dark:text-green-200 flex items-center gap-2">
-                                    <i class="fas fa-check-circle"></i>
-                                    تم الدفع بنجاح في {{ $invoice->paid_at ? \Carbon\Carbon::parse($invoice->paid_at)->format('Y-m-d H:i') : 'غير
-                                    محدد' }}
-                                </p>
-                            </div>
-                            @endif
-                    </div>
+@if ($invoice->status === 'paid')
+<!-- تم الدفع (للجميع) -->
+<div class="mt-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+    <p class="text-xs text-green-800 dark:text-green-200 flex items-center gap-2">
+        <i class="fas fa-check-circle"></i>
+        تم الدفع بنجاح في
+        {{ $invoice->paid_at ? \Carbon\Carbon::parse($invoice->paid_at)->format('Y-m-d H:i') : 'غير محدد' }}
+    </p>
+</div>
+
+@else
+<!-- لم يتم الدفع بعد -->
+@if (auth()->user()->role !== 'admin')
+<!-- المستخدم العادي: زر الدفع -->
+<div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+    <form action="{{ route('mobile.invoice.pay', $invoice->id) }}" method="POST">
+        @csrf
+        <button type="submit"
+            class="w-full bg-green-600 hover:bg-green-700 text-black py-2.5 px-4 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2">
+            <i class="fas fa-credit-card"></i>
+            ادفع الآن ({{ number_format($invoice->amount, 2) }} درهم)
+        </button>
+    </form>
+</div>
+<p style="font-size: 12px; color: red; text-align: center; margin-top: 5px;">
+    المبلغ شامل رسوم بوابة الدفع
+</p>
+
+@else
+<!-- الأدمن: رسالة فقط -->
+<div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+    <p class="text-xs text-yellow-800 dark:text-yellow-200 flex items-center gap-2">
+        <i class="fas fa-exclamation-triangle"></i>
+        لم يتم الدفع حتى الآن
+    </p>
+</div>
+@endif
+@endif                    </div>
                 </div>
             </div>
         </div>

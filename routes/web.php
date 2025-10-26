@@ -34,8 +34,47 @@ use App\Http\Controllers\TripGuidelineController;
 use App\Http\Controllers\TripFeaturesController;
 use App\Http\Controllers\AddsController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ChatOrderController;
+use App\Http\Controllers\Admin\OrderController;
 use Illuminate\Support\Facades\Auth;
 
+// ============================================
+// 🟢 Routes للمستخدم (User)
+// ============================================
+Route::middleware(['auth'])->group(function () {
+    // عرض الشات للمستخدم
+    Route::get(
+        '/mobile/user-trip-messages/{order_id}/{order_type}',
+        [ChatOrderController::class, 'userTripMessages']
+    )
+        ->name('mobile.user.trip-messages');
+
+    // إرسال رسالة من المستخدم
+    Route::post(
+        '/mobile/user-trip-messages/send',
+        [ChatOrderController::class, 'sendUserTripMessage']
+    )
+        ->name('mobile.user.trip-messages.send');
+});
+
+// ============================================
+// 🔵 Routes للأدمن (Admin)
+// ============================================
+Route::middleware(['auth'])->prefix('admin/orders')->group(function () {
+    // عرض الشات للأدمن
+    Route::get(
+        '/trip-messages/{user_id}/{order_id}/{order_type}',
+        [OrderController::class, 'tripMessages']
+    )
+        ->name('admin.orders.trip-messages');
+
+    // إرسال رسالة من الأدمن
+    Route::post(
+        '/trip-messages/send',
+        [OrderController::class, 'sendTripMessage']
+    )
+        ->name('admin.orders.trip-messages.send');
+});
 Route::get('/test-firebase', function () {
     try {
         $firebase = new \App\Services\FirebaseService();

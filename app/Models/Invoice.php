@@ -19,6 +19,7 @@ class Invoice extends Model
         'amount',
         'payment_intent_id',
         'paid_at',
+        'trip_id',
         'status',
     ];
 

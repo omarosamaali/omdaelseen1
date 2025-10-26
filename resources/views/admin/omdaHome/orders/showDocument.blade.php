@@ -88,11 +88,13 @@
                 <span class="detail-label">أضيف بواسطة:</span>
                 <span class="detail-value">{{ $document->user->name ?? $document->user->email ?? 'غير متاح' }}</span>
             </div>
+            @if($document->order_type != 'App\Models\Payment')
             <div class="mb-4">
                 <span class="detail-label">نوع الطلب:</span>
                 <span class="detail-value">{{ $document->order_type == 'App\\Models\\TripRequest' ? 'رحلة' : 'منتج خاص'
                     }}</span>
             </div>
+            @endif
             <div class="mb-4">
                 <span class="detail-label">اسم العميل:</span>
                 <span class="detail-value">{{ $order->user->name ?? 'غير متاح' }}</span>

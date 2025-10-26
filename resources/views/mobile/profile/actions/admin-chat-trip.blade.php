@@ -50,33 +50,25 @@
                 </p>
             </div>
             <div class="flex flex-col gap-8 w-full" style="margin-top: 93px; padding-top: 23px; overflow: auto;">
-                @foreach (App\Models\TravelChat::where('trip_id', $trip_id)->with('user')->orderBy('created_at',
-                'asc')->get() as $message)
-                <div
-                    class="flex {{ $message->user->role === 'admin' ? 'justify-start' : 'justify-end' }} items-end gap-3 w-full px-6">
-                    <div class="flex flex-col gap-3">
-                        <div class="flex justify-start items-center gap-2">
-                            @if ($message->image)
-                            <img src="{{ asset('storage/' . $message->image) }}" style="max-height: 200px;"
-                                alt="Message Image" class="max-w-[200px] rounded-lg border border-color21" />
-                            @endif
-                            @if ($message->message)
-                            <p
-                                class="text-{{ $message->user->role === 'admin' ? 'white' : 'color5' }} p-4 
-                                {{ $message->user->role === 'admin' ? 'bg-p2 dark:bg-p1 rounded-r-2xl rounded-bl-2xl' : 
-                                'bg-white dark:bg-color9 dark:text-white rounded-l-2xl rounded-tr-2xl' }} text-xs max-w-[280px]">
-                                {{ $message->message }}
-                            </p>
-                            @endif
-                        </div>
-                    </div>
-                    @if ($message->user->role !== 'admin')
-                    <div>
-                        <i class="ph ph-check text-xs p-1 rounded-full bg-p2 dark:bg-p1 text-white"></i>
-                    </div>
+           @foreach ($messages as $message)
+        <div class="flex {{ $message->user->role === 'admin' ? 'justify-start' : 'justify-end' }} items-end gap-3 w-full px-6">
+            <div class="flex flex-col gap-3">
+                <div class="flex justify-start items-center gap-2">
+                    @if ($message->image)
+                    <img src="{{ asset('storage/' . $message->image) }}" style="max-height: 200px;" alt="Message Image"
+                        class="max-w-[200px] rounded-lg border border-color21" />
+                    @endif
+                    @if ($message->message)
+                    <p class="text-{{ $message->user->role === 'admin' ? 'white' : 'color5' }} p-4 
+                        {{ $message->user->role === 'admin' ? 'bg-p2 dark:bg-p1 rounded-r-2xl rounded-bl-2xl' : 
+                        'bg-white dark:bg-color9 dark:text-white rounded-l-2xl rounded-tr-2xl' }} text-xs max-w-[280px]">
+                        {{ $message->message }}
+                    </p>
                     @endif
                 </div>
-                @endforeach
+            </div>
+        </div>
+        @endforeach
             </div>
             <div class="fixed bottom-0 left-0 right-0 z-50" style="direction: rtl;">
                 <form id="message-form" enctype="multipart/form-data">
@@ -103,71 +95,82 @@
         </div>
 
         <script>
-            document.getElementById('message-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            let messageInput = document.getElementById('message-input').value.trim();
-            let imageInput = document.getElementById('image-upload').files[0];
-            let tripId = document.querySelector('input[name="trip_id"]').value;
+// استبدل الـ script الموجود في الـ view بهذا الكود:
 
-            if (!messageInput && !imageInput) {
-                alert('يرجى إدخال رسالة أو صورة');
-                return;
-            }
+document.getElementById('message-form').addEventListener('submit', function (e) {
+e.preventDefault();
 
-            if (!tripId || isNaN(tripId)) {
-                alert('معرف الرحلة غير صالح');
-                return;
-            }
+let messageInput = document.getElementById('message-input').value.trim();
+let imageInput = document.getElementById('image-upload').files[0];
+let tripId = document.querySelector('input[name="trip_id"]').value;
 
-            let formData = new FormData();
-            formData.append('trip_id', tripId);
-            if (messageInput) formData.append('message', messageInput);
-            if (imageInput) formData.append('image', imageInput);
+if (!messageInput && !imageInput) {
+alert('يرجى إدخال رسالة أو صورة');
+return;
+}
 
-            fetch('/mobile/trip-chat/send', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.error) {
-                    alert('فشل إرسال الرسالة: ' + data.error);
-                    return;
-                }
-                let chatContainer = document.querySelector('.flex.flex-col.gap-8');
-                let messageContent = '';
-                if (data.message.image) {
-                    messageContent += `<img src="{{ asset('storage/') }}/${data.message.image}" alt="Message Image" style="max-height: 200px;" class="max-w-[200px] rounded-lg border border-color21" />`;
-                }
-                if (data.message.message) {
-                    messageContent += `<p class="text-white p-4 bg-p2 dark:bg-p1 rounded-r-2xl rounded-bl-2xl text-xs max-w-[280px]">${data.message.message}</p>`;
-                }
-                let newMessage = `
-                    <div class="flex justify-start items-end gap-3 w-full px-6">
-                        <div class="flex flex-col gap-3">
-                            <div class="flex justify-start items-center gap-2">
-                                ${messageContent}
-                            </div>
-                        </div>
-                    </div>
-                `;
-                chatContainer.insertAdjacentHTML('beforeend', newMessage);
-                document.getElementById('message-input').value = '';
-                document.getElementById('image-upload').value = '';
-            })
-            .catch(error => {
-                console.error('Fetch error:', error);
-                alert('حدث خطأ أثناء إرسال الرسالة: ' + error.message);
-            });
-        });
-        </script>
+if (!tripId || isNaN(tripId)) {
+alert('معرف الرحلة غير صالح');
+return;
+}
+
+let formData = new FormData();
+formData.append('trip_id', tripId); // ⚠️ تأكد إن الاسم trip_id مش order_id
+if (messageInput) formData.append('message', messageInput);
+if (imageInput) formData.append('image', imageInput);
+
+fetch('/mobile/trip-chat/send', {
+method: 'POST',
+headers: {
+'X-CSRF-TOKEN': '{{ csrf_token() }}'
+},
+body: formData
+})
+.then(response => {
+if (!response.ok) {
+throw new Error('Network response was not ok: ' + response.statusText);
+}
+return response.json();
+})
+.then(data => {
+if (data.error) {
+alert('فشل إرسال الرسالة: ' + data.error);
+return;
+}
+
+let chatContainer = document.querySelector('.flex.flex-col.gap-8');
+let messageContent = '';
+
+if (data.message.image) {
+messageContent += `<img src="/storage/${data.message.image}" alt="Message Image" style="max-height: 200px;"
+    class="max-w-[200px] rounded-lg border border-color21" />`;
+}
+if (data.message.message) {
+messageContent += `<p class="text-white p-4 bg-p2 dark:bg-p1 rounded-r-2xl rounded-bl-2xl text-xs max-w-[280px]">
+    ${data.message.message}</p>`;
+}
+
+let newMessage = `
+<div class="flex justify-start items-end gap-3 w-full px-6">
+    <div class="flex flex-col gap-3">
+        <div class="flex justify-start items-center gap-2">
+            ${messageContent}
+        </div>
+    </div>
+</div>
+`;
+
+chatContainer.insertAdjacentHTML('beforeend', newMessage);
+chatContainer.scrollTop = chatContainer.scrollHeight; // scroll للأسفل
+
+// مسح الـ inputs
+document.getElementById('message-input').value = '';
+document.getElementById('image-upload').value = '';
+})
+.catch(error => {
+console.error('Fetch error:', error);
+alert('حدث خطأ أثناء إرسال الرسالة: ' + error.message);
+});
+});        </script>
 </body>
 @endsection

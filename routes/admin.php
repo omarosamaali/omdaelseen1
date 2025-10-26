@@ -4,6 +4,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\ChatOrderController;
 use App\Http\Controllers\Admin\ChatController;
+use App\Http\Controllers\TripRequestController;
+use App\Http\Controllers\UnpaidTripRequestsController;
+
+Route::get('/my-trip-requests', [UnpaidTripRequestsController::class, 'index'])
+    ->name('trip-requests.index');
+Route::post('/unpaid-trip-requests', [UnpaidTripRequestsController::class, 'store'])
+    ->name('unpaid-trip-requests.store');
+Route::delete('/unpaid-trip-requests/{id}', [UnpaidTripRequestsController::class, 'destroy'])
+    ->name('unpaid-trip-requests.destroy');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/orders/{trip}/chat', [ChatController::class, 'show'])->name('admin.omdaHome.orders.chat');
@@ -11,15 +20,15 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/mobile/orders/user-chat/{product_id}', [ChatOrderController::class, 'userChat'])
-->name('mobile.profile.actions.user-chat');
+    ->name('mobile.profile.actions.user-chat');
 Route::get('/mobile/orders/userAdminChat/{product_id}', [ChatOrderController::class, 'userAdminChat'])
-->name('mobile.profile.actions.userAdminChat');
+    ->name('mobile.profile.actions.userAdminChat');
 
 Route::get('/mobile/orders/userAdminChatTrip/{trip_id}', [ChatOrderController::class, 'userAdminChatTrip'])
     ->name('mobile.profile.actions.userAdminChatTrip');
 
 Route::get('/mobile/orders/admin-chat/{product_id}', [ChatOrderController::class, 'adminChat'])
-->name('mobile.profile.actions.admin-chat');
+    ->name('mobile.profile.actions.admin-chat');
 
 Route::get('/mobile/orders/admin-chat-trip/{trip_id}', [ChatOrderController::class, 'adminChatTrip'])
     ->name('mobile.profile.actions.admin-chat-trip');
@@ -27,12 +36,12 @@ Route::get('/mobile/orders/admin-chat-trip/{trip_id}', [ChatOrderController::cla
 Route::prefix('admin/orders')->name('admin.orders.')->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('index');
     Route::get('/user/{user}/places/count', [OrderController::class, 'getUserPlacesCount'])->name('user.places.count');
-    Route::get('/messages/{user}', [OrderController::class, 'messages'])->name('messages'); 
+    Route::get('/messages/{user}', [OrderController::class, 'messages'])->name('messages');
 
     Route::get('/', [OrderController::class, 'index'])->name('index');
     Route::get('/admin/user/{user}/places/count', [OrderController::class, 'getUserPlacesCount']);
     Route::get('/admin/messages/{user}', [OrderController::class, 'messages']);
-    
+
     Route::get('/create', [OrderController::class, 'create'])->name('create');
     Route::post('/', [OrderController::class, 'store'])->name('store');
     Route::get('/invoice/{id}', [OrderController::class, 'invoice'])->name('invoice');
@@ -40,7 +49,9 @@ Route::prefix('admin/orders')->name('admin.orders.')->group(function () {
     Route::post('/store-invoice/{id}', [OrderController::class, 'storeInvoice'])->name('storeInvoice');
     Route::get('/show/{invoice_id}', [OrderController::class, 'showInvoice'])->name('showInvoice');
     Route::get('/bookingShow/{id}', [OrderController::class, 'bookingShow'])->name('bookingShow');
-    
+    Route::get('/trip-show-client/{id}', [OrderController::class, 'tripShowClient'])->name('trip-show-client');
+    Route::get('/trip-show-register/{id}', [OrderController::class, 'tripShowRegister'])->name('trip-show-register');
+
     Route::get('/note/{id}', [OrderController::class, 'note'])->name('note');
     Route::get('/createNote/{id}', [OrderController::class, 'createNote'])->name('createNote');
     Route::post('/store-note/{id}', [OrderController::class, 'storeNote'])->name('storeNote');

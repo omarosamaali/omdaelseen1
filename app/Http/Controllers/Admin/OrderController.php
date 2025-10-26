@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Places;
@@ -19,46 +20,70 @@ use App\Models\OrderMessage;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Models\TravelChat;
+use App\Models\TripRegistration;
+use App\Models\UnpaidTripRequests;
+use App\Models\Adds;
 
 class OrderController extends Controller
 {
-    public function tripMessages($user_id, $trip_id = null)
+    public function tripMessages($user_id, $order_id, $order_type)
     {
-        $query = TravelChat::query()
-            ->where(function ($query) use ($user_id) {
-                $query->where('user_id', $user_id)
-                    ->orWhere('user_id', Auth::id());
+        $orderModel = match ($order_type) {
+            'unpaid' => UnpaidTripRequests::class,
+            'registration' => TripRegistration::class,
+            'trip_request' => TripRequest::class,
+            default => abort(404, 'نوع الطلب غير صحيح')
+        };
+
+        $messages = TravelChat::query()
+            ->where('order_id', $order_id)
+            ->where('order_type', $orderModel)
+            ->with(['user'])
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        \Log::info('Messages fetched:', [
+            'count' => $messages->count(),
+            'order_id' => $order_id,
+            'order_type' => $orderModel,
+            'messages' => $messages->map(function ($msg) {
+                return [
+                    'id' => $msg->id,
+                    'message' => $msg->message,
+                    'user_id' => $msg->user_id,
+                    'user_role' => $msg->user?->role ?? 'NO USER',
+                ];
             })
-            ->with(['user', 'trip'])
-            ->orderBy('created_at', 'asc');
-
-        if ($trip_id) {
-            $query->where('trip_id', $trip_id);
-        }
-
-        $messages = $query->get();
+        ]);
         $user = User::findOrFail($user_id);
-        $trip = TripRequest::findOrFail($trip_id);
-
-        return view('admin.omdaHome.orders.trip-messages', compact('messages', 'user', 'trip_id', 'trip'));
+        $order = $orderModel::findOrFail($order_id);
+        return view('admin.omdaHome.orders.trip-messages', compact('messages', 'user', 'order_id', 'order', 'order_type'));
     }
 
     public function sendTripMessage(Request $request)
     {
         \Log::info('sendTripMessage called', $request->all());
         $request->validate([
-            'trip_id' => 'required|exists:trip_requests,id',
+            'order_id' => 'required|integer',
+            'order_type' => 'required|string|in:unpaid,registration,trip_request',
             'message' => 'nullable|string',
             'image' => 'nullable|file|mimes:jpg,png,jpeg|max:2048',
         ]);
-
+        $orderModel = match ($request->order_type) {
+            'unpaid' => UnpaidTripRequests::class,
+            'registration' => TripRegistration::class,
+            'trip_request' => TripRequest::class,
+        };
+        $order = $orderModel::findOrFail($request->order_id);
         $filePath = null;
         if ($request->hasFile('image')) {
             $filePath = $request->file('image')->store('chat_images', 'public');
         }
 
         $message = TravelChat::create([
-            'trip_id' => $request->trip_id,
+            'order_id' => $request->order_id,
+            'order_type' => $orderModel,
+            'trip_id' => $order->trip_id ?? null,
             'user_id' => Auth::id(),
             'message' => $request->message,
             'image' => $filePath,
@@ -76,48 +101,39 @@ class OrderController extends Controller
             ]
         ]);
     }
-
-    public function messages($user_id, $product_id = null)
-    {
-        if (Auth::user()->role !== 'admin') {
-            abort(403, 'Unauthorized');
-        }
-
-        $query = OrderMessage::query()
-            ->where(function ($query) use ($user_id) {
-                $query->where('user_id', $user_id)
-                    ->orWhere('user_id', Auth::id());
-            })
-            ->with(['user', 'product'])
-            ->orderBy('created_at', 'asc');
-
-        if ($product_id) {
-            $query->where('product_id', $product_id);
-        }
-
-        $messages = $query->get();
-        $user = User::findOrFail($user_id);
-        $product = Product::findOrFail($product_id); // جلب بيانات المنتج
-
-        return view('admin.omdaHome.orders.messages', compact('messages', 'user', 'product_id'));
-    }
     
     public function updateStatus(Request $request, string $id)
     {
         $request->validate([
             'status' => 'required|in:في المراجعة,بإنتظار الدفع,بإنتظار مستندات,تحت الإجراء,ملغي,مكرر,منتهي,تم الاستلام في الصين,تم الاستلام بالامارات,تم الاستلام من قبل العميل',
-            'order_type' => 'required|in:App\\Models\\TripRequest,App\\Models\\Product',
+            'order_type' => 'required|in:App\\Models\\TripRequest,App\\Models\\Product,App\\Models\\UnpaidTripRequests,App\\Models\\TripRegistration,App\\Models\\Payment',
         ]);
 
-        $order = $request->order_type == 'App\\Models\\TripRequest'
-            ? TripRequest::findOrFail($id)
-            : Product::findOrFail($id);
+        switch ($request->order_type) {
+            case 'App\\Models\\TripRequest':
+                $order = TripRequest::findOrFail($id);
+                break;
+            case 'App\\Models\\Product':
+                $order = Product::findOrFail($id);
+                break;
+            case 'App\\Models\\UnpaidTripRequests':
+                $order = UnpaidTripRequests::findOrFail($id);
+                break;
+            case 'App\\Models\\TripRegistration':
+                $order = TripRegistration::findOrFail($id);
+                break;
+            case 'App\\Models\\Payment':
+                $order = Payment::findOrFail($id);
+                break;
+            default:
+                return response()->json(['error' => 'نوع الطلب غير صحيح'], 400);
+        }
 
         $order->update(['status' => $request->status]);
 
         return response()->json(['success' => 'تم تحديث الحالة بنجاح']);
     }
-    
+
     public function index(Request $request)
     {
         $status = $request->input('status');
@@ -172,7 +188,11 @@ class OrderController extends Controller
         $bookings = $bookings->get();
         $trip_requests = $trip_requests->get();
 
-        return view('admin.omdaHome.orders.index', compact('trip_requests', 'products', 'bookings'));
+        $unpaidTripRequests = UnpaidTripRequests::with(['trip', 'user'])->get();
+        $tripRegisters = TripRegistration::all();
+        $adds = Payment::all();
+
+        return view('admin.omdaHome.orders.index', compact('adds', 'tripRegisters', 'unpaidTripRequests', 'trip_requests', 'products', 'bookings'));
     }
 
     public function showProduct(string $id)
@@ -189,12 +209,28 @@ class OrderController extends Controller
         return view('admin.omdaHome.orders.booking-show', compact('trip_request', 'places_count'));
     }
 
+    public function tripShowClient(string $id)
+    {
+        $trip_request = UnpaidTripRequests::find($id);
+        return view('admin.omdaHome.orders.trip-show-client', compact('trip_request'));
+    }
+
+    public function tripShowRegister(string $id)
+    {
+        $trip_request = TripRegistration::find($id);
+        if (!$trip_request) {
+            $trip_request = Payment::find($id);
+        }
+        return view('admin.omdaHome.orders.trip-show-register', compact('trip_request'));
+    }
+
     public function show(string $id)
     {
         $trip_request = TripRequest::find($id);
         $places_count = Places::where('user_id', $trip_request->user_id)->count();
         return view('admin.omdaHome.orders.show', compact('trip_request', 'places_count'));
     }
+
 
     public function edit(string $id)
     {
@@ -206,19 +242,32 @@ class OrderController extends Controller
     {
         $status = $request->input('status');
         $search = $request->input('search');
-
-        // Fetch the order (either a trip or a product)
         $trip = TripRequest::find($id);
         $product = Product::find($id);
+        $unpaidTripRequest = UnpaidTripRequests::find($id);
+        $tripRegistration = TripRegistration::find($id);
+        $tripPayment = Payment::find($id);
 
-        if (!$trip && !$product) {
-            return redirect()->route('admin.orders.index')->with('error', 'الطلب غير موجود');
+        if ($trip) {
+            $order = $trip;
+            $orderType = TripRequest::class;
+        } elseif ($product) {
+            $order = $product;
+            $orderType = Product::class;
+        } elseif ($unpaidTripRequest) {
+            $order = $unpaidTripRequest;
+            $orderType = UnpaidTripRequests::class;
+        } elseif ($tripRegistration) {  
+            $order = $tripRegistration;
+            $orderType = TripRegistration::class;
+        } elseif ($tripPayment) {  
+            $order = $tripPayment;
+            $orderType = Payment::class;
+        } else {
+            return redirect()->route('admin.orders.index')
+                ->with('error', 'الطلب غير موجود');
         }
 
-        $order = $trip ?? $product;
-        $orderType = $trip ? TripRequest::class : Product::class;
-
-        // Fetch invoices related to this order
         $invoices = Invoice::where('order_id', $id)
             ->where('order_type', $orderType)
             ->get();
@@ -228,18 +277,31 @@ class OrderController extends Controller
 
     public function createInvoice(Request $request, string $id)
     {
-        // Fetch the order
         $trip = TripRequest::find($id);
         $product = Product::find($id);
+        $unpaidTripRequest = UnpaidTripRequests::find($id);
+        $tripRegistration = TripRegistration::find($id);  
+        $tripPayment = Payment::find($id);
 
-        if (!$trip && !$product) {
+        if ($trip) {
+            $order = $trip;
+            $orderType = TripRequest::class;
+        } elseif ($product) {
+            $order = $product;
+            $orderType = Product::class;
+        } elseif ($unpaidTripRequest) {
+            $order = $unpaidTripRequest;
+            $orderType = UnpaidTripRequests::class;
+        } elseif ($tripRegistration) {  
+            $order = $tripRegistration;
+            $orderType = TripRegistration::class;
+        } elseif ($tripPayment) {  
+            $order = $tripPayment;
+            $orderType = Payment::class;
+        } else {
             return redirect()->route('admin.orders.index')->with('error', 'الطلب غير موجود');
         }
 
-        $order = $trip ?? $product;
-        $orderType = $trip ? TripRequest::class : Product::class;
-
-        // Generate dynamic invoice_number
         $latestInvoice = Invoice::latest('id')->first();
         $nextId = $latestInvoice ? $latestInvoice->id + 1 : 1;
         $invoiceNumber = 'INV' . str_pad($nextId, 9, '0', STR_PAD_LEFT);
@@ -253,53 +315,81 @@ class OrderController extends Controller
             'invoice_number' => 'required|string|unique:invoices,invoice_number',
             'invoice_date' => 'required|date',
             'title' => 'required|string',
+            'trip_id' => 'nullable|exists:trips,id',
             'amount' => 'required|numeric|min:0',
             'status' => 'required|in:مدفوعة,غير مدفوعة,ملغية',
         ]);
 
-        // Fetch the order
         $trip = TripRequest::find($id);
         $product = Product::find($id);
+        $unpaidTripRequest = UnpaidTripRequests::find($id);
+        $tripRegistration = TripRegistration::find($id);  
+        $tripPayment = Payment::find($id);
 
-        if (!$trip && !$product) {
+        if ($trip) {
+            $order = $trip;
+            $orderType = TripRequest::class;
+        } elseif ($product) {
+            $order = $product;
+            $orderType = Product::class;
+        } elseif ($unpaidTripRequest) {
+            $order = $unpaidTripRequest;
+            $orderType = UnpaidTripRequests::class;
+        } elseif ($tripRegistration) {  
+            $order = $tripRegistration;
+            $orderType = TripRegistration::class;
+        } elseif ($tripPayment) { // 👈 جدي
+            $order = $tripPayment;
+            $orderType = Payment::class;
+        } else {
             return redirect()->route('admin.orders.index')->with('error', 'الطلب غير موجود');
         }
 
-        $order = $trip ?? $product;
-        $orderType = $trip ? TripRequest::class : Product::class;
+        $tripId = $request->trip_id;
 
-        // Store the invoice
-        Invoice::create([
+        // 👇 عدلت الشرط عشان يشمل TripRegistration
+        if (
+            $orderType == TripRequest::class ||
+            $orderType == UnpaidTripRequests::class ||
+            $orderType == TripRegistration::class ||
+            $orderType == Payment::class
+        ) {
+            if (!$tripId && isset($order->trip->id)) {
+                $tripId = $order->trip->id;
+            }
+        }
+
+        $invoice = Invoice::create([
             'invoice_number' => $request->invoice_number,
             'order_id' => $id,
-            'user_id' => Auth::user()->id,
+            'user_id' => Auth::id(),
             'order_type' => $orderType,
             'invoice_date' => $request->invoice_date,
+            'trip_id' => $tripId, // 👈 استخدمت المتغير
             'title' => $request->title,
             'amount' => $request->amount,
             'status' => $request->status,
         ]);
 
-        Mail::raw('تم إضافة فاتورة جديدة علي الطلب الذي قمت بتقديمه', function ($mail) use ($order) {
-            $mail->to($order->user->email)->subject('تم إنشاء الفاتورة');
-        });
+        if ($order->user && $order->user->email) {
+            Mail::raw("تم إضافة فاتورة جديدة برقم: {$invoice->invoice_number} للطلب الخاص بك.", function ($mail) use ($order, $invoice) {
+                $mail->to($order->user->email)->subject('تم إنشاء الفاتورة');
+            });
+        }
 
         return redirect()->route('admin.orders.invoice', $id)->with('success', 'تم إنشاء الفاتورة بنجاح');
     }
 
     public function showInvoice(Request $request, string $invoice_id)
     {
-        // Fetch the invoice
         $invoice = Invoice::findOrFail($invoice_id);
-
-        // Fetch the related order based on the polymorphic relationship
-        $order = $invoice->order; // This uses the morphTo relationship
-
+        $order = $invoice->order;
         if (!$order) {
             return redirect()->route('admin.orders.index')->with('error', 'الطلب المرتبط بالفاتورة غير موجود');
         }
-
-        return view('admin.omdaHome.orders.showInvoice', compact('invoice', 'order'));
+        $status = $request->input('status');
+        $search = $request->input('search');
+        return view('admin.omdaHome.orders.showInvoice', compact('invoice', 'order', 'status', 'search'));
     }
 
     public function note(Request $request, string $id)
@@ -307,18 +397,28 @@ class OrderController extends Controller
         $status = $request->input('status');
         $search = $request->input('search');
 
-        // Fetch the order
         $trip = TripRequest::find($id);
         $product = Product::find($id);
+        $unpaidTripRequest = UnpaidTripRequests::find($id);
+        $tripRegistration = TripRegistration::find($id);
+        $tripPayment = Payment::find($id);
 
-        if (!$trip && !$product) {
+        if (!$trip && !$product && !$unpaidTripRequest && !$tripRegistration && !$tripPayment) {
             return redirect()->route('admin.orders.index')->with('error', 'الطلب غير موجود');
         }
 
-        $order = $trip ?? $product;
-        $orderType = $trip ? TripRequest::class : Product::class;
+        $order = $trip ?? $product ?? $unpaidTripRequest ?? $tripRegistration ?? $tripPayment;
 
-        // Fetch notes related to this order
+        $orderType = $trip
+            ? TripRequest::class
+            : ($product
+                ? Product::class
+                : ($unpaidTripRequest
+                    ? UnpaidTripRequests::class
+                    : ($tripRegistration
+                        ? TripRegistration::class
+                        : Payment::class)));
+
         $notes = Note::where('order_id', $id)
             ->where('order_type', $orderType);
 
@@ -339,19 +439,29 @@ class OrderController extends Controller
         return view('admin.omdaHome.orders.note', compact('order', 'orderType', 'notes', 'status', 'search'));
     }
 
-    public function createNote(Request $request, string $id)
-    {
+    public function createNote(Request $request, string $id){
         $trip = TripRequest::find($id);
         $product = Product::find($id);
+        $unpaidTripRequest = UnpaidTripRequests::find($id);
+        $tripRegistration = TripRegistration::find($id);
+        $tripPayment = Payment::find($id);
 
-        if (!$trip && !$product) {
+        if (!$trip && !$product && !$unpaidTripRequest && !$tripRegistration && !$tripPayment) {
             return redirect()->route('admin.orders.index')->with('error', 'الطلب غير موجود');
         }
 
-        $order = $trip ?? $product;
-        $orderType = $trip ? TripRequest::class : Product::class;
+        $order = $trip ?? $product ?? $unpaidTripRequest ?? $tripRegistration ?? $tripPayment;
 
-        // Generate dynamic note_number
+        $orderType = $trip
+            ? TripRequest::class
+            : ($product
+                ? Product::class
+                : ($unpaidTripRequest
+                    ? UnpaidTripRequests::class
+                    : ($tripRegistration
+                        ? TripRegistration::class
+                        : Payment::class)));
+
         $latestNote = Note::latest('id')->first();
         $nextId = $latestNote ? $latestNote->id + 1 : 1;
         $noteNumber = 'NOTE' . str_pad($nextId, 9, '0', STR_PAD_LEFT);
@@ -368,24 +478,34 @@ class OrderController extends Controller
             'details' => 'required|string',
             'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
             'status' => 'required|in:عامة,خاصة,ملغية',
+            'trip_id' => 'nullable|exists:trips,id',
         ]);
 
         $trip = TripRequest::find($id);
         $product = Product::find($id);
+        $unpaidTripRequest = UnpaidTripRequests::find($id);
+        $tripRegistration = TripRegistration::find($id);
+        $tripPayment = Payment::find($id);
 
-        if (!$trip && !$product) {
+        if (!$trip && !$product && !$unpaidTripRequest && !$tripRegistration && !$tripPayment) {
             return redirect()->route('admin.orders.index')->with('error', 'الطلب غير موجود');
         }
 
-        $orderType = $trip ? TripRequest::class : Product::class;
+        $orderType = $trip
+            ? TripRequest::class
+            : ($product
+                ? Product::class
+                : ($unpaidTripRequest
+                    ? UnpaidTripRequests::class
+                    : ($tripRegistration
+                        ? TripRegistration::class
+                        : Payment::class)));
 
-        // Handle file upload
         $filePath = null;
         if ($request->hasFile('file')) {
             $filePath = $request->file('file')->store('notes', 'public');
         }
 
-        // Store the note
         Note::create([
             'note_number' => $request->note_number,
             'order_id' => $id,
@@ -396,13 +516,24 @@ class OrderController extends Controller
             'file_path' => $filePath,
             'user_id' => Auth::user()->id,
             'status' => $request->status,
+            'trip_id' => $request->trip_id ? $request->trip_id : null,
         ]);
 
-        $userId = $trip ? $trip->user_id : $product->user_id;
+        $userId = $trip
+            ? $trip->user_id
+            : ($product
+                ? $product->user_id
+                : ($unpaidTripRequest
+                    ? $unpaidTripRequest->user_id
+                    : ($tripRegistration
+                        ? $tripRegistration->user_id
+                        : $tripPayment->user_id)));
+
         $user = User::find($userId);
         if (!$user) {
             return redirect()->route('admin.orders.index')->with('error', 'المستخدم غير موجود');
         }
+
         Mail::raw('قم بالرجوع للتطبيق لمراجعة تفاصيل الملاحظة', function ($message) use ($user) {
             $message->to($user->email)->subject('تمت إضافة ملاحظة بنجاح من قبل فريق عمدة الصين');
         });
@@ -428,13 +559,28 @@ class OrderController extends Controller
 
         $trip = TripRequest::find($id);
         $product = Product::find($id);
+        $unpaidTripRequest = UnpaidTripRequests::find($id);
+        $tripRegistration = TripRegistration::find($id);
+        $tripPayment = Payment::find($id);
 
-        if (!$trip && !$product) {
+        if ($trip) {
+            $order = $trip;
+            $orderType = TripRequest::class;
+        } elseif ($product) {
+            $order = $product;
+            $orderType = Product::class;
+        } elseif ($unpaidTripRequest) {
+            $order = $unpaidTripRequest;
+            $orderType = UnpaidTripRequests::class;
+        } elseif ($tripRegistration) {  
+            $order = $tripRegistration;
+            $orderType = TripRegistration::class;
+        } elseif ($tripPayment) {
+            $order = $tripPayment;
+            $orderType = Payment::class;
+        } else {
             return redirect()->route('admin.orders.index')->with('error', 'الطلب غير موجود');
         }
-
-        $order = $trip ?? $product;
-        $orderType = $trip ? TripRequest::class : Product::class;
 
         $documents = Document::with('user')->where('order_id', $id)->where('order_type', $orderType);
 
@@ -455,15 +601,29 @@ class OrderController extends Controller
     {
         $trip = TripRequest::find($id);
         $product = Product::find($id);
+        $unpaidTripRequest = UnpaidTripRequests::find($id);
+        $tripRegistration = TripRegistration::find($id);
+        $tripPayment = Payment::find($id);
 
-        if (!$trip && !$product) {
+        if ($trip) {
+            $order = $trip;
+            $orderType = TripRequest::class;
+        } elseif ($product) {
+            $order = $product;
+            $orderType = Product::class;
+        } elseif ($unpaidTripRequest) {
+            $order = $unpaidTripRequest;
+            $orderType = UnpaidTripRequests::class;
+        } elseif ($tripRegistration) {  
+            $order = $tripRegistration;
+            $orderType = TripRegistration::class;
+        } elseif ($tripPayment) {
+            $order = $tripPayment;
+            $orderType = Payment::class;
+        } else {
             return redirect()->route('admin.orders.index')->with('error', 'الطلب غير موجود');
         }
 
-        $order = $trip ?? $product;
-        $orderType = $trip ? TripRequest::class : Product::class;
-
-        // Generate dynamic document_number
         $latestDocument = Document::latest('id')->first();
         $nextId = $latestDocument ? $latestDocument->id + 1 : 1;
         $documentNumber = 'DOC' . str_pad($nextId, 9, '0', STR_PAD_LEFT);
@@ -479,26 +639,49 @@ class OrderController extends Controller
             'title' => 'required|string',
             'details' => 'required|string',
             'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
+            'trip_id' => 'nullable|exists:trips,id',
         ]);
 
         $trip = TripRequest::find($id);
         $product = Product::find($id);
+        $unpaidTripRequest = UnpaidTripRequests::find($id);
+        $tripRegistration = TripRegistration::find($id);
+        $tripPayment = Payment::find($id);
 
-        if (!$trip && !$product) {
+        if ($trip) {
+            $order = $trip;
+            $orderType = TripRequest::class;
+        } elseif ($product) {
+            $order = $product;
+            $orderType = Product::class;
+        } elseif ($unpaidTripRequest) {
+            $order = $unpaidTripRequest;
+            $orderType = UnpaidTripRequests::class;
+        } elseif ($tripRegistration) {  
+            $order = $tripRegistration;
+            $orderType = TripRegistration::class;
+        } elseif ($tripPayment) {
+            $order = $tripPayment;
+            $orderType = Payment::class;
+        } else {
             return redirect()->route('admin.orders.index')->with('error', 'الطلب غير موجود');
         }
 
-        $orderType = $trip ? TripRequest::class : Product::class;
-        // استرجاع user_id من الطلب
-        $userId = $trip ? $trip->user_id : $product->user_id;
+        $userId = $trip
+            ? $trip->user_id
+            : ($product
+                ? $product->user_id
+                : ($unpaidTripRequest
+                    ? $unpaidTripRequest->user_id
+                    : ($tripRegistration
+                        ? $tripRegistration->user_id
+                        : $tripPayment->user_id)));
 
-        // استرجاع البريد الإلكتروني للمستخدم
         $user = User::find($userId);
         if (!$user) {
             return redirect()->route('admin.orders.index')->with('error', 'المستخدم غير موجود');
         }
 
-        // Handle file upload
         $filePath = null;
         if ($request->hasFile('file')) {
             $filePath = $request->file('file')->store('documents', 'public');
@@ -512,6 +695,7 @@ class OrderController extends Controller
             'title' => $request->title,
             'details' => $request->details,
             'file_path' => $filePath,
+            'trip_id' => $request->trip_id ? $request->trip_id : null,
             'user_id' => Auth::id(),
         ]);
 
@@ -560,17 +744,14 @@ class OrderController extends Controller
             'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
         ]);
 
-        // Handle file upload
         $filePath = $document->file_path;
         if ($request->hasFile('file')) {
-            // Delete old file if exists
             if ($filePath && Storage::disk('public')->exists($filePath)) {
                 Storage::disk('public')->delete($filePath);
             }
             $filePath = $request->file('file')->store('documents', 'public');
         }
 
-        // Update the document
         $document->update([
             'document_number' => $request->document_number,
             'document_date' => $request->document_date,
@@ -587,7 +768,6 @@ class OrderController extends Controller
     {
         $document = Document::findOrFail($document_id);
 
-        // Delete associated file if exists
         if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
             Storage::disk('public')->delete($document->file_path);
         }
@@ -670,15 +850,30 @@ class OrderController extends Controller
 
         $trip = TripRequest::find($id);
         $product = Product::find($id);
+        $unpaidTripRequest = UnpaidTripRequests::find($id);
+        $tripRegistration = TripRegistration::find($id);
+        $tripPayment = Payment::find($id);
 
-        if (!$trip && !$product) {
+        if (!$trip && !$product && !$unpaidTripRequest && !$tripRegistration && !$tripPayment) { // 👈 عدلت
             return redirect()->route('admin.orders.index')->with('error', 'الطلب غير موجود');
         }
 
-        $order = $trip ?? $product;
-        $orderType = $trip ? TripRequest::class : Product::class;
+        if ($trip) {
+            $orderType = TripRequest::class;
+        } elseif ($product) {
+            $orderType = Product::class;
+        } elseif ($unpaidTripRequest) {
+            $orderType = UnpaidTripRequests::class;
+        } elseif ($tripRegistration) {  
+            $orderType = TripRegistration::class;
+        } elseif ($tripPayment) {
+            $orderType = Payment::class;
+        }
 
-        $shippingNotes = ShippingNote::with('user')->where('order_id', $id)->where('order_type', $orderType);
+        $order = $trip ?? $product ?? $unpaidTripRequest ?? $tripRegistration ?? $tripPayment; // 👈 عدلت
+
+        $shippingNotes = ShippingNote::with('user')->where('order_id', $id)
+            ->where('order_type', $orderType);
 
         if ($search) {
             $shippingNotes->where(function ($query) use ($search) {
@@ -701,15 +896,23 @@ class OrderController extends Controller
     {
         $trip = TripRequest::find($id);
         $product = Product::find($id);
+        $unpaidTripRequest = UnpaidTripRequests::find($id);
+        $tripRegistration = TripRegistration::find($id);
+        $tripPayment = Payment::find($id);
 
-        if (!$trip && !$product) {
+        if (!$trip && !$product && !$unpaidTripRequest && !$tripRegistration && !$tripPayment) { // 👈 عدلت
             return redirect()->route('admin.orders.index')->with('error', 'الطلب غير موجود');
         }
 
-        $order = $trip ?? $product;
-        $orderType = $trip ? TripRequest::class : Product::class;
+        $order = $trip ?? $product ?? $unpaidTripRequest ?? $tripRegistration ?? $tripPayment; // 👈 عدلت
 
-        // Generate dynamic note_number
+        $orderType =
+            ($trip ? TripRequest::class : null)
+            ?? ($product ? Product::class : null)
+            ?? ($unpaidTripRequest ? UnpaidTripRequests::class : null)
+            ?? ($tripRegistration ? TripRegistration::class : null)
+            ?? ($tripPayment ? Payment::class : null);
+
         $latestNote = ShippingNote::latest('id')->first();
         $nextId = $latestNote ? $latestNote->id + 1 : 1;
         $noteNumber = 'SHPNOTE' . str_pad($nextId, 9, '0', STR_PAD_LEFT);
@@ -726,18 +929,31 @@ class OrderController extends Controller
             'details' => 'required|string',
             'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
             'status' => 'required|in:التجهيز للشحن,تم الشحن',
+            'trip_id' => 'nullable|exists:trips,id',
         ]);
 
         $trip = TripRequest::find($id);
         $product = Product::find($id);
+        $unpaidTripRequest = UnpaidTripRequests::find($id);
+        $tripRegistration = TripRegistration::find($id);
+        $tripPayment = Payment::find($id);
 
-        if (!$trip && !$product) {
+        if (!$trip && !$product && !$unpaidTripRequest && !$tripRegistration && !$tripPayment) { // 👈 عدلت
             return redirect()->route('admin.orders.index')->with('error', 'الطلب غير موجود');
         }
 
-        $orderType = $trip ? TripRequest::class : Product::class;
+        if ($trip) {
+            $orderType = TripRequest::class;
+        } elseif ($product) {
+            $orderType = Product::class;
+        } elseif ($unpaidTripRequest) {
+            $orderType = UnpaidTripRequests::class;
+        } elseif ($tripRegistration) {  
+            $orderType = TripRegistration::class;
+        } elseif ($tripPayment) {
+            $orderType = Payment::class;
+        }
 
-        // Handle file upload
         $filePath = null;
         if ($request->hasFile('file')) {
             $filePath = $request->file('file')->store('shipping_notes', 'public');
@@ -753,13 +969,26 @@ class OrderController extends Controller
             'file_path' => $filePath,
             'status' => $request->status,
             'user_id' => Auth::id(),
+            'trip_id' => $request->trip_id ? $request->trip_id : null,
         ]);
 
-        $userId = $trip ? $trip->user_id : $product->user_id;
+        // 👇 عدلت عشان يشمل TripRegistration
+        $userId = null;
+        if ($trip) {
+            $userId = $trip->user_id;
+        } elseif ($product) {
+            $userId = $product->user_id;
+        } elseif ($unpaidTripRequest) {
+            $userId = $unpaidTripRequest->user_id;
+        } elseif ($tripRegistration) {
+            $userId = $tripRegistration->user_id;
+        }
+
         $user = User::find($userId);
         if (!$user) {
             return redirect()->route('admin.orders.index')->with('error', 'المستخدم غير موجود');
         }
+
         Mail::raw('قم بالرجوع للتطبيق لمراجعة تفاصيل الشحن ', function ($message) use ($user) {
             $message->to($user->email)->subject('تمت إضافة تفاصيل شحن جديدة بنجاح من قبل فريق عمدة الصين');
         });
@@ -804,19 +1033,17 @@ class OrderController extends Controller
             'details' => 'required|string',
             'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
             'status' => 'required|in:التجهيز للشحن,تم الشحن',
+            'trip_id' => 'nullable|exists:trips,id',
         ]);
 
-        // Handle file upload
         $filePath = $shippingNote->file_path;
         if ($request->hasFile('file')) {
-            // Delete old file if exists
             if ($filePath && Storage::disk('public')->exists($filePath)) {
                 Storage::disk('public')->delete($filePath);
             }
             $filePath = $request->file('file')->store('shipping_notes', 'public');
         }
 
-        // Update the shipping note
         $shippingNote->update([
             'note_number' => $request->note_number,
             'note_date' => $request->note_date,
@@ -825,6 +1052,7 @@ class OrderController extends Controller
             'file_path' => $filePath,
             'status' => $request->status,
             'user_id' => Auth::id(),
+            'trip_id' => $request->trip_id ? $request->trip_id : null,
         ]);
 
         return redirect()->route('admin.orders.shippingNote', $shippingNote->order_id)->with('success', 'تم تعديل ملاحظة الشحن بنجاح');
@@ -834,7 +1062,6 @@ class OrderController extends Controller
     {
         $shippingNote = ShippingNote::findOrFail($shipping_note_id);
 
-        // Delete associated file if exists
         if ($shippingNote->file_path && Storage::disk('public')->exists($shippingNote->file_path)) {
             Storage::disk('public')->delete($shippingNote->file_path);
         }
@@ -845,21 +1072,90 @@ class OrderController extends Controller
         return redirect()->route('admin.orders.shippingNote', $order_id)->with('success', 'تم حذف ملاحظة الشحن بنجاح');
     }
 
+    public function editApproval(Request $request, string $approval_id)
+    {
+        $approval = Approval::findOrFail($approval_id);
+        $order = $approval->order;
+
+        if (!$order) {
+            return redirect()->route('admin.orders.index')->with('error', 'الطلب المرتبط بالموافقة غير موجود');
+        }
+
+        $orderType = $approval->order_type;
+
+        return view('admin.omdaHome.orders.editApproval', compact('approval', 'order', 'orderType'));
+    }
+
+    public function showApproval(Request $request, string $approval_id)
+    {
+        $approval = Approval::findOrFail($approval_id);
+        $order = $approval->order;
+
+        if (!$order) {
+            return redirect()->route('admin.orders.index')->with('error', 'الطلب المرتبط بالموافقة غير موجود');
+        }
+
+        return view('admin.omdaHome.orders.showApproval', compact('approval', 'order'));
+    }
+
+    public function updateApproval(Request $request, string $approval_id)
+    {
+        $approval = Approval::findOrFail($approval_id);
+
+        $request->validate([
+            'approval_number' => 'required|string|unique:approvals,approval_number,' . $approval->id,
+            'approval_date' => 'required|date',
+            'title' => 'required|string',
+            'details' => 'required|string',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
+        ]);
+
+        $filePath = $approval->file_path;
+        if ($request->hasFile('file')) {
+            if ($filePath && Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+            }
+            $filePath = $request->file('file')->store('approvals', 'public');
+        }
+
+        $approval->update([
+            'approval_number' => $request->approval_number,
+            'approval_date' => $request->approval_date,
+            'title' => $request->title,
+            'details' => $request->details,
+            'file_path' => $filePath,
+            'status' => 'يحتاج الموافقة',
+        ]);
+
+        return redirect()->route('admin.orders.approval', $approval->order_id)
+            ->with('success', 'تم تعديل الموافقة بنجاح');
+    }
+
     public function approval(Request $request, string $id)
     {
         $search = $request->input('search');
 
         $trip = TripRequest::find($id);
         $product = Product::find($id);
+        $unpaidTripRequest = UnpaidTripRequests::find($id);
+        $tripRegistration = TripRegistration::find($id);  
 
-        if (!$trip && !$product) {
+        if (!$trip && !$product && !$unpaidTripRequest && !$tripRegistration) { // 👈 عدلت
             return redirect()->route('admin.orders.index')->with('error', 'الطلب غير موجود');
         }
 
-        $order = $trip ?? $product;
-        $orderType = $trip ? TripRequest::class : Product::class;
+        $order = $trip ?? $product ?? $unpaidTripRequest ?? $tripRegistration; // 👈 عدلت
 
-        $approvals = Approval::where('order_id', $id)->where('order_type', $orderType);
+        $orderType = $trip
+            ? TripRequest::class
+            : ($product
+                ? Product::class
+                : ($unpaidTripRequest
+                    ? UnpaidTripRequests::class
+                    : TripRegistration::class)); // 👈 عدلت
+
+        $approvals = Approval::where('order_id', $id)
+            ->where('order_type', $orderType);
 
         if ($search) {
             $approvals->where(function ($query) use ($search) {
@@ -878,15 +1174,23 @@ class OrderController extends Controller
     {
         $trip = TripRequest::find($id);
         $product = Product::find($id);
+        $unpaidTripRequest = UnpaidTripRequests::find($id);
+        $tripRegistration = TripRegistration::find($id);  
 
-        if (!$trip && !$product) {
+        if (!$trip && !$product && !$unpaidTripRequest && !$tripRegistration) { // 👈 عدلت
             return redirect()->route('admin.orders.index')->with('error', 'الطلب غير موجود');
         }
 
-        $order = $trip ?? $product;
-        $orderType = $trip ? TripRequest::class : Product::class;
+        $order = $trip ?? $product ?? $unpaidTripRequest ?? $tripRegistration; // 👈 عدلت
 
-        // Generate dynamic approval_number
+        $orderType = $trip
+            ? TripRequest::class
+            : ($product
+                ? Product::class
+                : ($unpaidTripRequest
+                    ? UnpaidTripRequests::class
+                    : TripRegistration::class)); // 👈 عدلت
+
         $latestApproval = Approval::latest('id')->first();
         $nextId = $latestApproval ? $latestApproval->id + 1 : 1;
         $approvalNumber = 'APPR' . str_pad($nextId, 9, '0', STR_PAD_LEFT);
@@ -902,18 +1206,26 @@ class OrderController extends Controller
             'title' => 'required|string',
             'details' => 'required|string',
             'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
+
         ]);
 
         $trip = TripRequest::find($id);
         $product = Product::find($id);
+        $unpaidTripRequest = UnpaidTripRequests::find($id);
+        $tripRegistration = TripRegistration::find($id);  
 
-        if (!$trip && !$product) {
+        if (!$trip && !$product && !$unpaidTripRequest && !$tripRegistration) { // 👈 عدلت
             return redirect()->route('admin.orders.index')->with('error', 'الطلب غير موجود');
         }
 
-        $orderType = $trip ? TripRequest::class : Product::class;
+        $orderType = $trip
+            ? TripRequest::class
+            : ($product
+                ? Product::class
+                : ($unpaidTripRequest
+                    ? UnpaidTripRequests::class
+                    : TripRegistration::class)); // 👈 عدلت
 
-        // Handle file upload
         $filePath = null;
         if ($request->hasFile('file')) {
             $filePath = $request->file('file')->store('approvals', 'public');
@@ -929,93 +1241,65 @@ class OrderController extends Controller
             'details' => $request->details,
             'file_path' => $filePath,
             'status' => 'يحتاج الموافقة',
+            'trip_id' => $request->trip_id ? $request->trip_id : null,
         ]);
 
-        $userId = $trip ? $trip->user_id : $product->user_id;
+        // 👇 عدلت عشان يشمل TripRegistration
+        $userId = null;
+        if ($trip) {
+            $userId = $trip->user_id;
+        } elseif ($product) {
+            $userId = $product->user_id;
+        } elseif ($unpaidTripRequest) {
+            $userId = $unpaidTripRequest->trip?->user_id;
+        } elseif ($tripRegistration) {
+            $userId = $tripRegistration->user_id;
+        }
+
+        if (!$userId) {
+            return redirect()->route('admin.orders.index')->with('error', 'تعذر تحديد المستخدم المرتبط بالطلب');
+        }
+
         $user = User::find($userId);
         if (!$user) {
             return redirect()->route('admin.orders.index')->with('error', 'المستخدم غير موجود');
         }
+
         Mail::raw('قم بالرجوع للتطبيق لمراجعة تفاصيل الموافقة', function ($message) use ($user) {
-            $message->to($user->email)->subject('تمت إضافة موافقة بنجاح من قبل فريق عمدة الصين');
+            $message->to($user->email)->subject('تمت إضافة موافقة جديدة من قبل فريق عمدة الصين');
         });
 
         return redirect()->route('admin.orders.approval', $id)->with('success', 'تم إنشاء الموافقة بنجاح');
-    }
-
-    public function showApproval(Request $request, string $approval_id)
-    {
-        $approval = Approval::findOrFail($approval_id);
-        $order = $approval->order;
-
-        if (!$order) {
-            return redirect()->route('admin.orders.index')->with('error', 'الطلب المرتبط بالموافقة غير موجود');
-        }
-
-        return view('admin.omdaHome.orders.showApproval', compact('approval', 'order'));
-    }
-
-    public function editApproval(Request $request, string $approval_id)
-    {
-        $approval = Approval::findOrFail($approval_id);
-        $order = $approval->order;
-
-        if (!$order) {
-            return redirect()->route('admin.orders.index')->with('error', 'الطلب المرتبط بالموافقة غير موجود');
-        }
-
-        $orderType = $approval->order_type;
-
-        return view('admin.omdaHome.orders.editApproval', compact('approval', 'order', 'orderType'));
-    }
-
-    public function updateApproval(Request $request, string $approval_id)
-    {
-        $approval = Approval::findOrFail($approval_id);
-
-        $request->validate([
-            'approval_number' => 'required|string|unique:approvals,approval_number,' . $approval->id,
-            'approval_date' => 'required|date',
-            'title' => 'required|string',
-            'details' => 'required|string',
-            'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
-        ]);
-
-        // Handle file upload
-        $filePath = $approval->file_path;
-        if ($request->hasFile('file')) {
-            // Delete old file if exists
-            if ($filePath && Storage::disk('public')->exists($filePath)) {
-                Storage::disk('public')->delete($filePath);
-            }
-            $filePath = $request->file('file')->store('approvals', 'public');
-        }
-
-        // Update the approval
-        $approval->update([
-            'approval_number' => $request->approval_number,
-            'approval_date' => $request->approval_date,
-            'title' => $request->title,
-            'details' => $request->details,
-            'file_path' => $filePath,
-            'status' => 'يحتاج الموافقة',
-        ]);
-
-        return redirect()->route('admin.orders.approval', $approval->order_id)->with('success', 'تم تعديل الموافقة بنجاح');
     }
 
     public function destroyApproval(Request $request, string $approval_id)
     {
         $approval = Approval::findOrFail($approval_id);
 
-        // Delete associated file if exists
         if ($approval->file_path && Storage::disk('public')->exists($approval->file_path)) {
             Storage::disk('public')->delete($approval->file_path);
         }
 
         $order_id = $approval->order_id;
+        $order_type = $approval->order_type;
+
         $approval->delete();
 
-        return redirect()->route('admin.orders.approval', $order_id)->with('success', 'تم حذف الموافقة بنجاح');
+        // 👇 عدلت عشان يشمل TripRegistration
+        if ($order_type === \App\Models\TripRequest::class) {
+            return redirect()->route('admin.orders.approval', $order_id)
+                ->with('success', 'تم حذف الموافقة بنجاح');
+        } elseif ($order_type === \App\Models\Product::class) {
+            return redirect()->route('admin.orders.approval', $order_id)
+                ->with('success', 'تم حذف الموافقة بنجاح');
+        } elseif ($order_type === \App\Models\UnpaidTripRequests::class) {
+            return redirect()->route('admin.orders.approval', $order_id)
+                ->with('success', 'تم حذف الموافقة بنجاح');
+        } elseif ($order_type === \App\Models\TripRegistration::class) {  
+            return redirect()->route('admin.orders.approval', $order_id)
+                ->with('success', 'تم حذف الموافقة بنجاح');
+        }
+
+        return redirect()->route('admin.orders.index')->with('success', 'تم حذف الموافقة بنجاح');
     }
 }

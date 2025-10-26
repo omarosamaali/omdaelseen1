@@ -19,6 +19,7 @@ class ShippingNote extends Model
         'file_path',
         'status',
         'user_id',
+        'trip_id',
     ];
 
     public function order()

@@ -7,7 +7,23 @@
 
 <body class="relative -z-20">
     <x-china-header :title="__('messages.تفاصيل الرحلة')" :route="route('mobile.trip')" />
+    @if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+    @endif
 
+    @if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+    @endif
+
+    @if(session('warning'))
+    <div class="alert alert-warning">
+        {{ session('warning') }}
+    </div>
+    @endif
     <div class="container min-h-dvh relative overflow-hidden pb-8 dark:text-white -z-10 dark:bg-color1">
         <img class="main-image" src="{{ asset('images/trips/' . $trip->image) }}" style="margin-top: 62px !important;"
             max-height="300px" alt="">
@@ -136,49 +152,171 @@
                         @endif
                     </div>
 
-        
-<form action="{{ route('mobile.trip.register.submit') }}" method="POST" class="relative z-20" id="registration-form">
-    @csrf
-    <input type="hidden" name="trip_id" value="{{ $trip->id }}">
+                    @if ($trip->is_paid == 'yes')
+                    <form action="{{ route('mobile.trip.register.submit') }}" method="POST" class="relative z-20"
+                        id="registration-form">
+                        @csrf
+                        <input type="hidden" name="trip_id" value="{{ $trip->id }}">
 
-    @php
-    $hasMultipleRoomTypes = $trip->private_room_price && $trip->shared_room_price;
-    @endphp
+                        @php
+                        $hasMultipleRoomTypes = $trip->private_room_price && $trip->shared_room_price;
+                        @endphp
 
-    @if ($hasMultipleRoomTypes)
-    <div class="mb-4">
-        <label class="block text-sm font-medium text-center">اختر نوع الغرفة:</label>
-        <div class="flex gap-4 justify-between" style="margin: auto; width: 90%;">
-            <label
-                style="gap: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <input type="radio" name="room_type" value="shared" {{ old('room_type', 'shared' )=='shared' ? 'checked'
-                    : '' }} class="mr-2">
-                <i class="fa-solid fa-bed" style="color: maroon;"></i>
-                نوع الغرفة مشتركة
-                <div style="display: flex; align-items: center; justify-content: center;">
-                    ({{ $trip->shared_room_price }})
-                </div>
-            </label>
+                        @if ($hasMultipleRoomTypes)
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-center">اختر نوع الغرفة:</label>
+                            <div class="flex gap-4 justify-between" style="margin: auto; width: 90%;">
+                                <label
+                                    style="gap: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                    <input type="radio" name="room_type" value="shared" {{ old('room_type', 'shared'
+                                        )=='shared' ? 'checked' : '' }} class="mr-2">
+                                    <i class="fa-solid fa-bed" style="color: maroon;"></i>
+                                    نوع الغرفة مشتركة
+                                    <div style="display: flex; align-items: center; justify-content: center;">
+                                        ({{ $trip->shared_room_price }})
+                                    </div>
+                                </label>
 
-            <label
-                style="gap: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <input type="radio" name="room_type" value="private" {{ old('room_type')=='private' ? 'checked' : '' }}
-                    class="mr-2">
-                <i class="fa-solid fa-bed" style="color: maroon;"></i>
-                نوع الغرفة خاصة
-                <div style="display: flex; align-items: center; justify-content: center;">
-                    ({{ $trip->private_room_price }})
-                </div>
-            </label>
-        </div>
-    </div>
-    @else
-    <input type="hidden" name="room_type" value="{{ $trip->room_type == 'shared' ? 'shared' : 'private' }}">
-    <input type="hidden" name="selected_price" value="{{ $trip->price }}">
-    @endif
+                                <label
+                                    style="gap: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                    <input type="radio" name="room_type" value="private" {{ old('room_type')=='private'
+                                        ? 'checked' : '' }} class="mr-2">
+                                    <i class="fa-solid fa-bed" style="color: maroon;"></i>
+                                    نوع الغرفة خاصة
+                                    <div style="display: flex; align-items: center; justify-content: center;">
+                                        ({{ $trip->private_room_price }})
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        @else
+                        <input type="hidden" name="room_type"
+                            value="{{ $trip->room_type == 'shared' ? 'shared' : 'private' }}">
+                        <input type="hidden" name="selected_price" value="{{ $trip->price }}">
+                        @endif
 
-    <button type="submit" class="trip-button">الاشتراك</button>
-</form>
+                        <button type="submit" class="trip-button">الاشتراك</button>
+                    </form>
+                    @else
+                    {{-- ✅ الفورم الرئيسي لتقديم الطلب الجديد --}}
+                    @if($trip->is_paid == 'yes')
+                    {{-- الرحلة مدفوعة --}}
+                    <form action="{{ route('unpaid-trip-requests.store') }}" method="POST" class="relative z-20"
+                        id="registration-form">
+                        @csrf
+                        <input type="hidden" name="trip_id" value="{{ $trip->id }}">
+
+                        @php
+                        $hasMultipleRoomTypes = $trip->private_room_price && $trip->shared_room_price;
+                        @endphp
+
+                        @if ($hasMultipleRoomTypes)
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-center">اختر نوع الغرفة:</label>
+                            <div class="flex gap-4 justify-between" style="margin: auto; width: 90%;">
+                                <label
+                                    style="gap: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                    <input type="radio" name="room_type" value="shared" {{ old('room_type', 'shared'
+                                        )=='shared' ? 'checked' : '' }} class="mr-2">
+                                    <i class="fa-solid fa-bed" style="color: maroon;"></i>
+                                    نوع الغرفة مشتركة
+                                    <div style="display: flex; align-items: center; justify-content: center;">
+                                        ({{ $trip->shared_room_price }})
+                                    </div>
+                                </label>
+
+                                <label
+                                    style="gap: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                    <input type="radio" name="room_type" value="private" {{ old('room_type')=='private'
+                                        ? 'checked' : '' }} class="mr-2">
+                                    <i class="fa-solid fa-bed" style="color: maroon;"></i>
+                                    نوع الغرفة خاصة
+                                    <div style="display: flex; align-items: center; justify-content: center;">
+                                        ({{ $trip->private_room_price }})
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        @else
+                        <input type="hidden" name="room_type"
+                            value="{{ $trip->room_type == 'shared' ? 'shared' : 'private' }}">
+                        <input type="hidden" name="selected_price" value="{{ $trip->price }}">
+                        @endif
+
+                        <button type="submit" class="trip-button">الاشتراك</button>
+                    </form>
+
+                    @else
+                    {{-- الرحلة غير مدفوعة --}}
+                    @php
+                    $hasRequested = \App\Models\UnpaidTripRequests::where('user_id', auth()->id())
+                    ->where('trip_id', $trip->id)
+                    ->first();
+                    @endphp
+
+                    @if($hasRequested)
+                    @if($hasRequested->status == 'pending')
+                    <div style="
+                text-align: center;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                font-size: 14px;
+                color: #1e3a8a; /* text-blue-800 */
+                background-color: #eff6ff; /* bg-blue-50 */
+                border-radius: 0.5rem; /* rounded-lg */
+            ">
+                        ✋ طلبك قيد المراجعة
+                    </div>
+                    <form action="{{ route('unpaid-trip-requests.destroy', $hasRequested->id) }}" method="POST"
+                        style="text-align: center; margin-top: 0.5rem;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" style="
+                    background-color: #dc3545; /* bootstrap danger */
+                    color: white;
+                    font-size: 14px;
+                    border: none;
+                    border-radius: 4px;
+                    padding: 6px 12px;
+                    cursor: pointer;
+                "
+                            onclick="return confirm('هل تريد إلغاء طلبك؟')">
+                            إلغاء الطلب
+                        </button>
+                    </form>
+                    @elseif($hasRequested->status == 'paid')
+                    <div style="
+                background-color: #d1e7dd; /* alert-success */
+                color: #0f5132;
+                text-align: center;
+                padding: 0.75rem;
+                border-radius: 6px;
+                margin-bottom: 1rem;
+            ">✅ تم قبول طلبك!</div>
+
+                    @elseif($hasRequested->status == 'rejected')
+                    <div style="
+                background-color: #f8d7da; /* alert-danger */
+                color: #842029;
+                text-align: center;
+                padding: 0.75rem;
+                border-radius: 6px;
+                margin-bottom: 1rem;
+            ">❌ تم رفض طلبك</div>
+                    @endif
+
+                    @else
+                    {{-- المستخدم لم يقدم طلب بعد --}}
+                    <form action="{{ route('unpaid-trip-requests.store') }}" method="POST" class="text-center mt-2">
+                        @csrf
+                        <input type="hidden" name="trip_id" value="{{ $trip->id }}">
+                        <button type="submit" class="trip-button">تقديم طلب</button>
+                    </form>
+                    @endif
+                    @endif
+                    </form>
+                    @endif
+
                     <span style="text-align: center; display: block; font-size: 12px; color: rgb(97, 95, 95);">
                         السعر يشمل رسوم بوابة الدفع
                     </span>

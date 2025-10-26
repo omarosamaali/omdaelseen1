@@ -19,5 +19,16 @@ class Payment extends Model
         'status',
         'payment_method',
         'gateway_response',
+        'reference_number',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+    
+    public function order()
+    {
+        return $this->belongsTo(Adds::class, 'order_id');
+    }
 }

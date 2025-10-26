@@ -18,6 +18,7 @@
         href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Cairo:wght@200..1000&display=swap"
         rel="stylesheet">
     @vite('resources/js/app.js')
+    
 </head>
 
 <body class="-z-20" style="overflow-x: hidden;">

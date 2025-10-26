@@ -61,13 +61,17 @@ class ZiinaPaymentHandler
             $title = mb_substr($title, 0, 80);
 
             $message = "{$title}";
-            $roomType = $roomType ?? '';
 
-            if ($roomType) {
-                $roomTypeAr = $roomType === 'shared' ? 'غرفة مشتركة' : 'غرفة خاصة';
+            if ($roomType == 'shared') {
+                $roomTypeAr = $roomType = 'غرفة مشتركة';
                 $message .= " - {$roomTypeAr}";
+            } elseif ($roomType == 'private') {
+                $roomTypeAr = $roomType = 'غرفة خاصة';
+                $message .= " - {$roomTypeAr}";
+            } else {
+                $message .= "";
             }
-
+            
             if (mb_strlen($message) < 10) {
                 $message .= " - حجز";
             }
@@ -89,9 +93,9 @@ class ZiinaPaymentHandler
                 ]
             ];
 
-            // if ($isTest || app()->environment('local', 'testing')) {
-            //     $data['test'] = true;
-            // }
+            if ($isTest || app()->environment('local', 'testing')) {
+                $data['test'] = true;
+            }
 
             Log::info('Creating Ziina payment intent', [
                 'trip_id' => $trip->id,
@@ -99,8 +103,8 @@ class ZiinaPaymentHandler
                 'room_type' => $roomType,
                 'final_price' => $totalPrice,
                 'message' => $message,
-                // 'test_mode' => app()->environment('local', 'testing')
-                'test_mode' => false
+                'test_mode' => app()->environment('local', 'testing')
+                // 'test_mode' => false
                 
             ]);
 

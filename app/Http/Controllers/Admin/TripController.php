@@ -95,6 +95,7 @@ class TripController extends Controller
                 'trip_features.*' => 'exists:trip_features,id',
                 'trip_guidelines' => 'required|array',
                 'trip_guidelines.*' => 'exists:trip_guidelines,id',
+                'is_paid' => 'required',
             ]);
 
             $validated['trip_features'] = json_encode($validated['trip_features']);
@@ -168,6 +169,7 @@ class TripController extends Controller
                 'trip_features.*'     => 'exists:trip_features,id',
                 'trip_guidelines'     => 'required|array',
                 'trip_guidelines.*'   => 'exists:trip_guidelines,id',
+                'is_paid'             => 'required',
             ]);
             if ($request->hasFile('image')) {
                 // حذف الصورة القديمة لو موجودة

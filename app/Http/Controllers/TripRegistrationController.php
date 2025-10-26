@@ -45,8 +45,9 @@ class TripRegistrationController extends Controller
                     'trip_id' => $trip->id,
                     'room_type' => $selectedRoom,
                     'amount' => $totalPrice,
-                    'status' => 'pending',
-                ]);
+                    'status' => 'paid',
+                    'reference_number' => 'REF' . rand(100000000, 999999999)
+                                ]);
 
                 // ✅ أرسل الـ registration_id مع الريدايركت
                 return $this->redirectToPayment($trip, $totalPrice, $selectedRoom, $registration->id);
@@ -107,7 +108,9 @@ class TripRegistrationController extends Controller
                     'trip_id' => $trip->id,
                     'room_type' => $selectedRoom,
                     'amount' => $totalPrice,
-                    'status' => 'pending',
+                    'status' => 'paid',
+                    'reference_number' => 'REF' . rand(100000000, 999999999)
+
                 ]);
                 DB::commit(); // نحفظ الترانزاكشن قبل الريدايركت
 

@@ -89,11 +89,13 @@
                 <span class="detail-label">الحالة:</span>
                 <span class="detail-value">{{ $note->status }}</span>
             </div>
+            @if($note->order_type != 'App\Models\Payment')
             <div class="mb-4">
                 <span class="detail-label">نوع الطلب:</span>
                 <span class="detail-value">{{ $note->order_type == 'App\\Models\\TripRequest' ? 'رحلة' : 'منتج خاص'
                     }}</span>
             </div>
+            @endif
             <div class="mb-4">
                 <span class="detail-label">اسم العميل:</span>
                 <span class="detail-value">{{ $order->user->name ?? 'غير متاح' }}</span>

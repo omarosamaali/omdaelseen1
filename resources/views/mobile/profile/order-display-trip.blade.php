@@ -133,17 +133,22 @@
                     </div>
                 </div>
             </div>
-
+            @php
+                $hasUnpaid = \App\Models\UnpaidTripRequests::where('trip_id', $trip->id)->exists();
+                $hasRequest = \App\Models\TripRegistration::where('trip_id', $trip->id)->exists();
+            @endphp
+            @if (!$hasRequest && !$hasUnpaid)
             <div class="lg:col-span-2 bg-white rounded-lg shadow-md my-8 p-6" >
                 <h2 class="text-xl font-bold mb-4 text-gray-800">الإهتمامات التي تخص هذا الطلب</h2>
                 <div class="grid grid-cols-1 gap-4">
                     @forelse ($trip->interests as $interest)
-                        <div>{{ $interest }}</div>
+                    <div>{{ $interest }}</div>
                     @empty
                     <p class="text-gray-500 text-center">لا يوجد منتجات مرتبطة بهذا الطلب</p>
                     @endforelse
                 </div>
             </div>
+            @endif
 
         </div>
     </div>

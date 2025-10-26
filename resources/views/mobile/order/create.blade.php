@@ -14,7 +14,7 @@
 
     <div id="selectionModal" class="fixed inset-0 bg-white bg-opacity-50 items-center justify-center z-50">
         <x-china-header :title="__('messages.special_request')" :route="route('mobile.welcome')" />
-
+        
         <div class="bg-white shadow border dark:bg-color9 rounded-xl p-6 w-11/12 max-w-md"
             style="top: 20%; position: relative; margin: auto; width: 70%;">
             <h2 class="text-xl font-semibold text-center mb-4">اختر الخيار</h2>
