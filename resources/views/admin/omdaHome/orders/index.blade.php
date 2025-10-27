@@ -98,15 +98,17 @@
                         @endif
                     </td>
                     <td class="th" style="display: flex; gap: 8px;">
-                        <a href="{{ route('admin.orders.trip-show-register', $trip->id) }}" class="font-medium text-green-600">
-                            <svg class="w-6 h-6 text-green-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                                height="24" fill="none" viewBox="0 0 24 24">
+                        <a href="{{ route('admin.orders.trip-show-register', $trip->id) }}"
+                            class="font-medium text-green-600">
+                            <svg class="w-6 h-6 text-green-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-width="2"
                                     d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z" />
                                 <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                             </svg>
                         </a>
-                        <button onclick="showClientData({{ json_encode($trip->user) }})" class="font-medium text-blue-600">
+                        <button onclick="showClientData({{ json_encode($trip->user) }})"
+                            class="font-medium text-blue-600">
                             <i class="fa-regular fa-id-badge" style="font-size: 18px;"></i>
                         </button>
                         <a href="{{ route('admin.orders.invoice', $trip->id) }}" class="text-yellow-600">
@@ -121,10 +123,12 @@
                         <a href="{{ route('admin.orders.approval', $trip->id) }}" class="text-green-600">
                             <i class="fa-solid fa-check-circle" style="font-size: 18px;"></i>
                         </a>
-                        <button class="text-indigo-600">
+                        <a href="{{ route('mobile.profile.actions.userAdminChatTrip', $trip->id) }}"
+                            class="text-indigo-600">
                             <i class="fa-regular fa-envelope" style="font-size: 18px;"></i>
-                        </button>
-                        <button onclick="showStatusModal('{{ $trip->id }}', 'App\\Models\\Payment', '{{ $trip->status }}')"
+                        </a>
+                        <button
+                            onclick="showStatusModal('{{ $trip->id }}', 'App\\Models\\Payment', '{{ $trip->status }}')"
                             class="text-red-600">
                             <i class="fa-solid fa-pen-to-square" style="font-size: 18px;"></i>
                         </button>
@@ -176,9 +180,10 @@
                         <a href="{{ route('admin.orders.approval', $trip->id) }}" class="text-green-600">
                             <i class="fa-solid fa-check-circle" style="font-size: 18px;"></i>
                         </a>
-                        <button class="text-indigo-600">
+                        <a href="{{ route('mobile.profile.actions.userAdminChatTrip', $trip->id) }}"
+                            class="text-indigo-600">
                             <i class="fa-regular fa-envelope" style="font-size: 18px;"></i>
-                        </button>
+                        </a>
                         <button
                             onclick="showStatusModal('{{ $trip->id }}', 'App\\Models\\TripRegistration', '{{ $trip->status }}')"
                             class="text-red-600">
@@ -232,9 +237,10 @@
                         <a href="{{ route('admin.orders.approval', $trip->id) }}" class="text-green-600">
                             <i class="fa-solid fa-check-circle" style="font-size: 18px;"></i>
                         </a>
-                        <button class="text-indigo-600">
+                        <a href="{{ route('mobile.profile.actions.userAdminChatTrip', $trip->id) }}"
+                            class="text-indigo-600">
                             <i class="fa-regular fa-envelope" style="font-size: 18px;"></i>
-                        </button>
+                        </a>
                         <button
                             onclick="showStatusModal('{{ $trip->id }}', 'App\\Models\\UnpaidTripRequests', '{{ $trip->status }}')"
                             class="text-red-600">
@@ -280,9 +286,10 @@
                         <a href="{{ route('admin.orders.approval', $trip->id) }}" class="text-green-600">
                             <i class="fa-solid fa-check-circle" style="font-size: 18px;"></i>
                         </a>
-                        <button class="text-indigo-600">
+                        <a href="{{ route('mobile.profile.actions.userAdminChatTrip', $trip->id) }}"
+                            class="text-indigo-600">
                             <i class="fa-regular fa-envelope" style="font-size: 18px;"></i>
-                        </button>
+                        </a>
                         <button
                             onclick="showStatusModal('{{ $trip->id }}', 'App\\Models\\Booking', '{{ $trip->status }}')"
                             class="text-red-600">
@@ -413,7 +420,8 @@
         </div>
         <div class="mt-4 text-gray-700">
             <div style="display: flex; align-items: center; gap: 10px;">
-                <p><img id="clientAvatar" style="border-radius: 50%; width: 70px; height: 70px;" src="" alt="Avatar" class="user-avatar mb-4"></p>
+                <p><img id="clientAvatar" style="border-radius: 50%; width: 70px; height: 70px;" src="" alt="Avatar"
+                        class="user-avatar mb-4"></p>
                 <p><span id="clientName"></span></p>
             </div>
             <p><strong>الدولة:</strong> <span id="clientCountry"></span></p>

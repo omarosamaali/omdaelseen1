@@ -19,8 +19,7 @@
     <!-- Chat Messages Container -->
     <div class="flex-1 overflow-hidden">
         <div class="h-full overflow-y-auto px-4 py-6 space-y-6" id="chat-container">
-            @foreach (App\Models\TravelChat::where('trip_id', $trip_id)->with('user')->orderBy('created_at',
-            'asc')->get() as $message)
+            @foreach ($travel_chats as $message)
             <div
                 class="flex {{ $message->user->role === 'admin' ? 'justify-start' : 'justify-end' }} items-end gap-3 w-full animate-fade-in">
 

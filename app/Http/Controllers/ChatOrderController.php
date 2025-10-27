@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrderMessage;
+use App\Models\Payment;
 use App\Models\Product;
 use App\Models\TripRequest;
 use App\Models\UnpaidTripRequests;
@@ -99,10 +100,46 @@ class ChatOrderController extends Controller
     }
     public function userAdminChatTrip($trip_id)
     {
-        $trip = TripRequest::findOrFail($trip_id);
-        return view('mobile.profile.actions.userAdminChatTrip', compact('trip_id', 'trip'));
-    }
+        // البحث عن الرحلة وتحديد النوع تلقائياً
+        $trip = TripRequest::find($trip_id);
+        $order_type = 'trip_request';
+        $orderModel = TripRequest::class;
 
+        if (!$trip) {
+            $trip = UnpaidTripRequests::find($trip_id);
+            $order_type = 'unpaid';
+            $orderModel = UnpaidTripRequests::class;
+        }
+        if (!$trip) {
+            $trip = TripRegistration::find($trip_id);
+            $order_type = 'registration';
+            $orderModel = TripRegistration::class;
+        }
+        if (!$trip) {
+            $trip = Payment::find($trip_id);
+            $order_type = 'payment';
+            $orderModel = Payment::class;
+        }
+
+        if (!$trip) {
+            abort(404, 'الرحلة غير موجودة');
+        }
+
+        // جلب جميع الرسائل
+        $travel_chats = TravelChat::query()
+            ->where('order_id', $trip_id)
+            ->where('order_type', $orderModel)
+            ->with(['user'])
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return view('mobile.profile.actions.userAdminChatTrip', compact(
+            'travel_chats',
+            'trip_id',
+            'trip',
+            'order_type'
+        ));
+    }
     public function userAdminChat($product_id)
     {
         $product = Product::findOrFail($product_id);
