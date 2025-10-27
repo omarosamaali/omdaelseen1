@@ -27,7 +27,7 @@
                 </div>
                 <div class="text-white">
                     <p class="text-2xl font-semibold">{{ $trip->user->name }}</p>
-                    <p class="text-xs font-semibold">Online</p>
+                    {{-- <p class="text-xs font-semibold">Online</p> --}}
                 </div>
             </div>
         </div>
