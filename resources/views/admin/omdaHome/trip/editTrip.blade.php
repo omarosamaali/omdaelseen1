@@ -17,7 +17,7 @@
                         <div class="mb-4 text-right">
                             <label for="image" class="block text-gray-700 font-bold mb-2">البانر *</label>
                             <input type="file" name="image" id="image" value="{{ old('image', $trip->image) }}"
-                                class="w-full border-gray-300 rounded-md shadow-sm text-right" >
+                                class="w-full border-gray-300 rounded-md shadow-sm text-right">
                             @error('image')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
@@ -433,9 +433,10 @@
 
                         <div class="mb-4 text-right">
                             <label for="is_paid" class="block text-gray-700 font-bold mb-2">قابلة للدفع *</label>
-                            <select name="is_paid" id="is_paid" class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
-                                <option value="yes" {{ old('is_paid')=='active' ? 'selected' : '' }}>نعم</option>
-                                <option value="no" {{ old('is_paid')=='inactive' ? 'selected' : '' }}>لا
+                            <select name="is_paid" id="is_paid"
+                                class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
+                                <option value="yes" {{ 'yes' ? 'selected' : '' }}>نعم</option>
+                                <option value="no" {{ 'no' ? 'selected' : '' }}>لا
                                 </option>
                             </select>
                             @error('status')
