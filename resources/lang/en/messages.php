@@ -292,8 +292,14 @@ return [
     'new_places' => 'New Places',
     'الأكثر تقييما' => 'The Most Rated',
     'request' => 'Request',
-
-
+    'نوع الرحلة' => 'Trip Type',
+    'trip_type' => [
+        'group' => 'Group',
+        'traders_only' => 'For Traders Only',
+        'trade_and_tourism' => 'For Trade and Tourism',
+        'tourism_only' => 'For Tourism Only',
+        'family' => 'Family',
+    ],
 
 
 

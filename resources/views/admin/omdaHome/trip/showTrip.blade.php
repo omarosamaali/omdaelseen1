@@ -85,7 +85,7 @@
                             @if (!empty($trip->meals))
                             @php
                             $mealsTranslations = [
-                            'breakfast' => 'فطار',
+                            'breakfast' => 'إفطار',
                             'lunch' => 'غداء',
                             'dinner' => 'عشاء',
                             ];

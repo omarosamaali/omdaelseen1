@@ -972,7 +972,7 @@ body {
 }
 
 .tab-content {
-    padding: 20px;
+    padding: 20px 20px 0px;
     direction: rtl;
     border-radius: 0 0 8px 8px;
     margin-top: 10px;
@@ -1137,13 +1137,12 @@ body {
 .sub-category {
     position: absolute;
     top: 11px;
-    left: -63px;
+    left: -8px;
     background: maroon;
     color: white;
-    rotate: -39deg;
     z-index: 9999999999999999999999999999;
     padding: 13px;
-    width: 150px;
+    width: fit-content;
     font-size: 12px;
     text-align: center;
 }

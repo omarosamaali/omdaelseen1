@@ -266,13 +266,20 @@ return [
         'airport_only' => 'من وإلي المطار فقط',
         'no_transportation' => 'بدون مواصلات',
     ],
+    'trip_type' => [
+        'group' => 'رحلة جماعية',
+        'traders_only' => 'للتجار فقط',
+        'trade_and_tourism' => 'للتجارة والسياحة',
+        'tourism_only' => 'للسياحة فقط',
+        'family' => 'عائلية',
+    ],
     'translator_types' => [
         'group_translator' => 'للمجموعة',
         'private_translator' => 'خاص لكل شخص',
         'none' => 'لا يوجد',
     ],
     'meals' => [
-        'breakfast' => 'فطار',
+        'breakfast' => 'إفطار',
         'lunch' => 'غداء',
         'dinner' => 'عشاء',
     ],
@@ -292,6 +299,7 @@ return [
     'new_places' => 'أحدث الأماكن',
     'الأكثر تقييما' => 'الأكثر تقييما',
     'request' => 'اطلب',
+    'نوع الرحلة' => 'نوع الرحلة',
 
 
 

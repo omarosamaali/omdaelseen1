@@ -259,7 +259,7 @@
                                 <input name="meals[]" type="checkbox" value="breakfast" @if (is_array($selectedMeals) &&
                                     in_array('breakfast', $selectedMeals)) checked @endif
                                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 focus:ring-2">
-                                <label class="ms-2 text-sm font-medium text-gray-900">فطار</label>
+                                <label class="ms-2 text-sm font-medium text-gray-900">إفطار</label>
                             </div>
                             <div class="flex items-center">
                                 <input name="meals[]" type="checkbox" value="lunch" @if (is_array($selectedMeals) &&

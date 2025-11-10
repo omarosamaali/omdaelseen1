@@ -130,48 +130,46 @@ class ChatController extends Controller
         return view('mobile.admin.all-chat', compact('chats'));
     }
 
+    // في ChatOrderController.php
     public function sendMessage(Request $request)
     {
         try {
+            // للـ debugging
+            \Log::info('Chat Order Request:', $request->all());
+
             if (!Auth::check()) {
-                return response()->json(['error' => 'Unauthenticated'], 401);
+                return response()->json(['error' => 'غير مصرح'], 401);
             }
 
             $validated = $request->validate([
                 'message' => 'nullable|string',
-                'receiver_id' => 'required|exists:users,id',
+                'product_id' => 'required|exists:products,id',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
-
-            if (Auth::id() == $request->receiver_id) {
-                return response()->json(['error' => 'لا يمكنك إرسال رسالة لنفسك'], 400);
-            }
 
             if (!$request->message && !$request->hasFile('image')) {
                 return response()->json(['error' => 'يجب إرسال نص أو صورة'], 400);
             }
 
             $data = [
-                'sender_id' => Auth::id(),
-                'receiver_id' => $request->receiver_id,
+                'user_id' => Auth::id(),
+                'product_id' => $request->product_id,
                 'message' => $request->message,
             ];
 
             if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('chat_images', 'public');
+                $imagePath = $request->file('image')->store('order_chat_images', 'public');
                 $data['image'] = $imagePath;
             }
 
-            $message = Message::create($data);
-
-            $this->sendEmailNotifications($message);
+            $message = OrderMessage::create($data);
 
             return response()->json([
                 'status' => 'success',
                 'message' => [
                     'id' => $message->id,
-                    'sender_id' => $message->sender_id,
-                    'receiver_id' => $message->receiver_id,
+                    'user_id' => $message->user_id,
+                    'product_id' => $message->product_id,
                     'message' => $message->message,
                     'image' => $message->image,
                     'created_at' => $message->created_at->format('Y-m-d H:i:s')
@@ -183,6 +181,7 @@ class ChatController extends Controller
                 'details' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
+            \Log::error('Chat Order Error: ' . $e->getMessage());
             return response()->json([
                 'error' => 'فشل إرسال الرسالة',
                 'message' => $e->getMessage()
