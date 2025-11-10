@@ -13,6 +13,7 @@ class Trip extends Model
     protected $table = 'trips';
 
     protected $fillable = [
+
         'title_ar',
         'title_en',
         'is_paid',

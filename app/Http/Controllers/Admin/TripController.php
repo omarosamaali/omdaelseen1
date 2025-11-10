@@ -90,12 +90,13 @@ class TripController extends Controller
                 'tickets_included' => 'required|boolean',
                 'price' => 'nullable|numeric',
                 'status' => 'required|string',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:90048',
                 'trip_features' => 'required|array',
                 'trip_features.*' => 'exists:trip_features,id',
                 'trip_guidelines' => 'required|array',
                 'trip_guidelines.*' => 'exists:trip_guidelines,id',
                 'is_paid' => 'required',
+                
             ]);
 
             $validated['trip_features'] = json_encode($validated['trip_features']);

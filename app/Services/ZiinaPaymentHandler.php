@@ -93,9 +93,9 @@ class ZiinaPaymentHandler
                 ]
             ];
 
-            // if ($isTest || app()->environment('local', 'testing')) {
-            //     $data['test'] = true;
-            // }
+            if ($isTest || app()->environment('local', 'testing')) {
+                $data['test'] = true;
+            }
 
             Log::info('Creating Ziina payment intent', [
                 'trip_id' => $trip->id,

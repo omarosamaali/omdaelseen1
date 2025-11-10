@@ -7,9 +7,6 @@
             <div class="p-6 bg-white border-b border-gray-200">
                 <h2 class="text-right mb-4 font-bold text-xl">إضافة رحلة</h2>
                 {{-- display errors --}}
-                @foreach($errors->all() as $error)
-                <p class="text-red-500 text-sm">{{ $error }}</p>
-                @endforeach
                 <form action="{{ route('admin.omdaHome.trip.store') }}" method="POST" enctype="multipart/form-data"
                     class="space-y-6">
                     @csrf

@@ -187,10 +187,32 @@
                                 </div>
                                 <div class="flex justify-between items-center">
                                     @auth
+                                    @if(Auth::user()?->is_verified == 0)
+                                    <a href="javascript:void(0)" onclick="showVerificationAlert()"
+                                        class="w-full text-white text-md bg-p2 py-2 px-4 rounded-full dark:bg-p1 text-center">
+                                        {{ __('messages.details') }}
+                                    </a>
+                                    @else
                                     <a href="{{ route('mobile.trip-show', $trip->id) }}"
                                         class="w-full text-white text-md bg-p2 py-2 px-4 rounded-full dark:bg-p1 text-center">
                                         {{ __('messages.details') }}
                                     </a>
+                                    @endif
+                                    <script>
+                                        function showVerificationAlert() {
+                                                            Swal.fire({
+                                                                title: 'تنبيه',
+                                                                text: 'يجب توثيق الحساب أولاً',
+                                                                icon: 'warning',
+                                                                confirmButtonText: 'موافق',
+                                                                confirmButtonColor: '#3085d6',
+                                                            }).then((result) => {
+                                                                if (result.isConfirmed) {
+                                                                    window.location.href = "{{ route('mobile.profile.profile') }}";
+                                                                }
+                                                            });
+                                                        }
+                                    </script>
                                     @else
                                     <a href="{{ route('mobile.auth.login') }}"
                                         class="w-full text-white text-md bg-p2 py-2 px-4 rounded-full dark:bg-p1 text-center">

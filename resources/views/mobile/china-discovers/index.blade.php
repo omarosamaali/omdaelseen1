@@ -29,6 +29,10 @@
         top: unset !important;
         bottom: 12px;
     }
+
+    div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm) {
+        background: maroon !important;
+    }
 </style>
 <x-china-header :title="__('messages.china_explorers')" :route="route('mobile.welcome')" />
 
@@ -44,8 +48,31 @@
     <div>
         <div class="continaer--title">
             <h6 class="categories text-black" style="color: maroon;">{{ __('messages.categories') }}</h6>
-            <a href={{ route('mobile.china-discovers.all--places') }} class="show--all">{{
-                __('messages.search_for_place') }}</a>
+            @if(Auth::user()?->is_verified == 0)
+            <a href="javascript:void(0)" class="show--all" onclick="showVerificationAlert()">
+                {{ __('messages.search_for_place') }}
+            </a>
+            @else
+            <a href="{{ route('mobile.china-discovers.all--places') }}" class="show--all">
+                {{ __('messages.search_for_place') }}
+            </a>
+            @endif
+
+            <script>
+                function showVerificationAlert() {
+                Swal.fire({
+                    title: 'تنبيه',
+                    text: 'يجب توثيق الحساب أولاً',
+                    icon: 'warning',
+                    confirmButtonText: 'موافق',
+                    confirmButtonColor: '#3085d6',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('mobile.profile.profile') }}";
+                    }
+                });
+            }
+            </script>
         </div>
 
         <div style="display: flex; align-items: center; justify-content: flex-start; gap: 10px; margin: 10px;">
@@ -77,10 +104,15 @@
             </div>
         </div>
     </div>
-
-    <a href="{{ route('mobile.create') }}" class="add-place-button">{{ __('messages.add_new_place') }}
-        </h2>
+    @if(Auth::user()?->is_verified == 0)
+    <a href="javascript:void(0)" onclick="showVerificationAlert()" class="add-place-button">{{
+        __('messages.add_new_place') }}
     </a>
+    @else
+    <a href="{{ route('mobile.create') }}" class="add-place-button">{{ __('messages.add_new_place') }}
+    </a>
+    @endif
+
 
     @if (session('success'))
     <div id="success-alert" style="background: #282b28; color: green; margin: 20px 20px 4px;"
@@ -94,7 +126,8 @@
         <div class="slider" id="placesSlider">
             @forelse ($places as $place)
             @auth
-            <a href="{{ route('mobile.china-discovers.info_place', $place) }}">
+            @if(Auth::user()?->is_verified == 0)
+            <a href="javascript:void(0)" onclick="showVerificationAlert()">
                 <div class="place-card">
                     <img src="{{ asset('storage/' . $place->avatar) }}"
                         alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
@@ -108,13 +141,13 @@
                             style="font-size: 18px;"></i>
                     </div>
                     @endif
-                <div class="rating-icon"
-                                        style="left: 31%; bottom: 16px; top: unset; position: absolute; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
-                                        <i class="fa-solid fa-star" style="font-size: 18px;"></i>
-                                        <span style="font-size: 14px; font-weight: bold; color: #fff;">
-                                            {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
-                                        </span>
-                                    </div>
+                    <div class="rating-icon"
+                        style="left: 31%; bottom: 16px; top: unset; position: absolute; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                        <i class="fa-solid fa-star" style="font-size: 18px;"></i>
+                        <span style="font-size: 14px; font-weight: bold; color: #fff;">
+                            {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
+                        </span>
+                    </div>
                     <div class="category-tag">
                         @if ($place->mainCategory)
                         <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
@@ -159,15 +192,13 @@
                 </div>
             </a>
             @else
-            <a href="{{ route('mobile.auth.login') }}">
+            <a href="{{ route('mobile.china-discovers.info_place', $place) }}">
                 <div class="place-card">
                     <img src="{{ asset('storage/' . $place->avatar) }}"
                         alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
-
                     @php
                     $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
                     @endphp
-
                     @if (auth()->check() && auth()->id() != $place->user_id)
                     <div style="bottom: 12px; top: unset;" class="heart-icon @if ($isFavorited) favorited @endif"
                         data-place-id="{{ $place->id }}">
@@ -175,15 +206,13 @@
                             style="font-size: 18px;"></i>
                     </div>
                     @endif
-
-<div class="rating-icon"
+                    <div class="rating-icon"
                         style="left: 31%; bottom: 16px; top: unset; position: absolute; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
                         <span style="font-size: 14px; font-weight: bold; color: #fff;">
                             {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
                         </span>
                     </div>
-
                     <div class="category-tag">
                         @if ($place->mainCategory)
                         <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
@@ -197,59 +226,39 @@
                         @endif
                     </div>
                     <div class="place-name">
-
                         <span style="bottom: 50px; position: relative;">
-                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }} 
+                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
                         </span>
-                        </div>
-                            @auth
-                        {{-- @if(Auth::user()->status != 1) --}}
-                        {{-- <button onclick="showActivationAlert()" class="explore-btn">
-                            {{ __('messages.explore') }}
-                        </button> --}}
-                        @else
-                        {{-- <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
-                            {{ __('messages.explore') }}
-                        </a> --}}
-                        {{-- @endif --}}
-                        @endauth
-                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                    </div>
+                    @auth
+                    {{-- @if(Auth::user()->status != 1) --}}
+                    {{-- <button onclick="showActivationAlert()" class="explore-btn">
+                        {{ __('messages.explore') }}
+                    </button> --}}
+                    @else
+                    {{-- <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
+                        {{ __('messages.explore') }}
+                    </a> --}}
+                    {{-- @endif --}}
+                    @endauth
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-                        <script>
-                            function showActivationAlert() {
-                                Swal.fire({
-                                    title: 'تنبيه',
-                                    text: 'يجب تفعيل الحساب أولاً قبل استكشاف الأماكن.',
-                                    icon: 'warning',
-                                    confirmButtonText: 'حسناً',
-                                    confirmButtonColor: '#3085d6',
-                                });
-                            }
-                        </script>
+                    <script>
+                        function showActivationAlert() {
+                    Swal.fire({
+                        title: 'تنبيه',
+                        text: 'يجب تفعيل الحساب أولاً قبل استكشاف الأماكن.',
+                        icon: 'warning',
+                        confirmButtonText: 'حسناً',
+                        confirmButtonColor: '#3085d6',
+                    });
+                }
+                    </script>
                 </div>
             </a>
-            @endauth
-            @empty
-            <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
-                <p style="color: #6c757d; font-size: 18px;">{{ __('لا يوجد أماكن للعرض حاليًا.') }}</p>
-            </div>
-            @endforelse
-        </div>
-    </div>
-
-    {{-- أحدث الأماكن --}}
-    <div class="continaer--title" style="margin-top: 30px;">
-        <h6 class="categories" style="color: maroon;">{{ __('messages.latest_places') }}</h6>
-        <a href="{{ route('mobile.china-discovers.new-places') }}" style="border: 0px;" class="show--all">{{
-            __('messages.show_all')
-            }}</a>
-    </div>
-
-    <div class="slider-container">
-        <div class="slider" id="latestPlacesSlider">
-            @forelse ($latestPlaces as $place)
-            @auth
-            <a href="{{ route('mobile.china-discovers.info_place', $place) }}">
+            @endif
+            @else
+            <a href="{{ route('mobile.auth.login') }}">
                 <div class="place-card">
                     <img src="{{ asset('storage/' . $place->avatar) }}"
                         alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
@@ -286,10 +295,11 @@
                         <span>{{ __('بدون تصنيف') }}</span>
                         @endif
                     </div>
-
                     <div class="place-name">
+
                         <span style="bottom: 50px; position: relative;">
                             {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
+                        </span>
                     </div>
                     @auth
                     {{-- @if(Auth::user()->status != 1) --}}
@@ -306,17 +316,169 @@
 
                     <script>
                         function showActivationAlert() {
-                    Swal.fire({
-                        title: 'تنبيه',
-                        text: 'يجب تفعيل الحساب أولاً قبل استكشاف الأماكن.',
-                        icon: 'warning',
-                        confirmButtonText: 'حسناً',
-                        confirmButtonColor: '#3085d6',
-                    });
-                }
+                                Swal.fire({
+                                    title: 'تنبيه',
+                                    text: 'يجب تفعيل الحساب أولاً قبل استكشاف الأماكن.',
+                                    icon: 'warning',
+                                    confirmButtonText: 'حسناً',
+                                    confirmButtonColor: '#3085d6',
+                                });
+                            }
                     </script>
                 </div>
             </a>
+            @endauth
+            @empty
+            <div class="empty-message-container" style="text-align: center; width: 100%; padding: 20px;">
+                <p style="color: #6c757d; font-size: 18px;">{{ __('لا يوجد أماكن للعرض حاليًا.') }}</p>
+            </div>
+            @endforelse
+        </div>
+    </div>
+
+    {{-- أحدث الأماكن --}}
+    <div class="continaer--title" style="margin-top: 30px;">
+        <h6 class="categories" style="color: maroon;">{{ __('messages.latest_places') }}</h6>
+        <a href="{{ route('mobile.china-discovers.new-places') }}" style="border: 0px;" class="show--all">{{
+            __('messages.show_all')
+            }}</a>
+    </div>
+
+    <div class="slider-container">
+        <div class="slider" id="latestPlacesSlider">
+            @forelse ($latestPlaces as $place)
+            @auth
+            @if(Auth::user()?->is_verified == 0)
+            <a href="javascript:void(0)" onclick="showVerificationAlert()">
+                <div class="place-card">
+                    <img src="{{ asset('storage/' . $place->avatar) }}"
+                        alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
+                    @php
+                    $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
+                    @endphp
+                    @if (auth()->check() && auth()->id() != $place->user_id)
+                    <div style="bottom: 12px; top: unset;" class="heart-icon @if ($isFavorited) favorited @endif"
+                        data-place-id="{{ $place->id }}">
+                        <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
+                            style="font-size: 18px;"></i>
+                    </div>
+                    @endif
+                    <div class="rating-icon"
+                        style="left: 31%; bottom: 16px; top: unset; position: absolute; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                        <i class="fa-solid fa-star" style="font-size: 18px;"></i>
+                        <span style="font-size: 14px; font-weight: bold; color: #fff;">
+                            {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
+                        </span>
+                    </div>
+                    <div class="category-tag">
+                        @if ($place->mainCategory)
+                        <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
+                            alt="{{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}">
+                        <span>
+                            {{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}
+                        </span>
+                        @else
+                        <img src="{{ asset('storage/placeholders/no-category.png') }}" alt="{{ __('بدون تصنيف') }}">
+                        <span>{{ __('بدون تصنيف') }}</span>
+                        @endif
+                    </div>
+                    <div class="place-name">
+                        <span style="bottom: 50px; position: relative;">
+                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
+                        </span>
+                    </div>
+                    @auth
+                    {{-- @if(Auth::user()->status != 1) --}}
+                    {{-- <button onclick="showActivationAlert()" class="explore-btn">
+                        {{ __('messages.explore') }}
+                    </button> --}}
+                    @else
+                    {{-- <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
+                        {{ __('messages.explore') }}
+                    </a> --}}
+                    {{-- @endif --}}
+                    @endauth
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+                    <script>
+                        function showActivationAlert() {
+                                Swal.fire({
+                                    title: 'تنبيه',
+                                    text: 'يجب تفعيل الحساب أولاً قبل استكشاف الأماكن.',
+                                    icon: 'warning',
+                                    confirmButtonText: 'حسناً',
+                                    confirmButtonColor: '#3085d6',
+                                });
+                            }
+                    </script>
+                </div>
+            </a>
+            @else
+            <a href="{{ route('mobile.china-discovers.info_place', $place) }}">
+                <div class="place-card">
+                    <img src="{{ asset('storage/' . $place->avatar) }}"
+                        alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
+                    @php
+                    $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
+                    @endphp
+                    @if (auth()->check() && auth()->id() != $place->user_id)
+                    <div style="bottom: 12px; top: unset;" class="heart-icon @if ($isFavorited) favorited @endif"
+                        data-place-id="{{ $place->id }}">
+                        <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
+                            style="font-size: 18px;"></i>
+                    </div>
+                    @endif
+                    <div class="rating-icon"
+                        style="left: 31%; bottom: 16px; top: unset; position: absolute; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                        <i class="fa-solid fa-star" style="font-size: 18px;"></i>
+                        <span style="font-size: 14px; font-weight: bold; color: #fff;">
+                            {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
+                        </span>
+                    </div>
+                    <div class="category-tag">
+                        @if ($place->mainCategory)
+                        <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
+                            alt="{{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}">
+                        <span>
+                            {{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}
+                        </span>
+                        @else
+                        <img src="{{ asset('storage/placeholders/no-category.png') }}" alt="{{ __('بدون تصنيف') }}">
+                        <span>{{ __('بدون تصنيف') }}</span>
+                        @endif
+                    </div>
+                    <div class="place-name">
+                        <span style="bottom: 50px; position: relative;">
+                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
+                        </span>
+                    </div>
+                    @auth
+                    {{-- @if(Auth::user()->status != 1) --}}
+                    {{-- <button onclick="showActivationAlert()" class="explore-btn">
+                        {{ __('messages.explore') }}
+                    </button> --}}
+                    @else
+                    {{-- <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
+                        {{ __('messages.explore') }}
+                    </a> --}}
+                    {{-- @endif --}}
+                    @endauth
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+                    <script>
+                        function showActivationAlert() {
+                                            Swal.fire({
+                                                title: 'تنبيه',
+                                                text: 'يجب تفعيل الحساب أولاً قبل استكشاف الأماكن.',
+                                                icon: 'warning',
+                                                confirmButtonText: 'حسناً',
+                                                confirmButtonColor: '#3085d6',
+                                            });
+                                        }
+                    </script>
+                </div>
+            </a>
+            @endif
             @else
             <a href="{{ route('mobile.auth.login') }}">
                 <div class="place-card">
@@ -335,7 +497,7 @@
                     </div>
                     @endif
 
-<div class="rating-icon"
+                    <div class="rating-icon"
                         style="left: 31%; bottom: 16px; top: unset; position: absolute; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
                         <span style="font-size: 14px; font-weight: bold; color: #fff;">
@@ -397,7 +559,8 @@
     {{-- الأكثر تقييماً --}}
     <div class="continaer--title" style="margin-top: 30px;">
         <h6 class="categories" style="color: maroon;">{{ __('messages.most_rated') }}</h6>
-        <a href={{ route('mobile.china-discovers.most-fav-places') }} style="border: 0px !important;" class="show--all">{{
+        <a href={{ route('mobile.china-discovers.most-fav-places') }} style="border: 0px !important;"
+            class="show--all">{{
             __('messages.show_all') }}</a>
     </div>
 
@@ -405,15 +568,14 @@
         <div class="slider" id="placesSlider">
             @forelse ($topRatedPlaces as $place)
             @auth
-            <a href="{{ route('mobile.china-discovers.info_place', $place) }}">
+            @if(Auth::user()?->is_verified == 0)
+            <a href="javascript:void(0)" onclick="showVerificationAlert()">
                 <div class="place-card">
                     <img src="{{ asset('storage/' . $place->avatar) }}"
                         alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
-
                     @php
                     $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
                     @endphp
-
                     @if (auth()->check() && auth()->id() != $place->user_id)
                     <div style="bottom: 12px; top: unset;" class="heart-icon @if ($isFavorited) favorited @endif"
                         data-place-id="{{ $place->id }}">
@@ -421,15 +583,13 @@
                             style="font-size: 18px;"></i>
                     </div>
                     @endif
-
-<div class="rating-icon"
-                        style="left: 31%; bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                    <div class="rating-icon"
+                        style="left: 31%; bottom: 16px; top: unset; position: absolute; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
                         <span style="font-size: 14px; font-weight: bold; color: #fff;">
                             {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
                         </span>
                     </div>
-
                     <div class="category-tag">
                         @if ($place->mainCategory)
                         <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
@@ -442,10 +602,10 @@
                         <span>{{ __('بدون تصنيف') }}</span>
                         @endif
                     </div>
-
                     <div class="place-name">
                         <span style="bottom: 50px; position: relative;">
                             {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
+                        </span>
                     </div>
                     @auth
                     {{-- @if(Auth::user()->status != 1) --}}
@@ -462,17 +622,83 @@
 
                     <script>
                         function showActivationAlert() {
-                    Swal.fire({
-                        title: 'تنبيه',
-                        text: 'يجب تفعيل الحساب أولاً قبل استكشاف الأماكن.',
-                        icon: 'warning',
-                        confirmButtonText: 'حسناً',
-                        confirmButtonColor: '#3085d6',
-                    });
-                }
+                                Swal.fire({
+                                    title: 'تنبيه',
+                                    text: 'يجب تفعيل الحساب أولاً قبل استكشاف الأماكن.',
+                                    icon: 'warning',
+                                    confirmButtonText: 'حسناً',
+                                    confirmButtonColor: '#3085d6',
+                                });
+                            }
                     </script>
                 </div>
             </a>
+            @else
+            <a href="{{ route('mobile.china-discovers.info_place', $place) }}">
+                <div class="place-card">
+                    <img src="{{ asset('storage/' . $place->avatar) }}"
+                        alt="{{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}">
+                    @php
+                    $isFavorited = auth()->check() && auth()->user()->isFavorite($place);
+                    @endphp
+                    @if (auth()->check() && auth()->id() != $place->user_id)
+                    <div style="bottom: 12px; top: unset;" class="heart-icon @if ($isFavorited) favorited @endif"
+                        data-place-id="{{ $place->id }}">
+                        <i class="fa @if ($isFavorited) fa-solid fa-heart @else fa-regular fa-heart @endif"
+                            style="font-size: 18px;"></i>
+                    </div>
+                    @endif
+                    <div class="rating-icon"
+                        style="left: 31%; bottom: 16px; top: unset; position: absolute; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
+                        <i class="fa-solid fa-star" style="font-size: 18px;"></i>
+                        <span style="font-size: 14px; font-weight: bold; color: #fff;">
+                            {{ number_format($place->ratings_avg_rating ?? 0, 1) }} ({{ $place->ratings_count ?? 0 }})
+                        </span>
+                    </div>
+                    <div class="category-tag">
+                        @if ($place->mainCategory)
+                        <img src="{{ asset('storage/' . $place->mainCategory->avatar) }}"
+                            alt="{{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}">
+                        <span>
+                            {{ $place->mainCategory->{'name_' . app()->getLocale()} ?? $place->mainCategory->name_ar }}
+                        </span>
+                        @else
+                        <img src="{{ asset('storage/placeholders/no-category.png') }}" alt="{{ __('بدون تصنيف') }}">
+                        <span>{{ __('بدون تصنيف') }}</span>
+                        @endif
+                    </div>
+                    <div class="place-name">
+                        <span style="bottom: 50px; position: relative;">
+                            {{ $place->{'name_' . app()->getLocale()} ?? $place->name_ar }}
+                        </span>
+                    </div>
+                    @auth
+                    {{-- @if(Auth::user()->status != 1) --}}
+                    {{-- <button onclick="showActivationAlert()" class="explore-btn">
+                        {{ __('messages.explore') }}
+                    </button> --}}
+                    @else
+                    {{-- <a href="{{ route('mobile.china-discovers.info_place', $place) }}" class="explore-btn">
+                        {{ __('messages.explore') }}
+                    </a> --}}
+                    {{-- @endif --}}
+                    @endauth
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+                    <script>
+                        function showActivationAlert() {
+                                            Swal.fire({
+                                                title: 'تنبيه',
+                                                text: 'يجب تفعيل الحساب أولاً قبل استكشاف الأماكن.',
+                                                icon: 'warning',
+                                                confirmButtonText: 'حسناً',
+                                                confirmButtonColor: '#3085d6',
+                                            });
+                                        }
+                    </script>
+                </div>
+            </a>
+            @endif
             @else
             <a href="{{ route('mobile.auth.login') }}">
                 <div class="place-card">
@@ -490,7 +716,7 @@
                     </div>
                     @endif
 
-<div class="rating-icon"
+                    <div class="rating-icon"
                         style="left: 31%; bottom: 16px; top: unset; position: absolute; left: 10px; color: #f9a50f; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-star" style="font-size: 18px;"></i>
                         <span style="font-size: 14px; font-weight: bold; color: #fff;">
