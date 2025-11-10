@@ -712,7 +712,7 @@ Route::get('/mobile/trip-show/{id}', function ($id) {
 })->name('mobile.trip-show');
 
 Route::get('/mobile/trip', function () {
-    $trips = Trip::all()->orderBy('created_at', 'desc');
+    $trips = Trip::orderBy('created_at', 'desc')->get();
     return view('mobile.welcome.trip', compact('trips'));
 })->name('mobile.trip');
 
