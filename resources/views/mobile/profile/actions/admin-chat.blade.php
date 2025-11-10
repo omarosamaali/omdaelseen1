@@ -100,166 +100,62 @@
             </div>
         </div>
 
-<script>
-    // تأكد إن الـ script بيشتغل
-    console.log('Script loaded!');
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM Ready!');
-        
-        const form = document.getElementById('message-form');
-        console.log('Form found:', form);
-        
-        if (!form) {
-            alert('Form not found!');
-            return;
-        }
-        
-        form.addEventListener('submit', function (e) {
-            e.preventDefault(); // مهم جداً!
-            console.log('Form submitted via JavaScript!');
-            
-            let messageInput = document.getElementById('message-input');
-            let imageInput = document.getElementById('image-upload');
-            let productIdInput = document.querySelector('input[name="product_id"]');
-            
-            console.log('Message Input:', messageInput);
-            console.log('Image Input:', imageInput);
-            console.log('Product ID Input:', productIdInput);
-            
-            let messageValue = messageInput ? messageInput.value.trim() : '';
-            let imageFile = imageInput ? imageInput.files[0] : null;
-            let productId = productIdInput ? productIdInput.value : '';
+    <script>
+        document.getElementById('message-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            let messageInput = document.getElementById('message-input').value.trim();
+            let imageInput = document.getElementById('image-upload').files[0];
+            let productId = document.querySelector('input[name="product_id"]').value;
 
-            console.log('=== Form Data ===');
-            console.log('Product ID:', productId);
-            console.log('Message:', messageValue);
-            console.log('Image:', imageFile ? imageFile.name : 'No image');
-
-            if (!messageValue && !imageFile) {
-                alert('يجب إدخال رسالة أو صورة');
+            if (!messageInput && !imageInput) {
                 return;
             }
 
             let formData = new FormData();
             formData.append('product_id', productId);
-            if (messageValue) formData.append('message', messageValue);
-            if (imageFile) formData.append('image', imageFile);
+            if (messageInput) formData.append('message', messageInput);
+            if (imageInput) formData.append('image', imageInput);
 
-            // اطبع الـ FormData
-            console.log('=== FormData Contents ===');
-            for (let pair of formData.entries()) {
-                console.log(pair[0] + ':', pair[1]);
-            }
-
-            let sendButton = document.getElementById('send-message');
-            let originalHTML = sendButton.innerHTML;
-            sendButton.innerHTML = '<i class="ph ph-spinner-gap"></i>';
-            sendButton.disabled = true;
-
-            fetch('/mobile/chat/order/send', {
+            fetch('/mobile/chat/send', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 body: formData
             })
-            .then(response => {
-                console.log('=== Response ===');
-                console.log('Status:', response.status);
-                return response.text();
-            })
-            .then(text => {
-                console.log('=== Raw Response ===');
-                console.log(text);
-                
-                let data;
-                try {
-                    data = JSON.parse(text);
-                } catch (e) {
-                    // اطبع الـ error على الصفحة
-                    document.body.insertAdjacentHTML('afterbegin', 
-                        `<div style="position:fixed;top:0;left:0;right:0;background:red;color:white;padding:20px;z-index:999999;max-height:400px;overflow:auto;">
-                            <h3>Server Error:</h3>
-                            <pre style="white-space:pre-wrap;font-size:12px;">${text}</pre>
-                            <button onclick="this.parentElement.remove()" style="background:white;color:red;padding:10px;margin-top:10px;">Close</button>
-                        </div>`
-                    );
-                    throw new Error('Invalid JSON');
-                }
-                
-                console.log('=== Parsed Data ===');
-                console.log(data);
-                
-                sendButton.innerHTML = originalHTML;
-                sendButton.disabled = false;
-                
+            .then(response => response.json())
+            .then(data => {
                 if (data.error) {
-                    // اطبع الـ error على الصفحة
-                    let errorHTML = '<h3>❌ خطأ: ' + data.error + '</h3>';
-                    if (data.details) {
-                        errorHTML += '<pre style="background:rgba(0,0,0,0.2);padding:10px;margin-top:10px;">' + JSON.stringify(data.details, null, 2) + '</pre>';
-                    }
-                    document.body.insertAdjacentHTML('afterbegin', 
-                        `<div style="position:fixed;top:0;left:0;right:0;background:#ff6b6b;color:white;padding:20px;z-index:999999;direction:rtl;">
-                            ${errorHTML}
-                            <button onclick="this.parentElement.remove()" style="background:white;color:#ff6b6b;padding:10px;margin-top:10px;border:none;border-radius:5px;">إغلاق</button>
-                        </div>`
-                    );
+                    alert('فشل إرسال الرسالة: ' + data.error);
                     return;
                 }
-                
-                // Success - add message
                 let chatContainer = document.querySelector('.flex.flex-col.gap-8');
                 let messageContent = '';
-                
                 if (data.message.image) {
-                    messageContent += `<img src="{{ asset('storage/') }}/${data.message.image}" style="max-height:200px;" class="max-w-[200px] rounded-lg border border-color21" />`;
+                    messageContent += `<img src="{{ asset('storage/') }}/${data.message.image}" alt="Message Image" style="max-height: 200px;" class="max-w-[200px] rounded-lg border border-color21" />`;
                 }
                 if (data.message.message) {
                     messageContent += `<p class="text-white p-4 bg-p2 dark:bg-p1 rounded-r-2xl rounded-bl-2xl text-xs max-w-[280px]">${data.message.message}</p>`;
                 }
-                
-                chatContainer.insertAdjacentHTML('beforeend', `
+                let newMessage = `
                     <div class="flex justify-start items-end gap-3 w-full px-6">
                         <div class="flex flex-col gap-3">
                             <div class="flex justify-start items-center gap-2">
                                 ${messageContent}
                             </div>
                         </div>
+     
                     </div>
-                `);
-                
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-                
-                messageInput.value = '';
-                imageInput.value = '';
-                
-                // Success message
-                document.body.insertAdjacentHTML('afterbegin', 
-                    `<div style="position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#51cf66;color:white;padding:15px 30px;z-index:999999;border-radius:10px;">
-                        ✓ تم إرسال الرسالة
-                    </div>`
-                );
-                setTimeout(() => document.querySelector('div[style*="#51cf66"]')?.remove(), 3000);
+                `;
+                chatContainer.insertAdjacentHTML('beforeend', newMessage);
+                document.getElementById('message-input').value = '';
+                document.getElementById('image-upload').value = '';
             })
             .catch(error => {
-                console.error('=== Error ===');
-                console.error(error);
-                
-                sendButton.innerHTML = originalHTML;
-                sendButton.disabled = false;
-                
-                document.body.insertAdjacentHTML('afterbegin', 
-                    `<div style="position:fixed;top:0;left:0;right:0;background:#c92a2a;color:white;padding:20px;z-index:999999;direction:rtl;">
-                        <h3>⚠️ خطأ: ${error.message}</h3>
-                        <button onclick="this.parentElement.remove()" style="background:white;color:#c92a2a;padding:10px;margin-top:10px;border:none;border-radius:5px;">إغلاق</button>
-                    </div>`
-                );
+                console.error('Fetch error:', error);
+                alert('حدث خطأ أثناء إرسال الرسالة');
             });
         });
-    });
-</script>
+    </script>
 </body>
 @endsection

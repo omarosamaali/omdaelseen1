@@ -129,21 +129,16 @@ class ChatController extends Controller
 
         return view('mobile.admin.all-chat', compact('chats'));
     }
-
-    // في ChatOrderController.php
     public function sendMessage(Request $request)
     {
         try {
-            // للـ debugging
-            \Log::info('Chat Order Request:', $request->all());
-
             if (!Auth::check()) {
-                return response()->json(['error' => 'غير مصرح'], 401);
+                return response()->json(['error' => 'غير مسموح، يرجى تسجيل الدخول'], 401);
             }
 
             $validated = $request->validate([
-                'message' => 'nullable|string',
                 'product_id' => 'required|exists:products,id',
+                'message' => 'nullable|string',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
@@ -152,8 +147,8 @@ class ChatController extends Controller
             }
 
             $data = [
-                'user_id' => Auth::id(),
                 'product_id' => $request->product_id,
+                'user_id' => Auth::id(),
                 'message' => $request->message,
             ];
 
@@ -162,18 +157,11 @@ class ChatController extends Controller
                 $data['image'] = $imagePath;
             }
 
-            $message = OrderMessage::create($data);
+            $message = \App\Models\OrderMessage::create($data);
 
             return response()->json([
                 'status' => 'success',
-                'message' => [
-                    'id' => $message->id,
-                    'user_id' => $message->user_id,
-                    'product_id' => $message->product_id,
-                    'message' => $message->message,
-                    'image' => $message->image,
-                    'created_at' => $message->created_at->format('Y-m-d H:i:s')
-                ]
+                'message' => $message,
             ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -181,13 +169,13 @@ class ChatController extends Controller
                 'details' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            \Log::error('Chat Order Error: ' . $e->getMessage());
             return response()->json([
                 'error' => 'فشل إرسال الرسالة',
                 'message' => $e->getMessage()
             ], 500);
         }
     }
+
 
     private function sendEmailNotifications($message)
     {

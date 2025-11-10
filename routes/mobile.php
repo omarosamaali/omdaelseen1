@@ -619,18 +619,24 @@ Route::get('/mobile/orders/orders-user-trip/{trip}', function ($tripId) {
 })->name('mobile.orders.show-trip');
 
 Route::middleware(['auth'])->group(function () {
-    // Chat Routes
+    Route::post('mobile/chat/send', [ChatController::class, 'sendMessage'])->name('mobile.chat.send');
+});
+
+Route::post('/mobile/trip-chat/send', [ChatOrderController::class, 'sendTripMessage'])
+    ->name('mobile.trip-chat.send');
+
+Route::post('/mobile/chat/sendMessage', [ChatOrderController::class, 'sendMessage'])
+    ->name('mobile.chat.order.send');
+
+Route::middleware(['auth'])->group(function () {
     Route::get('/mobile/chat', [ChatController::class, 'showUserChat'])->name('mobile.user.chat');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('mobile/chat', [ChatController::class, 'showUserChat'])->name('mobile.chat');
     Route::get('mobile/admin/all-chat', [ChatController::class, 'showAllChats'])->name('mobile.admin.all-chat');
     Route::get('mobile/admin/all-chat-profile', [ChatController::class, 'showAllChatsProfile'])->name('mobile.admin.all-chat-profile');
     Route::get('mobile/admin/chat/{chatUser}', [ChatController::class, 'showAdminChat'])->name('mobile.admin.chat');
-    Route::post('/mobile/chat/send', [ChatController::class, 'sendMessage'])->name('mobile.chat.send');
-
-    // Order Chat Routes (مختلف عن الـ chat العادي)
-    Route::post('/mobile/chat/order/send', [ChatOrderController::class, 'sendMessage'])->name('mobile.chat.order.send');
-
-    // Trip Chat Routes
-    Route::post('/mobile/trip-chat/send', [ChatOrderController::class, 'sendTripMessage'])->name('mobile.trip-chat.send');
 });
 
 Route::middleware('mobile_auth')->group(function () {
