@@ -128,6 +128,7 @@
                         <p class="mb-1"><strong>عدد المشتركين:</strong> {{ $trip->number_of_participants ?? '0' }}
                         </p>
                         <p class="mb-1"><strong>بانتظار الدفع:</strong> {{ $trip->pending_payments ?? '0' }}</p>
+                        <p class="mb-1"><strong>قابلة للدفع:</strong> {{ $trip->is_paid == 'yes' ? 'نعم' : 'لا' }}</p>
                     </div>
                 </div>
 

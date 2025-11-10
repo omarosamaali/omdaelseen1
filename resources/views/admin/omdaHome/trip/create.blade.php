@@ -160,10 +160,10 @@
                             <div class="mb-4 text-right">
                                 <label for="shared_room_price" class="block text-gray-700 font-bold mb-2">سعر الغرفة
                                     المشتركة</label>
-                                <input type="number" name="shared_room_price" id="shared_room_price"
-                                    value="{{ old('shared_room_price') }}"
-                                    class="w-full border-gray-300 rounded-md shadow-sm">
-                                @error('shared_room_price')
+<input type="text" name="shared_room_price_display" id="shared_room_price_display"
+        value="{{ old('shared_room_price') ? number_format(old('shared_room_price')) : '' }}"
+        class="w-full border-gray-300 rounded-md shadow-sm" placeholder="0">
+    <input type="hidden" name="shared_room_price" id="shared_room_price" value="{{ old('shared_room_price') }}">                                @error('shared_room_price')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -171,10 +171,10 @@
                             <div class="mb-4 text-right">
                                 <label for="private_room_price" class="block text-gray-700 font-bold mb-2">سعر الغرفة
                                     الخاصة</label>
-                                <input type="number" name="private_room_price" id="private_room_price"
-                                    value="{{ old('private_room_price') }}"
-                                    class="w-full border-gray-300 rounded-md shadow-sm">
-                                @error('private_room_price')
+<input type="text" name="private_room_price_display" id="private_room_price_display"
+        value="{{ old('private_room_price') ? number_format(old('private_room_price')) : '' }}"
+        class="w-full border-gray-300 rounded-md shadow-sm" placeholder="0">
+    <input type="hidden" name="private_room_price" id="private_room_price" value="{{ old('private_room_price') }}">                                @error('private_room_price')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -193,7 +193,67 @@
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
+<script>
+    // دالة لتنسيق الأرقام بالفواصل
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
 
+    // دالة لإزالة الفواصل
+    function unformatNumber(num) {
+        return num.replace(/,/g, '');
+    }
+
+    // دالة عامة للتعامل مع حقول الأرقام
+    function setupNumberField(displayId, hiddenId) {
+        const displayInput = document.getElementById(displayId);
+        const hiddenInput = document.getElementById(hiddenId);
+
+        if (!displayInput || !hiddenInput) return;
+
+        displayInput.addEventListener('input', function(e) {
+            // السماح فقط بالأرقام والفواصل
+            let value = e.target.value.replace(/[^\d,]/g, '');
+            
+            // إزالة الفواصل للمعالجة
+            let numericValue = unformatNumber(value);
+            
+            // تحديث القيمة المخفية (بدون فواصل)
+            hiddenInput.value = numericValue;
+            
+            // تنسيق وعرض القيمة (مع فواصل)
+            if (numericValue) {
+                e.target.value = formatNumber(numericValue);
+            } else {
+                e.target.value = '';
+            }
+        });
+
+        // التعامل مع اللصق
+        displayInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            let pastedData = e.clipboardData.getData('text');
+            let numericValue = unformatNumber(pastedData.replace(/[^\d]/g, ''));
+            
+            hiddenInput.value = numericValue;
+            displayInput.value = numericValue ? formatNumber(numericValue) : '';
+        });
+
+        // تنسيق القيمة الأولية إذا كانت موجودة
+        if (displayInput.value) {
+            let numericValue = unformatNumber(displayInput.value);
+            displayInput.value = formatNumber(numericValue);
+            hiddenInput.value = numericValue;
+        }
+    }
+
+    // تطبيق على جميع الحقول عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+        setupNumberField('price_display', 'price');
+        setupNumberField('shared_room_price_display', 'shared_room_price');
+        setupNumberField('private_room_price_display', 'private_room_price');
+    });
+</script>
                         <div class="flex gap-3">
                             <label class="block text-gray-700 font-bold mb-2">وجبات الطعام *</label>
                             <div class="flex items-center">
