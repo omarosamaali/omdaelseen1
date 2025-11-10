@@ -90,7 +90,7 @@ class TripController extends Controller
                 'tickets_included' => 'required|boolean',
                 'price' => 'nullable|numeric',
                 'status' => 'required|string',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:90048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB
                 'trip_features' => 'required|array',
                 'trip_features.*' => 'exists:trip_features,id',
                 'trip_guidelines' => 'required|array',
