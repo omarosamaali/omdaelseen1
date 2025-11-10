@@ -48,10 +48,10 @@
                     <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
             </div>
-
+            @if($activity->place_name_ar != null)
             <div class="mb-4 text-right">
                 <label for="name_ar" class="block text-gray-700 font-bold mb-2">الفعالية بالعربي *</label>
-                <input type="text" name="name_ar" id="name_ar" value="{{ old('name_ar', $activity->name_ar) }}"
+                <input type="text" name="name_ar" id="name_ar" value="{{ old('name_ar', $activity->place_name_ar) }}"
                        class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
                 @error('name_ar')
                     <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -59,7 +59,7 @@
             </div>
             <div class="mb-4 text-right">
                 <label for="name_en" class="block text-gray-700 font-bold mb-2">الفعالية بالإنجليزي *</label>
-                <input type="text" name="name_en" id="name_en" value="{{ old('name_en', $activity->name_en) }}"
+                <input type="text" name="name_en" id="name_en" value="{{ old('name_en', $activity->place_name_en) }}"
                        class="w-full border-gray-300 rounded-md shadow-sm" required>
                 @error('name_en')
                     <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -67,13 +67,13 @@
             </div>
             <div class="mb-4 text-right">
                 <label for="name_ch" class="block text-gray-700 font-bold mb-2">الفعالية بالصيني *</label>
-                <input type="text" name="name_ch" id="name_ch" value="{{ old('name_ch', $activity->name_ch) }}"
+                <input type="text" name="name_ch" id="name_ch" value="{{ old('name_ch', $activity->place_name_zh) }}"
                        class="w-full border-gray-300 rounded-md shadow-sm" required>
                 @error('name_ch')
                     <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
             </div>
-
+            @endif
             <div class="mb-4 text-right">
                 <label for="is_place_related" class="block text-gray-700 font-bold mb-2">هل الفعالية مرتبطة بمكان؟ *</label>
                 <select name="is_place_related" id="is_place_related"

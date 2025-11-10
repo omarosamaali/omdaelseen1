@@ -212,17 +212,12 @@
         if (!displayInput || !hiddenInput) return;
 
         displayInput.addEventListener('input', function(e) {
-            // السماح فقط بالأرقام والفواصل
             let value = e.target.value.replace(/[^\d,]/g, '');
             
-            // إزالة الفواصل للمعالجة
             let numericValue = unformatNumber(value);
             
-            // تحديث القيمة المخفية (بدون فواصل)
             hiddenInput.value = numericValue;
-            
-            // تنسيق وعرض القيمة (مع فواصل)
-            if (numericValue) {
+                        if (numericValue) {
                 e.target.value = formatNumber(numericValue);
             } else {
                 e.target.value = '';
