@@ -436,8 +436,7 @@
                             <select name="is_paid" id="is_paid"
                                 class="w-full border-gray-300 rounded-md shadow-sm text-right" required>
                                 <option value="yes" {{ 'yes' ? 'selected' : '' }}>نعم</option>
-                                <option value="no" {{ 'no' ? 'selected' : '' }}>لا
-                                </option>
+                                <option value="no" {{ 'no' ? 'selected' : '' }}>لا</option>
                             </select>
                             @error('status')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
