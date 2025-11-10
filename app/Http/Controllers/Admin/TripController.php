@@ -66,12 +66,23 @@ class TripController extends Controller
     public function store(Request $request)
     {
         try {
+            // لوج كل الـ Request
+            \Log::info('Trip Store Request:', [
+                'all_data' => $request->all(),
+                'has_file' => $request->hasFile('image'),
+                'file_info' => $request->hasFile('image') ? [
+                    'size' => $request->file('image')->getSize(),
+                    'mime' => $request->file('image')->getMimeType(),
+                    'original_name' => $request->file('image')->getClientOriginalName(),
+                ] : null
+            ]);
+
             $validated = $request->validate([
                 'title_ar' => 'required|string|max:255',
                 'title_en' => 'required|string|max:255',
                 'title_ch' => 'required|string|max:255',
                 'departure_date' => 'required|date',
-                'return_date' => 'required|date',
+                'return_date' => 'required|date|after_or_equal:departure_date',
                 'hotel_ar' => 'required|string|max:255',
                 'hotel_en' => 'required|string|max:255',
                 'hotel_ch' => 'required|string|max:255',
@@ -90,35 +101,86 @@ class TripController extends Controller
                 'tickets_included' => 'required|boolean',
                 'price' => 'nullable|numeric',
                 'status' => 'required|string',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB
-                'trip_features' => 'required|array',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+                'trip_features' => 'required|array|min:1',
                 'trip_features.*' => 'exists:trip_features,id',
-                'trip_guidelines' => 'required|array',
+                'trip_guidelines' => 'required|array|min:1',
                 'trip_guidelines.*' => 'exists:trip_guidelines,id',
-                'is_paid' => 'required',
-                
+                'is_paid' => 'required|in:yes,no',
             ]);
 
+            \Log::info('Validation Passed');
+
+            // التأكد من وجود المجلد
+            $uploadPath = public_path('images/trips');
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+                \Log::info('Created directory: ' . $uploadPath);
+            }
+
+            // رفع الصورة
+            $imageName = null;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+
+                \Log::info('Attempting to upload image:', [
+                    'filename' => $imageName,
+                    'path' => $uploadPath
+                ]);
+
+                try {
+                    $image->move($uploadPath, $imageName);
+                    \Log::info('Image uploaded successfully: ' . $imageName);
+
+                    // تأكد إن الملف فعلاً موجود
+                    if (!file_exists($uploadPath . '/' . $imageName)) {
+                        throw new \Exception('File not found after upload');
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Image upload failed: ' . $e->getMessage());
+                    throw new \Exception('فشل رفع الصورة: ' . $e->getMessage());
+                }
+            } else {
+                \Log::error('No image file in request');
+                throw new \Exception('لم يتم اختيار صورة');
+            }
+
+            // تحضير البيانات
             $validated['trip_features'] = json_encode($validated['trip_features']);
             $validated['trip_guidelines'] = json_encode($validated['trip_guidelines']);
             $validated['reference_number'] = 'REF' . mt_rand(10000000, 99999999);
-            $validated['user_id'] = auth()->user()->id;
+            $validated['user_id'] = auth()->id();
+            $validated['image'] = $imageName;
+
+            \Log::info('Creating trip with data:', $validated);
+
+            // حفظ البيانات
             $trip = Trip::create($validated);
 
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $imageName = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/trips'), $imageName);
-                $trip->image = $imageName;
-                $trip->save();
-            }
+            \Log::info('Trip created successfully with ID: ' . $trip->id);
 
             return redirect()->route('admin.omdaHome.trip.index')
                 ->with('success', 'تم إضافة الرحلة بنجاح.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation Error:', ['errors' => $e->errors()]);
+
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
         } catch (\Exception $e) {
+            \Log::error('Trip Store Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // حذف الصورة لو اتحملت
+            if (isset($imageName) && file_exists(public_path('images/trips/' . $imageName))) {
+                unlink(public_path('images/trips/' . $imageName));
+            }
+
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'حدث خطأ أثناء إضافة الرحلة: ' . $e->getMessage());
+                ->with('error', 'حدث خطأ: ' . $e->getMessage());
         }
     }
 
@@ -158,7 +220,9 @@ class TripController extends Controller
                 'translators'         => 'required|string',
                 'meals'               => 'nullable|array',
                 'airport_pickup'      => 'required|boolean',
-                'image'               => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                // 'image'               => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+
                 'supervisor'          => 'required|boolean',
                 'factory_visit'       => 'required|boolean',
                 'tourist_sites_visit' => 'required|boolean',
