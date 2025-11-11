@@ -100,7 +100,8 @@
                                             <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5"
                                                 stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round">
                                             </path>
-                                        </svg></span>
+                                        </svg>
+                                    </span>
                                 </p>
                             </div>
                         </div>
@@ -112,11 +113,9 @@
                         id="registration-form">
                         @csrf
                         <input type="hidden" name="trip_id" value="{{ $trip->id }}">
-
                         @php
                         $hasMultipleRoomTypes = $trip->private_room_price && $trip->shared_room_price;
                         @endphp
-
                         @if ($hasMultipleRoomTypes)
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-center">اختر نوع الغرفة:</label>
@@ -131,7 +130,6 @@
                                         ({{ $trip->shared_room_price }})
                                     </div>
                                 </label>
-
                                 <label
                                     style="gap: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                                     <input type="radio" name="room_type" value="private" {{ old('room_type')=='private'
@@ -154,9 +152,7 @@
                         <button type="submit" class="trip-button">الاشتراك</button>
                     </form>
                     @else
-                    {{-- ✅ الفورم الرئيسي لتقديم الطلب الجديد --}}
                     @if($trip->is_paid == 'yes')
-                    {{-- الرحلة مدفوعة --}}
                     <form action="{{ route('unpaid-trip-requests.store') }}" method="POST" class="relative z-20"
                         id="registration-form">
                         @csrf
@@ -269,7 +265,11 @@
                             <i class="fa-solid fa-bed" style="color: maroon;"></i>
                             نوع الغرفة مشتركة
                             <div style="display: flex; align-items: center; justify-content: center;">
-                                ({{ $trip->shared_room_price }})
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+										</svg> ({{ $trip->shared_room_price }})
                             </div>
                         </label>
 
@@ -280,7 +280,11 @@
                             <i class="fa-solid fa-bed" style="color: maroon;"></i>
                             نوع الغرفة خاصة
                             <div style="display: flex; align-items: center; justify-content: center;">
-                                ({{ $trip->private_room_price }})
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+											<path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+											<path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+											<path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+										</svg> ({{ $trip->private_room_price }})
                             </div>
                         </label>
                     </div>
@@ -423,8 +427,25 @@
                             <i class="fa-solid fa-wallet" style="color: maroon;"></i>
                             <span style="color: maroon">
                                 {{ __('messages.سعر_الرحلة') }}
+                                <span style="display: flex; align-items: center;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <path d="M8 7V17H12C14.8 17 17 14.8 17 12C17 9.2 14.8 7 12 7H8Z" stroke="#000" stroke-width="1.5"
+                                        stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M6.5 11H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                        <path d="M6.5 13H12.5H18.5" stroke="#000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+
+                                    </svg> 
+                                    @if($trip->shared_room_price != null) 
+                                    ({{ $trip->shared_room_price}})
+                                    @else
+                                    ({{ $trip->price }})
+                                    @endif
+                                </span>
                             </span>
-                            {{ $trip->price }}
+                            {{-- {{ $trip->price }} --}}
+                            
                         </p>
                     </div>
 
@@ -574,7 +595,7 @@
                                         @if ($activity->place?->subCategory->name_ar)
                                         <p>{{ $activity->place->subCategory->name_ar }}</p>
                                         @else
-                                        <p>{{ __('messages.new') }}</p>
+                                        <p>{{ __('messages.event') }}</p>
                                         @endif
                                     </div>
                                     <div class="sub-category-right">

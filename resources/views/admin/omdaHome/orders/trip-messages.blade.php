@@ -138,7 +138,6 @@
             if (messageInput) formData.append('message', messageInput);
             if (imageInput) formData.append('image', imageInput);
 
-            // ✅ المستخدم يبعت على route بتاعه
             fetch('/mobile/user-trip-messages/send', {
                 method: 'POST',
                 headers: {

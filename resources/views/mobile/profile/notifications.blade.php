@@ -27,13 +27,13 @@
                     <i class="ph ph-x"></i>
                 </div>
                 @endforeach --}}
-                @foreach ($favorites as $favorite)
+                {{-- @foreach ($favorites as $favorite)
                 <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
                     data-id="favorite-{{ $favorite->id }}">
                     <p>أضاف {{ $favorite->user->name }} {{ $favorite->place->name_ar }} الي المفضلة</p>
                     <i class="ph ph-x"></i>
                 </div>
-                @endforeach
+                @endforeach --}}
                 @foreach ($reports as $report)
                 <div class="flex justify-between items-center pb-4 border-b border-dashed border-color21 dark:border-color24 notification-item"
                     data-id="report-{{ $report->id }}">

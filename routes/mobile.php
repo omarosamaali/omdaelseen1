@@ -56,10 +56,8 @@ use App\Models\TripRegistration;
 use App\Models\UnpaidTripRequests;
 
 Route::post('/mobile/payment/start', [PaymentController::class, 'startPayment'])
-    ->name('mobile.payment.start')
-    ->middleware('auth');
+    ->name('mobile.payment.start')->middleware('auth');
 
-// ✅ اعمل support لـ GET و POST معاً
 Route::match(['get', 'post'], '/payment/callback', [PaymentController::class, 'handleCallback'])
     ->name('payment.callback');
 Route::get('/mobile/trip-chat/{user_id}/{order_id}/{order_type}', [OrderController::class, 'tripMessages'])
@@ -104,7 +102,6 @@ Route::post('/save-fcm-token', function (Request $request) {
         return response()->json(['success' => false, 'message' => 'Server error'], 500);
     }
 });
-
 
 Route::get('/emails/success-preview', function () {
     $booking = \App\Models\Booking::latest()->first();

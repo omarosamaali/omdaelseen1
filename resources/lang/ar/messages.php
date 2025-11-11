@@ -273,6 +273,8 @@ return [
         'tourism_only' => 'للسياحة فقط',
         'family' => 'عائلية',
     ],
+    'event' => 'فعالية',
+
     'translator_types' => [
         'group_translator' => 'للمجموعة',
         'private_translator' => 'خاص لكل شخص',

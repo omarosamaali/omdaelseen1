@@ -157,7 +157,9 @@
             @endif
 
             <div class="flex flex-col gap-4 pt-8" style="direction: rtl;">
-                <p>طلبات الرحلات  القابلة للدفع</p>
+                @if($trip_registers->count() > 0)
+                <p>طلبات الرحلات القابلة للدفع</p>
+                @endif
                 @foreach ($trip_registers as $trip)
                 <div class="bg-white dark:bg-color9 py-4 px-5 rounded-2xl shadow-md border relative"
                     style="overflow: hidden; height: 163px;">
@@ -206,7 +208,7 @@
                             </p>
                         </div>
                         <div id="container-type">
-                            <span>إضافة</span>
+                            <span>فعالية</span>
                         </div>
                     </div>
                     <div
@@ -252,7 +254,10 @@
                     </div>
                 </div>
                 @endforeach
+                @if($unPaidTrips->count() > 0)
                 <p>طلبات الرحلات الغير قابلة للدفع</p>
+                {{-- <p>طلبات الرحلات القابلة للدفع</p> --}}
+                @endif
                 @foreach ($unPaidTrips as $trip)
                 <div class="bg-white dark:bg-color9 py-4 px-5 rounded-2xl shadow-md border relative"
                     style="overflow: hidden; height: 163px;">
@@ -345,7 +350,10 @@
                     </div>
                 </div>
                 @endforeach
+                @if($products->count() > 0)
                 <p>طلبات المنتجات</p>
+                {{-- <p>طلبات الرحلات القابلة للدفع</p> --}}
+                @endif
                 @foreach ($products as $product)
                 <div class="bg-white dark:bg-color9 py-4 px-5 rounded-2xl shadow-md border relative"
                     style="overflow: hidden; height: 163px;">
@@ -432,7 +440,10 @@
                     </div>
                 </div>
                 @endforeach
+                @if($trip_requests->count() > 0)
                 <p>طلبات الرحلات الخاصة</p>
+                {{-- <p>طلبات الرحلات القابلة للدفع</p> --}}
+                @endif
                 @foreach ($trip_requests as $trip)
                 <div class="bg-white dark:bg-color9 py-4 px-5 rounded-2xl shadow-md border relative"
                     style="overflow: hidden; height: 163px;">

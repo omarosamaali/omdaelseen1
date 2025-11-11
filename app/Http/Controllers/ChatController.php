@@ -93,7 +93,7 @@ class ChatController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $users = User::where('role', 'user')->get();
+        $users = User::where('role', 'user')->orderBy('created_at', 'desc')->get();
         $chats = [];
 
         foreach ($users as $user) {

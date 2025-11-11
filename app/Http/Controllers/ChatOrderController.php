@@ -12,6 +12,7 @@ use App\Models\TravelChat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 
 class ChatOrderController extends Controller
 { // أضف هذه الـ Methods في ChatOrderController
@@ -48,12 +49,8 @@ class ChatOrderController extends Controller
         ));
     }
 
-    /**
-     * إرسال رسالة من المستخدم
-     */
     public function sendUserTripMessage(Request $request)
     {
-        \Log::info('sendUserTripMessage called', $request->all());
 
         $request->validate([
             'order_id' => 'required|integer',
@@ -85,7 +82,11 @@ class ChatOrderController extends Controller
             'message' => $request->message,
             'image' => $filePath,
         ]);
-
+        Mail::raw('تم إستلام رسالة جديدة يرجي الرجوع للتطبيق للتحقق منها', function ($message) {
+            $message->to('chinaomda@gmail.com')
+                ->subject('رسالة جديدة');
+        });
+        
         return response()->json([
             'message' => [
                 'id' => $message->id,
@@ -98,9 +99,10 @@ class ChatOrderController extends Controller
             ]
         ]);
     }
+
     public function userAdminChatTrip($trip_id)
     {
-        // البحث عن الرحلة وتحديد النوع تلقائياً
+
         $trip = TripRequest::find($trip_id);
         $order_type = 'trip_request';
         $orderModel = TripRequest::class;
@@ -133,6 +135,10 @@ class ChatOrderController extends Controller
             ->orderBy('created_at', 'asc')
             ->get();
 
+        Mail::raw('تم إستلام رسالة جديدة يرجي الرجوع للتطبيق للتحقق منها', function ($message) {
+            $message->to('chinaomda@gmail.com')
+                ->subject('رسالة جديدة');
+        });
         return view('mobile.profile.actions.userAdminChatTrip', compact(
             'travel_chats',
             'trip_id',
@@ -152,6 +158,11 @@ class ChatOrderController extends Controller
             abort(403, 'Unauthorized');
         }
         $product = Product::findOrFail($product_id);
+        Mail::raw('تم إستلام رسالة جديدة يرجي الرجوع للتطبيق للتحقق منها', function ($message) {
+            $message->to('chinaomda@gmail.com')
+                ->subject('رسالة جديدة');
+        });
+
         return view('mobile.profile.actions.user-chat', compact('product_id', 'product'));
     }
 
@@ -161,6 +172,10 @@ class ChatOrderController extends Controller
             abort(403, 'Unauthorized');
         }
         $product = Product::findOrFail($product_id);
+        Mail::raw('تم إستلام رسالة جديدة يرجي الرجوع للتطبيق للتحقق منها', function ($message) {
+            $message->to('chinaomda@gmail.com')
+                ->subject('رسالة جديدة');
+        });
         return view('mobile.profile.actions.admin-chat', compact('product_id', 'product'));
     }
 
@@ -177,6 +192,10 @@ class ChatOrderController extends Controller
             ->with('user')
             ->orderBy('created_at', 'asc')
             ->get();
+        Mail::raw('تم إستلام رسالة جديدة يرجي الرجوع للتطبيق للتحقق منها', function ($message) {
+            $message->to('chinaomda@gmail.com')
+                ->subject('رسالة جديدة');
+        });
 
         return view('mobile.profile.actions.admin-chat-trip', compact('trip_id', 'trip', 'messages'));
     }

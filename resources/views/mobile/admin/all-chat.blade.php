@@ -29,7 +29,7 @@
             <a href="{{ route('mobile.admin.chat', $chat['user']->id) }}" class="flex justify-between items-center">
                 <div class="flex justify-start items-center gap-3">
                     <div class="relative border border-p1 p-1 rounded-full">
-                        <img src="{{ $chat['user']->avatar ? asset('storage/' . $chat['user']->avatar) : asset('assets/images/user-img-1.png') }}"
+                        <img src="{{ $chat['user']->avatar ? asset('storage/' . $chat['user']->avatar) : asset('assets/assets/images/default.jpg') }}"
                             alt="{{ $chat['user']->name }}" class="size-10 rounded-full bg-color8" />
                         @if ($chat['unread_count'] > 0)
                         <div class="unread-badge absolute -right-1.5 bottom-1">

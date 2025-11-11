@@ -207,6 +207,7 @@ return [
     'نعتذر لا توجد بيانات' => 'Sorry, no data found',
     'المعارض' => 'Exhibitions',
     'المناسبات' => 'Events',
+    'event' => 'Event',
     'الطلبات' => 'Orders',
     'تفاصيل الطلب' => 'Order Details',
     'المستندات' => 'Documents',
